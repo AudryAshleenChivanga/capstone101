@@ -1,0 +1,423 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>H. pylori CDSS - AI-Powered Clinical Decision Support</title>
+    <link rel="stylesheet" href="landing.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar">
+        <div class="nav-container">
+            <div class="nav-logo">
+                <img src="/images/digestive_system+hpylori.webp" alt="H. pylori" class="logo-img">
+                <span class="logo-text">H. pylori CDSS</span>
+            </div>
+            <ul class="nav-menu">
+                <li><a href="#service">Services</a></li>
+                <li><a href="#specialties">Specialties</a></li>
+                <li><a href="#how-it-works">How it Works</a></li>
+                <li><a href="#about">About</a></li>
+                <li><a href="#contact">Contact</a></li>
+            </ul>
+            <div class="nav-actions">
+                <a href="index.html" class="btn btn-secondary">Sign In</a>
+                <a href="index.html#signup" class="btn btn-primary">Get Started</a>
+            </div>
+            <button class="mobile-menu-toggle" id="mobileMenuToggle">
+                <span></span>
+                <span></span>
+                <span></span>
+            </button>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section class="hero">
+        <div class="hero-container">
+            <div class="hero-content">
+                <div class="hero-badge">
+                    <svg viewBox="0 0 24 24" width="16" height="16">
+                        <path d="M22 11.08V12a10 10 0 11-5.93-9.14"/>
+                        <polyline points="22 4 12 14.01 9 11.01"/>
+                    </svg>
+                    <span>AI-Powered Clinical Support</span>
+                </div>
+                
+                <h1 class="hero-title">
+                    Elevating clinical precision and strong diagnostic confidence for all
+                </h1>
+                
+                <p class="hero-description">
+                    Discover the power of AI-assisted diagnosis with our only online H. pylori 
+                    Clinical Decision Support System aligned with your holistic, evidence-based 
+                    clinical practice & other things to do.
+                </p>
+                
+                <div class="hero-stats">
+                    <div class="stat-item">
+                        <div class="stat-icon">
+                            <img src="/images/Dr_Angie.webp" alt="Dr. Angie">
+                            <img src="/images/Dr_Ishimwe.webp" alt="Dr. Ishimwe">
+                            <img src="/images/Dr_Mugisha.webp" alt="Dr. Mugisha">
+                            <img src="/images/Dr_Tatenda.webp" alt="Dr. Tatenda">
+                            <span class="stat-count">75k+</span>
+                        </div>
+                        <p class="stat-text">Satisfied users globally</p>
+                    </div>
+                </div>
+                
+                <div class="hero-actions">
+                    <a href="index.html#signup" class="btn btn-primary btn-lg">
+                        Start Free Trial
+                        <svg viewBox="0 0 24 24" width="20" height="20">
+                            <line x1="5" y1="12" x2="19" y2="12"/>
+                            <polyline points="12 5 19 12 12 19"/>
+                        </svg>
+                    </a>
+                    <a href="#how-it-works" class="btn btn-outline btn-lg">
+                        Learn More
+                    </a>
+                </div>
+                
+                <div class="hero-features">
+                    <div class="feature-badge">
+                        <svg viewBox="0 0 24 24" width="16" height="16">
+                            <polyline points="20 6 9 17 4 12"/>
+                        </svg>
+                        <span>24/7 AI Support</span>
+                    </div>
+                    <div class="feature-badge">
+                        <svg viewBox="0 0 24 24" width="16" height="16">
+                            <polyline points="20 6 9 17 4 12"/>
+                        </svg>
+                        <span>Evidence-Based</span>
+                    </div>
+                    <div class="feature-badge">
+                        <svg viewBox="0 0 24 24" width="16" height="16">
+                            <polyline points="20 6 9 17 4 12"/>
+                        </svg>
+                        <span>HIPAA Compliant</span>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="hero-image">
+                <div class="hero-image-wrapper">
+                    <img src="/images/Dr_Mugisha.webp" alt="Medical Professional" class="doctor-image">
+                    <div class="floating-card card-1">
+                        <div class="card-icon">
+                            <svg viewBox="0 0 24 24" width="24" height="24">
+                                <path d="M22 11.08V12a10 10 0 11-5.93-9.14"/>
+                                <polyline points="22 4 12 14.01 9 11.01"/>
+                            </svg>
+                        </div>
+                        <div class="card-content">
+                            <p class="card-label">Accuracy Rate</p>
+                            <p class="card-value">98.7%</p>
+                        </div>
+                    </div>
+                    <div class="floating-card card-2">
+                        <div class="card-icon">
+                            <svg viewBox="0 0 24 24" width="24" height="24">
+                                <path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/>
+                                <circle cx="9" cy="7" r="4"/>
+                                <path d="M23 21v-2a4 4 0 00-3-3.87"/>
+                                <path d="M16 3.13a4 4 0 010 7.75"/>
+                            </svg>
+                        </div>
+                        <div class="card-content">
+                            <p class="card-label">Active Clinicians</p>
+                            <p class="card-value">2,500+</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Services Section -->
+    <section class="services" id="service">
+        <div class="section-container">
+            <div class="section-header">
+                <span class="section-badge">Our Services</span>
+                <h2 class="section-title">Comprehensive diagnostic support for every stage</h2>
+                <p class="section-description">
+                    From initial screening to treatment planning, our AI-powered platform provides 
+                    evidence-based recommendations tailored to your clinical practice.
+                </p>
+            </div>
+            
+            <div class="services-grid">
+                <div class="service-card">
+                    <div class="service-icon">
+                        <svg viewBox="0 0 24 24" width="32" height="32">
+                            <circle cx="11" cy="11" r="8"/>
+                            <path d="M21 21l-4.35-4.35"/>
+                        </svg>
+                    </div>
+                    <h3>AI Screening</h3>
+                    <p>Individual AI-powered assessment for H. pylori infection probability with comprehensive risk analysis.</p>
+                    <ul class="service-features">
+                        <li>97% accuracy rate</li>
+                        <li>Real-time analysis</li>
+                        <li>Symptom correlation</li>
+                    </ul>
+                    <a href="index.html" class="service-link">
+                        Get Started
+                        <svg viewBox="0 0 24 24" width="16" height="16">
+                            <line x1="5" y1="12" x2="19" y2="12"/>
+                            <polyline points="12 5 19 12 12 19"/>
+                        </svg>
+                    </a>
+                </div>
+                
+                <div class="service-card">
+                    <div class="service-icon">
+                        <svg viewBox="0 0 24 24" width="32" height="32">
+                            <polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/>
+                        </svg>
+                    </div>
+                    <h3>Resistance Staging</h3>
+                    <p>Advanced antibiotic resistance classification using MIC values and genetic analysis.</p>
+                    <ul class="service-features">
+                        <li>3-tier classification</li>
+                        <li>Treatment optimization</li>
+                        <li>Personalized therapy</li>
+                    </ul>
+                    <a href="index.html" class="service-link">
+                        Learn More
+                        <svg viewBox="0 0 24 24" width="16" height="16">
+                            <line x1="5" y1="12" x2="19" y2="12"/>
+                            <polyline points="12 5 19 12 12 19"/>
+                        </svg>
+                    </a>
+                </div>
+                
+                <div class="service-card featured">
+                    <div class="featured-badge">Most Popular</div>
+                    <div class="service-icon">
+                        <svg viewBox="0 0 24 24" width="32" height="32">
+                            <polygon points="23 7 16 12 23 17 23 7"/>
+                            <rect x="1" y="5" width="15" height="14" rx="2" ry="2"/>
+                        </svg>
+                    </div>
+                    <h3>Video Consultation</h3>
+                    <p>Seamless telemedicine platform with integrated scheduling and secure video conferencing.</p>
+                    <ul class="service-features">
+                        <li>HD video quality</li>
+                        <li>Appointment scheduling</li>
+                        <li>Screen sharing</li>
+                    </ul>
+                    <a href="index.html" class="service-link">
+                        Book Session
+                        <svg viewBox="0 0 24 24" width="16" height="16">
+                            <line x1="5" y1="12" x2="19" y2="12"/>
+                            <polyline points="12 5 19 12 12 19"/>
+                        </svg>
+                    </a>
+                </div>
+                
+                <div class="service-card">
+                    <div class="service-icon">
+                        <svg viewBox="0 0 24 24" width="32" height="32">
+                            <circle cx="12" cy="12" r="10"/>
+                            <circle cx="12" cy="12" r="6"/>
+                            <circle cx="12" cy="12" r="2"/>
+                        </svg>
+                    </div>
+                    <h3>3D Biopsy Simulation</h3>
+                    <p>Interactive 3D visualization with AI-powered analysis for real-time diagnostic insights.</p>
+                    <ul class="service-features">
+                        <li>Real-time analysis</li>
+                        <li>Cancer detection</li>
+                        <li>Interactive training</li>
+                    </ul>
+                    <a href="biopsy-simulation.html" class="service-link">
+                        Try Demo
+                        <svg viewBox="0 0 24 24" width="16" height="16">
+                            <line x1="5" y1="12" x2="19" y2="12"/>
+                            <polyline points="12 5 19 12 12 19"/>
+                        </svg>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Stats Section -->
+    <section class="stats">
+        <div class="section-container">
+            <div class="stats-grid">
+                <div class="stat-box">
+                    <div class="stat-number">98.7%</div>
+                    <div class="stat-label">Diagnostic Accuracy</div>
+                </div>
+                <div class="stat-box">
+                    <div class="stat-number">2,500+</div>
+                    <div class="stat-label">Active Clinicians</div>
+                </div>
+                <div class="stat-box">
+                    <div class="stat-number">50k+</div>
+                    <div class="stat-label">Cases Analyzed</div>
+                </div>
+                <div class="stat-box">
+                    <div class="stat-number">24/7</div>
+                    <div class="stat-label">AI Support</div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- How It Works -->
+    <section class="how-it-works" id="how-it-works">
+        <div class="section-container">
+            <div class="section-header">
+                <span class="section-badge">Simple Process</span>
+                <h2 class="section-title">How it works</h2>
+                <p class="section-description">Get started in minutes with our streamlined diagnostic workflow</p>
+            </div>
+            
+            <div class="steps-grid">
+                <div class="step-card">
+                    <div class="step-number">01</div>
+                    <div class="step-icon">
+                        <svg viewBox="0 0 24 24" width="32" height="32">
+                            <path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/>
+                            <circle cx="12" cy="7" r="4"/>
+                        </svg>
+                    </div>
+                    <h3>Create Account</h3>
+                    <p>Sign up with your professional credentials and get instant access to the platform.</p>
+                </div>
+                
+                <div class="step-card">
+                    <div class="step-number">02</div>
+                    <div class="step-icon">
+                        <svg viewBox="0 0 24 24" width="32" height="32">
+                            <path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/>
+                            <polyline points="14 2 14 8 20 8"/>
+                        </svg>
+                    </div>
+                    <h3>Enter Patient Data</h3>
+                    <p>Input symptoms, lab results, and clinical observations into our secure system.</p>
+                </div>
+                
+                <div class="step-card">
+                    <div class="step-number">03</div>
+                    <div class="step-icon">
+                        <svg viewBox="0 0 24 24" width="32" height="32">
+                            <circle cx="12" cy="12" r="3"/>
+                            <path d="M12 1v6m0 6v6m5.7-13.7l-4.2 4.2m0 3l-4.2 4.2m13.7-5.7h-6m-6 0H1m13.7 5.7l-4.2-4.2m0-3l-4.2-4.2"/>
+                        </svg>
+                    </div>
+                    <h3>Get AI Analysis</h3>
+                    <p>Our ML models analyze data and provide evidence-based recommendations instantly.</p>
+                </div>
+                
+                <div class="step-card">
+                    <div class="step-number">04</div>
+                    <div class="step-icon">
+                        <svg viewBox="0 0 24 24" width="32" height="32">
+                            <path d="M22 11.08V12a10 10 0 11-5.93-9.14"/>
+                            <polyline points="22 4 12 14.01 9 11.01"/>
+                        </svg>
+                    </div>
+                    <h3>Review & Approve</h3>
+                    <p>Review recommendations, add clinical notes, sign digitally, and send to patient.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- CTA Section -->
+    <section class="cta">
+        <div class="cta-container">
+            <div class="cta-content">
+                <h2>Ready to transform your clinical practice?</h2>
+                <p>Join thousands of healthcare professionals using AI-powered diagnostic support</p>
+                <div class="cta-actions">
+                    <a href="index.html#signup" class="btn btn-white btn-lg">
+                        Get Started Free
+                        <svg viewBox="0 0 24 24" width="20" height="20">
+                            <line x1="5" y1="12" x2="19" y2="12"/>
+                            <polyline points="12 5 19 12 12 19"/>
+                        </svg>
+                    </a>
+                    <a href="#contact" class="btn btn-outline-white btn-lg">
+                        Contact Sales
+                    </a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer" id="contact">
+        <div class="footer-container">
+            <div class="footer-grid">
+                <div class="footer-col">
+                    <div class="footer-logo">
+                        <img src="/images/digestive_system+hpylori.webp" alt="H. pylori">
+                        <span>H. pylori CDSS</span>
+                    </div>
+                    <p class="footer-description">
+                        AI-powered clinical decision support for H. pylori diagnosis and treatment.
+                    </p>
+                    <div class="social-links">
+                        <a href="#" aria-label="Twitter"><svg viewBox="0 0 24 24" width="20" height="20"><path d="M23 3a10.9 10.9 0 01-3.14 1.53 4.48 4.48 0 00-7.86 3v1A10.66 10.66 0 013 4s-4 9 5 13a11.64 11.64 0 01-7 2c9 5 20 0 20-11.5a4.5 4.5 0 00-.08-.83A7.72 7.72 0 0023 3z"/></svg></a>
+                        <a href="#" aria-label="LinkedIn"><svg viewBox="0 0 24 24" width="20" height="20"><path d="M16 8a6 6 0 016 6v7h-4v-7a2 2 0 00-2-2 2 2 0 00-2 2v7h-4v-7a6 6 0 016-6zM2 9h4v12H2z"/><circle cx="4" cy="4" r="2"/></svg></a>
+                        <a href="#" aria-label="GitHub"><svg viewBox="0 0 24 24" width="20" height="20"><path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 00-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0020 4.77 5.07 5.07 0 0019.91 1S18.73.65 16 2.48a13.38 13.38 0 00-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 005 4.77a5.44 5.44 0 00-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 009 18.13V22"/></svg></a>
+                    </div>
+                </div>
+                
+                <div class="footer-col">
+                    <h4>Services</h4>
+                    <ul>
+                        <li><a href="#service">AI Screening</a></li>
+                        <li><a href="#service">Resistance Staging</a></li>
+                        <li><a href="#service">Video Consultation</a></li>
+                        <li><a href="biopsy-simulation.html">3D Biopsy</a></li>
+                    </ul>
+                </div>
+                
+                <div class="footer-col">
+                    <h4>Company</h4>
+                    <ul>
+                        <li><a href="#about">About Us</a></li>
+                        <li><a href="#how-it-works">How It Works</a></li>
+                        <li><a href="#">Careers</a></li>
+                        <li><a href="#">Blog</a></li>
+                    </ul>
+                </div>
+                
+                <div class="footer-col">
+                    <h4>Support</h4>
+                    <ul>
+                        <li><a href="#">Help Center</a></li>
+                        <li><a href="#">Documentation</a></li>
+                        <li><a href="#contact">Contact Us</a></li>
+                        <li><a href="#">Privacy Policy</a></li>
+                    </ul>
+                </div>
+            </div>
+            
+            <div class="footer-bottom">
+                <p>&copy; 2025 H. pylori CDSS. All rights reserved.</p>
+                <div class="footer-links">
+                    <a href="#">Terms</a>
+                    <a href="#">Privacy</a>
+                    <a href="#">Cookies</a>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <script src="landing.js"></script>
+</body>
+</html>
+

@@ -1,0 +1,559 @@
+/**
+ * Enhanced Navigation & Dashboard Styles
+ * - Collapsible sidebar animations
+ * - Breadcrumbs
+ * - Keyboard shortcuts modal
+ * - Mobile responsive
+ * - Smooth transitions
+ */
+
+/* ==================== SIDEBAR ENHANCEMENTS ==================== */
+
+.sidebar {
+    width: 280px;
+    transition: width 0.3s cubic-bezier(0.4, 0, 0.2, 1), 
+                transform 0.3s ease;
+    position: fixed;
+    left: 0;
+    top: 0;
+    height: 100vh;
+    overflow-x: hidden;
+    overflow-y: auto;
+    z-index: 1000;
+}
+
+.sidebar.collapsed {
+    width: 80px;
+}
+
+.sidebar.collapsed .sidebar-header h2,
+.sidebar.collapsed .nav-item span,
+.sidebar.collapsed .sidebar-search {
+    opacity: 0;
+    visibility: hidden;
+    width: 0;
+    overflow: hidden;
+}
+
+.sidebar.collapsed .nav-item {
+    justify-content: center;
+    padding: 12px;
+}
+
+.sidebar.collapsed .nav-icon {
+    margin-right: 0;
+}
+
+/* Hover expand effect (desktop only) */
+.sidebar.collapsed.hover-expanded {
+    width: 280px;
+    box-shadow: 4px 0 20px rgba(0, 0, 0, 0.15);
+}
+
+.sidebar.collapsed.hover-expanded .sidebar-header h2,
+.sidebar.collapsed.hover-expanded .nav-item span,
+.sidebar.collapsed.hover-expanded .sidebar-search {
+    opacity: 1;
+    visibility: visible;
+    width: auto;
+}
+
+.sidebar.collapsed.hover-expanded .nav-item {
+    justify-content: flex-start;
+    padding: 12px 20px;
+}
+
+.sidebar.collapsed.hover-expanded .nav-icon {
+    margin-right: 15px;
+}
+
+/* Sidebar Toggle Button Enhancement */
+.sidebar-toggle {
+    background: rgba(255, 255, 255, 0.1);
+    border: none;
+    border-radius: 8px;
+    padding: 8px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.sidebar-toggle:hover {
+    background: rgba(255, 255, 255, 0.2);
+    transform: scale(1.1);
+}
+
+.sidebar-toggle .toggle-icon {
+    color: white;
+    transition: transform 0.3s ease;
+}
+
+.sidebar.collapsed .sidebar-toggle .toggle-icon {
+    transform: rotate(180deg);
+}
+
+/* ==================== SIDEBAR SEARCH ==================== */
+
+.sidebar-search {
+    padding: 15px 20px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    transition: opacity 0.3s ease, visibility 0.3s ease;
+}
+
+.sidebar-search-input {
+    width: 100%;
+    padding: 10px 15px;
+    background: rgba(255, 255, 255, 0.1);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    border-radius: 8px;
+    color: white;
+    font-size: 0.9rem;
+    transition: all 0.3s ease;
+}
+
+.sidebar-search-input::placeholder {
+    color: rgba(255, 255, 255, 0.5);
+}
+
+.sidebar-search-input:focus {
+    outline: none;
+    background: rgba(255, 255, 255, 0.15);
+    border-color: #00d4ff;
+    box-shadow: 0 0 0 3px rgba(0, 212, 255, 0.1);
+}
+
+/* ==================== BREADCRUMB NAVIGATION ==================== */
+
+.breadcrumb-nav {
+    margin-bottom: 20px;
+    padding: 12px 0;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+}
+
+.breadcrumb {
+    display: flex;
+    align-items: center;
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    font-size: 0.9rem;
+}
+
+.breadcrumb-item {
+    color: #64748b;
+    font-weight: 500;
+}
+
+.breadcrumb-item a {
+    color: #007bff;
+    text-decoration: none;
+    transition: color 0.2s ease;
+}
+
+.breadcrumb-item a:hover {
+    color: #0056b3;
+    text-decoration: underline;
+}
+
+.breadcrumb-item.active {
+    color: #1e293b;
+    font-weight: 600;
+}
+
+.breadcrumb-separator {
+    margin: 0 10px;
+    color: #cbd5e1;
+    user-select: none;
+}
+
+/* ==================== KEYBOARD SHORTCUTS ==================== */
+
+.shortcuts-help-btn {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    border: none;
+    color: white;
+    font-size: 1.2rem;
+    cursor: pointer;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    transition: all 0.3s ease;
+    z-index: 999;
+}
+
+.shortcuts-help-btn:hover {
+    transform: scale(1.1);
+    box-shadow: 0 6px 20px rgba(102, 126, 234, 0.4);
+}
+
+.shortcuts-modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.7);
+    backdrop-filter: blur(5px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 10000;
+    animation: fadeIn 0.3s ease;
+}
+
+.shortcuts-modal-content {
+    background: white;
+    border-radius: 16px;
+    padding: 30px;
+    max-width: 600px;
+    width: 90%;
+    max-height: 80vh;
+    overflow-y: auto;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+    animation: slideUp 0.3s ease;
+}
+
+.shortcuts-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 25px;
+    padding-bottom: 15px;
+    border-bottom: 2px solid #e2e8f0;
+}
+
+.shortcuts-header h3 {
+    margin: 0;
+    font-size: 1.5rem;
+    color: #1e293b;
+}
+
+.shortcuts-header .close-btn {
+    background: none;
+    border: none;
+    font-size: 2rem;
+    color: #64748b;
+    cursor: pointer;
+    width: 40px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 8px;
+    transition: all 0.2s ease;
+}
+
+.shortcuts-header .close-btn:hover {
+    background: #f1f5f9;
+    color: #1e293b;
+}
+
+.shortcuts-list {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 25px;
+}
+
+.shortcut-group h4 {
+    margin: 0 0 15px 0;
+    color: #475569;
+    font-size: 1rem;
+    font-weight: 600;
+}
+
+.shortcut-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 10px;
+    border-radius: 8px;
+    background: #f8fafc;
+    margin-bottom: 8px;
+    transition: all 0.2s ease;
+}
+
+.shortcut-item:hover {
+    background: #e2e8f0;
+    transform: translateX(5px);
+}
+
+.shortcut-item kbd {
+    background: white;
+    border: 1px solid #cbd5e1;
+    border-radius: 6px;
+    padding: 4px 8px;
+    font-size: 0.85rem;
+    font-family: 'Consolas', 'Monaco', monospace;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    margin-right: 5px;
+}
+
+.shortcut-item span {
+    color: #475569;
+    font-size: 0.9rem;
+}
+
+/* ==================== PAGE TRANSITIONS ==================== */
+
+.page {
+    animation-duration: 0.3s;
+    animation-fill-mode: both;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes fadeOut {
+    from {
+        opacity: 1;
+        transform: translateY(0);
+    }
+    to {
+        opacity: 0;
+        transform: translateY(-20px);
+    }
+}
+
+@keyframes slideUp {
+    from {
+        opacity: 0;
+        transform: translateY(30px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes slideIn {
+    from {
+        transform: translateX(400px);
+        opacity: 0;
+    }
+    to {
+        transform: translateX(0);
+        opacity: 1;
+    }
+}
+
+@keyframes slideOut {
+    from {
+        transform: translateX(0);
+        opacity: 1;
+    }
+    to {
+        transform: translateX(400px);
+        opacity: 0;
+    }
+}
+
+/* ==================== MOBILE NAVIGATION ==================== */
+
+.mobile-menu-btn {
+    display: none;
+    background: rgba(0, 0, 0, 0.05);
+    border: none;
+    border-radius: 8px;
+    padding: 10px 15px;
+    font-size: 1.5rem;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.mobile-menu-btn:hover {
+    background: rgba(0, 0, 0, 0.1);
+}
+
+@media (max-width: 768px) {
+    .sidebar {
+        transform: translateX(-100%);
+        width: 280px;
+        box-shadow: none;
+    }
+    
+    .sidebar.mobile-visible {
+        transform: translateX(0);
+        box-shadow: 4px 0 20px rgba(0, 0, 0, 0.3);
+    }
+    
+    .sidebar.collapsed {
+        width: 280px;
+        transform: translateX(-100%);
+    }
+    
+    .main-content {
+        margin-left: 0 !important;
+        width: 100%;
+    }
+    
+    .mobile-menu-btn {
+        display: block;
+    }
+    
+    .breadcrumb-nav {
+        font-size: 0.8rem;
+    }
+    
+    .breadcrumb-separator {
+        margin: 0 5px;
+    }
+    
+    .shortcuts-help-btn {
+        bottom: 15px;
+        right: 15px;
+        width: 45px;
+        height: 45px;
+        font-size: 1rem;
+    }
+    
+    .shortcuts-modal-content {
+        width: 95%;
+        padding: 20px;
+    }
+    
+    .shortcuts-list {
+        grid-template-columns: 1fr;
+    }
+}
+
+/* ==================== MAIN CONTENT ADJUSTMENT ==================== */
+
+.main-content {
+    margin-left: 280px;
+    transition: margin-left 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.sidebar.collapsed ~ .main-content {
+    margin-left: 80px;
+}
+
+/* ==================== SMOOTH SCROLLING ==================== */
+
+* {
+    scroll-behavior: smooth;
+}
+
+.page {
+    scroll-margin-top: 20px;
+}
+
+/* ==================== LOADING STATES ==================== */
+
+.nav-item.loading::after {
+    content: '';
+    width: 12px;
+    height: 12px;
+    border: 2px solid rgba(255, 255, 255, 0.3);
+    border-top-color: white;
+    border-radius: 50%;
+    animation: spin 0.8s linear infinite;
+    margin-left: auto;
+}
+
+@keyframes spin {
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+/* ==================== ACCESSIBILITY ==================== */
+
+.nav-item:focus,
+.sidebar-search-input:focus,
+.shortcuts-help-btn:focus {
+    outline: 2px solid #00d4ff;
+    outline-offset: 2px;
+}
+
+.sidebar-toggle:focus {
+    outline: 2px solid rgba(255, 255, 255, 0.5);
+    outline-offset: 2px;
+}
+
+/* High contrast mode */
+@media (prefers-contrast: high) {
+    .sidebar {
+        border-right: 2px solid #000;
+    }
+    
+    .nav-item {
+        border: 1px solid transparent;
+    }
+    
+    .nav-item:hover,
+    .nav-item.active {
+        border-color: #00d4ff;
+    }
+}
+
+/* Reduced motion */
+@media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+        scroll-behavior: auto !important;
+    }
+}
+
+/* ==================== DARK MODE SUPPORT ==================== */
+
+[data-theme="dark"] .breadcrumb-nav {
+    border-bottom-color: rgba(255, 255, 255, 0.1);
+}
+
+[data-theme="dark"] .breadcrumb-item {
+    color: #94a3b8;
+}
+
+[data-theme="dark"] .breadcrumb-item.active {
+    color: #e2e8f0;
+}
+
+[data-theme="dark"] .shortcuts-modal-content {
+    background: #1e293b;
+    color: #e2e8f0;
+}
+
+[data-theme="dark"] .shortcuts-header {
+    border-bottom-color: rgba(255, 255, 255, 0.1);
+}
+
+[data-theme="dark"] .shortcuts-header h3 {
+    color: #e2e8f0;
+}
+
+[data-theme="dark"] .shortcut-item {
+    background: rgba(255, 255, 255, 0.05);
+}
+
+[data-theme="dark"] .shortcut-item:hover {
+    background: rgba(255, 255, 255, 0.1);
+}
+
+[data-theme="dark"] .shortcut-item kbd {
+    background: #0f172a;
+    border-color: #475569;
+    color: #e2e8f0;
+}
+
+[data-theme="dark"] .shortcut-item span {
+    color: #cbd5e1;
+}
+

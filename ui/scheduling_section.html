@@ -1,0 +1,404 @@
+<!-- ========================================
+     SCHEDULING SECTION FOR DASHBOARD
+     Add this section to your dashboard_new.html
+     ======================================== -->
+
+<section id="scheduling" class="page-section" style="display: none;">
+    <div class="section-header">
+        <h2>📅 Specialist Scheduling</h2>
+        <p>Schedule appointments with gastroenterologists and specialists</p>
+    </div>
+
+    <!-- Tabs for different views -->
+    <div class="scheduling-tabs">
+        <button class="tab-btn active" onclick="switchSchedulingTab('request')">
+            📝 Request Appointment
+        </button>
+        <button class="tab-btn" onclick="switchSchedulingTab('pending')">
+            ⏳ Pending (<span id="pendingCount">0</span>)
+        </button>
+        <button class="tab-btn" onclick="switchSchedulingTab('confirmed')">
+            ✅ Confirmed (<span id="confirmedCount">0</span>)
+        </button>
+        <button class="tab-btn" onclick="switchSchedulingTab('specialists')">
+            👨‍⚕️ Specialists
+        </button>
+    </div>
+
+    <!-- Tab Content -->
+    <div class="scheduling-content">
+        
+        <!-- Request Appointment Tab -->
+        <div id="request-tab" class="tab-content active">
+            <div class="card">
+                <h3>Request New Appointment</h3>
+                <form id="appointmentRequestForm" onsubmit="submitAppointmentRequest(event)">
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label>Select Specialist *</label>
+                            <select id="specialistSelect" required>
+                                <option value="">Loading specialists...</option>
+                            </select>
+                        </div>
+
+                        <div class="form-group">
+                            <label>Related Case (Optional)</label>
+                            <select id="caseSelect">
+                                <option value="">Select a case...</option>
+                            </select>
+                        </div>
+
+                        <div class="form-group">
+                            <label>Preferred Date & Time *</label>
+                            <input type="datetime-local" id="preferredDate" required>
+                        </div>
+
+                        <div class="form-group">
+                            <label>Urgency Level *</label>
+                            <select id="urgencyLevel" required>
+                                <option value="normal">Normal</option>
+                                <option value="urgent">Urgent</option>
+                                <option value="emergency">Emergency</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Reason for Consultation *</label>
+                        <textarea id="appointmentReason" rows="4" placeholder="Describe the reason for this appointment..." required></textarea>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Additional Notes</label>
+                        <textarea id="appointmentNotes" rows="3" placeholder="Any special requirements or additional information..."></textarea>
+                    </div>
+
+                    <button type="submit" class="btn btn-primary">
+                        📅 Request Appointment
+                    </button>
+                </form>
+            </div>
+        </div>
+
+        <!-- Pending Appointments Tab -->
+        <div id="pending-tab" class="tab-content">
+            <div id="pendingAppointments" class="appointments-list">
+                <div class="loading-state">
+                    <div class="spinner"></div>
+                    <p>Loading pending appointments...</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Confirmed Appointments Tab -->
+        <div id="confirmed-tab" class="tab-content">
+            <div id="confirmedAppointments" class="appointments-list">
+                <div class="loading-state">
+                    <div class="spinner"></div>
+                    <p>Loading confirmed appointments...</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Specialists List Tab -->
+        <div id="specialists-tab" class="tab-content">
+            <div id="specialistsList" class="specialists-grid">
+                <div class="loading-state">
+                    <div class="spinner"></div>
+                    <p>Loading specialists...</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- ========================================
+     SCHEDULING STYLES
+     Add to your styles or <style> tag
+     ======================================== -->
+<style>
+.scheduling-tabs {
+    display: flex;
+    gap: 0.5rem;
+    margin-bottom: 2rem;
+    border-bottom: 2px solid #e5e7eb;
+    flex-wrap: wrap;
+}
+
+.tab-btn {
+    padding: 1rem 1.5rem;
+    background: transparent;
+    border: none;
+    border-bottom: 3px solid transparent;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s;
+    color: #64748b;
+}
+
+.tab-btn.active {
+    color: #3b82f6;
+    border-bottom-color: #3b82f6;
+}
+
+.tab-btn:hover {
+    background: #f8fafc;
+}
+
+.tab-content {
+    display: none;
+}
+
+.tab-content.active {
+    display: block;
+}
+
+.form-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 1.5rem;
+    margin-bottom: 1.5rem;
+}
+
+.appointments-list {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+.appointment-card {
+    background: white;
+    border: 2px solid #e5e7eb;
+    border-radius: 12px;
+    padding: 1.5rem;
+    transition: all 0.3s;
+}
+
+.appointment-card:hover {
+    border-color: #3b82f6;
+    box-shadow: 0 4px 12px rgba(59, 130, 246, 0.1);
+}
+
+.appointment-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: start;
+    margin-bottom: 1rem;
+}
+
+.appointment-title {
+    font-size: 1.2rem;
+    font-weight: 700;
+    color: #1e293b;
+}
+
+.appointment-status {
+    padding: 0.5rem 1rem;
+    border-radius: 50px;
+    font-size: 0.875rem;
+    font-weight: 600;
+}
+
+.status-pending {
+    background: #fef3c7;
+    color: #92400e;
+}
+
+.status-confirmed {
+    background: #d1fae5;
+    color: #065f46;
+}
+
+.status-declined {
+    background: #fee2e2;
+    color: #991b1b;
+}
+
+.status-urgent {
+    background: #fecaca;
+    color: #991b1b;
+}
+
+.status-emergency {
+    background: #dc2626;
+    color: white;
+}
+
+.appointment-details {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 1rem;
+    margin: 1rem 0;
+}
+
+.detail-item {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.detail-icon {
+    font-size: 1.2rem;
+}
+
+.detail-text {
+    font-size: 0.95rem;
+    color: #64748b;
+}
+
+.appointment-reason {
+    background: #f8fafc;
+    padding: 1rem;
+    border-radius: 8px;
+    margin: 1rem 0;
+    border-left: 4px solid #3b82f6;
+}
+
+.appointment-actions {
+    display: flex;
+    gap: 0.75rem;
+    flex-wrap: wrap;
+    margin-top: 1rem;
+}
+
+.specialists-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 1.5rem;
+}
+
+.specialist-card {
+    background: white;
+    border: 2px solid #e5e7eb;
+    border-radius: 12px;
+    padding: 1.5rem;
+    text-align: center;
+    transition: all 0.3s;
+}
+
+.specialist-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+    border-color: #3b82f6;
+}
+
+.specialist-avatar {
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    margin: 0 auto 1rem;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 2rem;
+    color: white;
+}
+
+.specialist-name {
+    font-size: 1.2rem;
+    font-weight: 700;
+    margin-bottom: 0.5rem;
+}
+
+.specialist-specialty {
+    color: #3b82f6;
+    font-weight: 600;
+    margin-bottom: 0.5rem;
+}
+
+.specialist-info {
+    font-size: 0.875rem;
+    color: #64748b;
+    margin-bottom: 1rem;
+}
+
+.specialist-available {
+    display: inline-block;
+    padding: 0.25rem 0.75rem;
+    background: #d1fae5;
+    color: #065f46;
+    border-radius: 50px;
+    font-size: 0.875rem;
+    font-weight: 600;
+    margin-bottom: 1rem;
+}
+
+.specialist-unavailable {
+    background: #fee2e2;
+    color: #991b1b;
+}
+
+.video-link-card {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    padding: 1.5rem;
+    border-radius: 12px;
+    margin-top: 1rem;
+}
+
+.video-link-card h4 {
+    margin-bottom: 1rem;
+}
+
+.video-link-input {
+    display: flex;
+    gap: 0.5rem;
+    margin-bottom: 1rem;
+}
+
+.video-link-input input {
+    flex: 1;
+    padding: 0.75rem;
+    border-radius: 8px;
+    border: none;
+    font-family: monospace;
+}
+
+.btn-copy {
+    background: rgba(255, 255, 255, 0.2);
+    backdrop-filter: blur(10px);
+    color: white;
+    border: 1px solid rgba(255, 255, 255, 0.3);
+}
+
+.btn-copy:hover {
+    background: rgba(255, 255, 255, 0.3);
+}
+
+.loading-state {
+    text-align: center;
+    padding: 3rem;
+    color: #64748b;
+}
+
+.spinner {
+    width: 40px;
+    height: 40px;
+    border: 4px solid #e5e7eb;
+    border-top-color: #3b82f6;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+    margin: 0 auto 1rem;
+}
+
+@keyframes spin {
+    to { transform: rotate(360deg); }
+}
+
+.empty-state {
+    text-align: center;
+    padding: 3rem;
+}
+
+.empty-icon {
+    font-size: 4rem;
+    margin-bottom: 1rem;
+}
+
+.empty-text {
+    color: #64748b;
+    font-size: 1.1rem;
+}
+</style>
+

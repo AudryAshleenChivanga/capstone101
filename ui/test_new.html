@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TEST - NEW VERSION LOADED</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: Arial, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        }
+        .test-box {
+            background: white;
+            padding: 50px;
+            border-radius: 20px;
+            text-align: center;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            max-width: 600px;
+        }
+        h1 {
+            color: #667eea;
+            font-size: 3rem;
+            margin: 0 0 20px 0;
+        }
+        p {
+            font-size: 1.5rem;
+            color: #333;
+            margin: 20px 0;
+        }
+        .success {
+            color: #38ef7d;
+            font-weight: bold;
+            font-size: 2rem;
+        }
+        button {
+            background: #667eea;
+            color: white;
+            border: none;
+            padding: 20px 40px;
+            font-size: 1.2rem;
+            border-radius: 10px;
+            cursor: pointer;
+            margin-top: 20px;
+        }
+        button:hover {
+            background: #764ba2;
+        }
+    </style>
+</head>
+<body>
+    <div class="test-box">
+        <h1>✅ SUCCESS!</h1>
+        <p class="success">NEW VERSION IS WORKING!</p>
+        <p>If you can see this page, the server is serving updated files correctly.</p>
+        <button onclick="window.location.href='dashboard.html'">Go to Dashboard</button>
+        <p style="font-size: 1rem; color: #666; margin-top: 30px;">
+            Version 4.0 - Complete System
+        </p>
+    </div>
+</body>
+</html>

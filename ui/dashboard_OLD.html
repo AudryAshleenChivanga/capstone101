@@ -1,0 +1,886 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>H. pylori CDSS - Dashboard</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <!-- Header -->
+    <header class="header">
+        <div class="header-content">
+            <div class="header-left">
+                <div class="header-logo">
+                    <span class="logo-icon">🦠</span>
+                    <div>
+                        <h1>H. pylori CDSS</h1>
+                        <span class="header-subtitle">Clinical Decision Support System</span>
+                    </div>
+                </div>
+            </div>
+            <div class="header-right">
+                <div class="user-profile-header">
+                    <div class="user-avatar">
+                        <span class="avatar-icon">👨‍⚕️</span>
+                    </div>
+                    <div class="user-info-detailed">
+                        <span class="user-greeting">Welcome back,</span>
+                        <strong id="userName" class="user-name">Dr. Loading...</strong>
+                        <span class="badge" id="userRole"></span>
+                    </div>
+                </div>
+                <button class="btn btn-secondary" id="logoutBtn">
+                    <span>🚪 Logout</span>
+                </button>
+            </div>
+        </div>
+    </header>
+    
+    <!-- Toast notifications -->
+    <div id="toastContainer" class="toast-container"></div>
+    
+    <!-- Main content -->
+    <main class="main-content">
+        <!-- Tabs -->
+        <div class="tabs">
+            <button class="tab-btn active" data-tab="dashboard">Dashboard</button>
+            <button class="tab-btn" data-tab="screening">Screening</button>
+            <button class="tab-btn" data-tab="staging">Staging</button>
+            <button class="tab-btn" data-tab="batch">Batch CSV</button>
+            <button class="tab-btn" data-tab="history">Case History</button>
+            <button class="tab-btn" data-tab="biopsy">3D Biopsy</button>
+            <button class="tab-btn" data-tab="telemed">Video Consult</button>
+            <button class="tab-btn" data-tab="profile">My Profile</button>
+            <button class="tab-btn" id="adminTab" data-tab="admin" style="display:none">Admin Panel</button>
+            <button class="tab-btn" data-tab="settings">Settings</button>
+        </div>
+        
+        <!-- Tab content -->
+        <div class="tab-content">
+            <!-- Dashboard Tab -->
+            <div id="dashboard" class="tab-pane active">
+                <div class="dashboard-grid-professional">
+                    <!-- Top Metrics Row -->
+                    <div class="metrics-row">
+                        <div class="metric-card-pro metric-primary-pro">
+                            <div class="metric-header">
+                                <span class="metric-label-pro">Total Cases</span>
+                                <svg class="metric-icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <path d="M9 11l3 3L22 4"></path>
+                                    <path d="M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11"></path>
+                                </svg>
+                            </div>
+                            <div class="metric-value-pro" id="totalCasesMetric">0</div>
+                            <div class="metric-trend">
+                                <span class="trend-indicator positive">↑ 12%</span>
+                                <span class="trend-text">vs last month</span>
+                            </div>
+                        </div>
+                        
+                        <div class="metric-card-pro metric-success-pro">
+                            <div class="metric-header">
+                                <span class="metric-label-pro">Screening Cases</span>
+                                <svg class="metric-icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <circle cx="11" cy="11" r="8"></circle>
+                                    <path d="M21 21l-4.35-4.35"></path>
+                                </svg>
+                            </div>
+                            <div class="metric-value-pro" id="screeningCasesMetric">0</div>
+                            <div class="metric-trend">
+                                <span class="trend-indicator positive">↑ 8%</span>
+                                <span class="trend-text">vs last month</span>
+                            </div>
+                        </div>
+                        
+                        <div class="metric-card-pro metric-warning-pro">
+                            <div class="metric-header">
+                                <span class="metric-label-pro">Staging Cases</span>
+                                <svg class="metric-icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <polyline points="22 12 18 12 15 21 9 3 6 12 2 12"></polyline>
+                                </svg>
+                            </div>
+                            <div class="metric-value-pro" id="stagingCasesMetric">0</div>
+                            <div class="metric-trend">
+                                <span class="trend-indicator positive">↑ 5%</span>
+                                <span class="trend-text">vs last month</span>
+                            </div>
+                        </div>
+                        
+                        <div class="metric-card-pro metric-danger-pro">
+                            <div class="metric-header">
+                                <span class="metric-label-pro">High Risk Cases</span>
+                                <svg class="metric-icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"></path>
+                                    <line x1="12" y1="9" x2="12" y2="13"></line>
+                                    <line x1="12" y1="17" x2="12.01" y2="17"></line>
+                                </svg>
+                            </div>
+                            <div class="metric-value-pro" id="highRiskMetric">0</div>
+                            <div class="metric-trend">
+                                <span class="trend-indicator negative">↓ 3%</span>
+                                <span class="trend-text">vs last month</span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Charts Row -->
+                    <div class="charts-row">
+                        <div class="chart-container">
+                            <div class="chart-header">
+                                <h3>Cases Overview</h3>
+                                <select id="chartPeriod" class="chart-select">
+                                    <option value="7">Last 7 days</option>
+                                    <option value="30" selected>Last 30 days</option>
+                                    <option value="90">Last 90 days</option>
+                                </select>
+                            </div>
+                            <canvas id="casesChart"></canvas>
+                        </div>
+                        
+                        <div class="chart-container">
+                            <div class="chart-header">
+                                <h3>Risk Distribution</h3>
+                            </div>
+                            <canvas id="riskChart"></canvas>
+                        </div>
+                    </div>
+                    
+                    <!-- Bottom Row -->
+                    <div class="bottom-row">
+                        <!-- Quick Actions -->
+                        <div class="quick-actions-pro">
+                            <h3>Quick Actions</h3>
+                            <div class="action-grid">
+                                <button class="action-card" onclick="switchTab('screening')">
+                                    <svg class="action-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                        <circle cx="11" cy="11" r="8"></circle>
+                                        <path d="M21 21l-4.35-4.35"></path>
+                                    </svg>
+                                    <span>New Screening</span>
+                                </button>
+                                <button class="action-card" onclick="switchTab('staging')">
+                                    <svg class="action-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                        <polyline points="22 12 18 12 15 21 9 3 6 12 2 12"></polyline>
+                                    </svg>
+                                    <span>New Staging</span>
+                                </button>
+                                <button class="action-card" onclick="switchTab('telemed')">
+                                    <svg class="action-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                        <polygon points="23 7 16 12 23 17 23 7"></polygon>
+                                        <rect x="1" y="5" width="15" height="14" rx="2" ry="2"></rect>
+                                    </svg>
+                                    <span>Video Consult</span>
+                                </button>
+                                <button class="action-card" onclick="generateReport()">
+                                    <svg class="action-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                        <path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"></path>
+                                        <polyline points="14 2 14 8 20 8"></polyline>
+                                        <line x1="16" y1="13" x2="8" y2="13"></line>
+                                        <line x1="16" y1="17" x2="8" y2="17"></line>
+                                        <polyline points="10 9 9 9 8 9"></polyline>
+                                    </svg>
+                                    <span>Generate Report</span>
+                                </button>
+                            </div>
+                        </div>
+                        
+                        <!-- Recent Cases -->
+                        <div class="recent-cases-pro">
+                            <h3>Recent Activity</h3>
+                            <div id="recentCasesList" class="recent-list">
+                                <p class="loading-text">Loading recent cases...</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Screening Tab -->
+            <div id="screening" class="tab-pane">
+                <div class="content-grid">
+                    <div class="form-panel">
+                        <h2>Screening Assessment</h2>
+                        <form id="screeningForm" class="form">
+                            <div class="form-section">
+                                <h3>Demographics & Risk Factors</h3>
+                                <div class="form-row">
+                                    <div class="form-group">
+                                        <label for="age">Age</label>
+                                        <input type="number" id="age" name="age" min="0" max="120">
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="sex">Sex</label>
+                                        <select id="sex" name="sex">
+                                            <option value="">Select...</option>
+                                            <option value="M">Male</option>
+                                            <option value="F">Female</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                
+                                <div class="form-row">
+                                    <div class="form-group">
+                                        <label for="residence">Residence</label>
+                                        <select id="residence" name="residence">
+                                            <option value="">Select...</option>
+                                            <option value="urban">Urban</option>
+                                            <option value="rural">Rural</option>
+                                        </select>
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="sanitation">Sanitation</label>
+                                        <select id="sanitation" name="sanitation">
+                                            <option value="">Select...</option>
+                                            <option value="good">Good</option>
+                                            <option value="poor">Poor</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                
+                                <div class="form-row">
+                                    <div class="form-group">
+                                        <label for="water_source">Water Source</label>
+                                        <select id="water_source" name="water_source">
+                                            <option value="">Select...</option>
+                                            <option value="treated">Treated</option>
+                                            <option value="untreated">Untreated</option>
+                                        </select>
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="crowding">Crowding Index</label>
+                                        <input type="number" id="crowding" name="crowding" step="0.1" min="0">
+                                    </div>
+                                </div>
+                                
+                                <div class="form-row">
+                                    <div class="form-group">
+                                        <label for="poverty_index">Poverty Index</label>
+                                        <input type="number" id="poverty_index" name="poverty_index" step="0.1" min="0" max="1">
+                                    </div>
+                                    <div class="form-group">
+                                        <label>Smoking</label>
+                                        <div class="radio-group">
+                                            <label><input type="radio" name="smoking" value="0"> No</label>
+                                            <label><input type="radio" name="smoking" value="1"> Yes</label>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <div class="form-row">
+                                    <div class="form-group">
+                                        <label>NSAID Use</label>
+                                        <div class="radio-group">
+                                            <label><input type="radio" name="nsaid_use" value="0"> No</label>
+                                            <label><input type="radio" name="nsaid_use" value="1"> Yes</label>
+                                        </div>
+                                    </div>
+                                    <div class="form-group">
+                                        <label>Prior Antibiotics (3m)</label>
+                                        <div class="radio-group">
+                                            <label><input type="radio" name="prior_antibiotics_3m" value="0"> No</label>
+                                            <label><input type="radio" name="prior_antibiotics_3m" value="1"> Yes</label>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="form-section">
+                                <h3>Symptoms</h3>
+                                <div class="form-row">
+                                    <div class="form-group">
+                                        <label>Epigastric Pain</label>
+                                        <div class="radio-group">
+                                            <label><input type="radio" name="epigastric_pain" value="0"> No</label>
+                                            <label><input type="radio" name="epigastric_pain" value="1"> Yes</label>
+                                        </div>
+                                    </div>
+                                    <div class="form-group">
+                                        <label>Nausea</label>
+                                        <div class="radio-group">
+                                            <label><input type="radio" name="nausea" value="0"> No</label>
+                                            <label><input type="radio" name="nausea" value="1"> Yes</label>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <div class="form-row">
+                                    <div class="form-group">
+                                        <label>Bloating</label>
+                                        <div class="radio-group">
+                                            <label><input type="radio" name="bloating" value="0"> No</label>
+                                            <label><input type="radio" name="bloating" value="1"> Yes</label>
+                                        </div>
+                                    </div>
+                                    <div class="form-group">
+                                        <label>Early Satiety</label>
+                                        <div class="radio-group">
+                                            <label><input type="radio" name="early_satiety" value="0"> No</label>
+                                            <label><input type="radio" name="early_satiety" value="1"> Yes</label>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <div class="form-row">
+                                    <div class="form-group">
+                                        <label>Weight Loss</label>
+                                        <div class="radio-group">
+                                            <label><input type="radio" name="weight_loss" value="0"> No</label>
+                                            <label><input type="radio" name="weight_loss" value="1"> Yes</label>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="form-section">
+                                <h3>Lab Tests</h3>
+                                <div class="form-row">
+                                    <div class="form-group">
+                                        <label>Stool Antigen</label>
+                                        <div class="radio-group">
+                                            <label><input type="radio" name="stool_ag" value="0"> Negative</label>
+                                            <label><input type="radio" name="stool_ag" value="1"> Positive</label>
+                                        </div>
+                                    </div>
+                                    <div class="form-group">
+                                        <label>Stool Antibody</label>
+                                        <div class="radio-group">
+                                            <label><input type="radio" name="stool_ab" value="0"> Negative</label>
+                                            <label><input type="radio" name="stool_ab" value="1"> Positive</label>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <div class="form-row">
+                                    <div class="form-group">
+                                        <label for="hemoglobin">Hemoglobin (g/dL)</label>
+                                        <input type="number" id="hemoglobin" name="hemoglobin" step="0.1" min="0">
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="crp">CRP (mg/L)</label>
+                                        <input type="number" id="crp" name="crp" step="0.1" min="0">
+                                    </div>
+                                </div>
+                                
+                                <div class="form-row">
+                                    <div class="form-group">
+                                        <label for="wbc">WBC (×10³/μL)</label>
+                                        <input type="number" id="wbc" name="wbc" step="0.1" min="0">
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="patient_pseudo_id">Patient ID (optional)</label>
+                                        <input type="text" id="patient_pseudo_id" name="patient_pseudo_id">
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="form-actions">
+                                <button type="reset" class="btn btn-secondary">Clear</button>
+                                <button type="submit" class="btn btn-primary">
+                                    <span class="btn-text">Get Recommendation</span>
+                                    <span class="spinner" style="display: none;"></span>
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                    
+                    <div class="results-panel" id="screeningResults" style="display: none;">
+                        <h2>Results</h2>
+                        <div class="gauge-container">
+                            <canvas id="screeningGauge" width="200" height="120"></canvas>
+                            <p class="gauge-label">Infection Likelihood</p>
+                        </div>
+                        
+                        <div id="stageBadge" style="display: none;">
+                            <h3>Resistance Stage</h3>
+                            <span class="badge badge-large" id="stageValue"></span>
+                        </div>
+                        
+                        <div class="recommendations">
+                            <h3>Recommendations</h3>
+                            <ul id="recommendationList"></ul>
+                        </div>
+                        
+                        <div class="result-actions">
+                            <button class="btn btn-secondary" onclick="copyResults()">Copy Results</button>
+                            <button class="btn btn-secondary" onclick="showSMSDialog()">Send SMS</button>
+                            <button class="btn btn-primary" onclick="openSignatureModal()">Sign & Send to Patient</button>
+                        </div>
+                        
+                        <div id="smsDialog" style="display: none; margin-top: 1rem;">
+                            <div class="form-group">
+                                <label for="phoneNumber">Patient Phone Number</label>
+                                <input type="tel" id="phoneNumber" placeholder="+1234567890">
+                            </div>
+                            <button class="btn btn-primary" onclick="sendSMS()">Send</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Staging Tab -->
+            <div id="staging" class="tab-pane">
+                <div class="content-grid">
+                    <div class="form-panel">
+                        <h2>Staging Assessment</h2>
+                        <form id="stagingForm" class="form">
+                            <div class="form-section">
+                                <h3>Patient Demographics</h3>
+                                <div class="form-row">
+                                    <div class="form-group">
+                                        <label for="stage_age">Age</label>
+                                        <input type="number" id="stage_age" name="age" min="0" max="120">
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="stage_sex">Sex</label>
+                                        <select id="stage_sex" name="sex">
+                                            <option value="">Select...</option>
+                                            <option value="M">Male</option>
+                                            <option value="F">Female</option>
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="form-section">
+                                <h3>Resistance Markers</h3>
+                                <div class="form-row">
+                                    <div class="form-group">
+                                        <label for="mic_clari">MIC Clarithromycin (μg/mL)</label>
+                                        <input type="number" id="mic_clari" name="mic_clari" step="0.01" min="0">
+                                    </div>
+                                </div>
+                                
+                                <div class="form-row">
+                                    <div class="form-group">
+                                        <label>Mutation A2143G</label>
+                                        <div class="radio-group">
+                                            <label><input type="radio" name="mut_A2143G" value="0"> Absent</label>
+                                            <label><input type="radio" name="mut_A2143G" value="1"> Present</label>
+                                        </div>
+                                    </div>
+                                    <div class="form-group">
+                                        <label>Mutation A2144G</label>
+                                        <div class="radio-group">
+                                            <label><input type="radio" name="mut_A2144G" value="0"> Absent</label>
+                                            <label><input type="radio" name="mut_A2144G" value="1"> Present</label>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <div class="form-row">
+                                    <div class="form-group">
+                                        <label>Double Mutation</label>
+                                        <div class="radio-group">
+                                            <label><input type="radio" name="double_mut" value="0"> No</label>
+                                            <label><input type="radio" name="double_mut" value="1"> Yes</label>
+                                        </div>
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="stage_patient_id">Patient ID (optional)</label>
+                                        <input type="text" id="stage_patient_id" name="patient_pseudo_id">
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="form-actions">
+                                <button type="reset" class="btn btn-secondary">Clear</button>
+                                <button type="submit" class="btn btn-primary">
+                                    <span class="btn-text">Get Stage Prediction</span>
+                                    <span class="spinner" style="display: none;"></span>
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                    
+                    <div class="results-panel" id="stagingResults" style="display: none;">
+                        <!-- Similar results panel as screening -->
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Batch CSV Tab -->
+            <div id="batch" class="tab-pane">
+                <div class="batch-panel">
+                    <h2>Batch Processing</h2>
+                    <div class="info-box">
+                        <p>Upload a CSV file with patient data to process multiple cases at once.</p>
+                        <button class="btn btn-secondary" onclick="downloadCSVTemplate()">Download Template</button>
+                    </div>
+                    
+                    <div class="upload-area">
+                        <input type="file" id="csvFile" accept=".csv" style="display: none;">
+                        <button class="btn btn-primary" onclick="document.getElementById('csvFile').click()">
+                            Choose CSV File
+                        </button>
+                        <span id="fileName" style="margin-left: 1rem;"></span>
+                    </div>
+                    
+                    <div id="batchResults" style="display: none; margin-top: 2rem;">
+                        <h3>Processing Results</h3>
+                        <div class="stats-grid">
+                            <div class="stat-card">
+                                <div class="stat-value" id="totalCases">0</div>
+                                <div class="stat-label">Total Cases</div>
+                            </div>
+                            <div class="stat-card">
+                                <div class="stat-value" id="processedCases">0</div>
+                                <div class="stat-label">Processed</div>
+                            </div>
+                            <div class="stat-card">
+                                <div class="stat-value" id="highRiskCases">0</div>
+                                <div class="stat-label">High Risk</div>
+                            </div>
+                        </div>
+                        
+                        <div class="results-table-container">
+                            <table class="data-table" id="batchResultsTable">
+                                <thead>
+                                    <tr>
+                                        <th>Patient ID</th>
+                                        <th>Infection Prob</th>
+                                        <th>Stage</th>
+                                        <th>Risk Level</th>
+                                    </tr>
+                                </thead>
+                                <tbody></tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Case History Tab -->
+            <div id="history" class="tab-pane">
+                <div class="history-panel">
+                    <div class="panel-header">
+                        <h2>Case History</h2>
+                        <div class="panel-actions">
+                            <button class="btn btn-primary" onclick="generateReport()">Generate Report</button>
+                            <button class="btn btn-secondary" onclick="loadCaseHistory()">Refresh</button>
+                        </div>
+                    </div>
+                    
+                    <div class="results-table-container">
+                        <table class="data-table" id="historyTable">
+                            <thead>
+                                <tr>
+                                    <th>Date</th>
+                                    <th>Patient ID</th>
+                                    <th>Screen Prob</th>
+                                    <th>Stage</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody></tbody>
+                        </table>
+                    </div>
+                    
+                    <div class="pagination" id="pagination">
+                        <button class="btn btn-secondary" id="prevPage" onclick="changePage(-1)">Previous</button>
+                        <span id="pageInfo">Page 1</span>
+                        <button class="btn btn-secondary" id="nextPage" onclick="changePage(1)">Next</button>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- 3D Biopsy Tab -->
+            <div id="biopsy" class="tab-pane">
+                <div class="biopsy-panel">
+                    <h2>3D Biopsy Visualization</h2>
+                    <p>Interactive 3D visualization of biopsy samples (Coming Soon)</p>
+                    
+                    <div class="biopsy-placeholder">
+                        <div class="placeholder-icon">🔬</div>
+                        <h3>3D Model Viewer</h3>
+                        <p>Upload your 3D biopsy model to visualize it here</p>
+                        
+                        <div class="upload-section" style="margin-top: 2rem;">
+                            <input type="file" id="biopsyModelUpload" accept=".obj,.stl,.gltf,.glb" style="display: none;">
+                            <button class="btn btn-primary" onclick="document.getElementById('biopsyModelUpload').click()">
+                                Upload 3D Model
+                            </button>
+                        </div>
+                        
+                        <div class="model-info" style="margin-top: 2rem; padding: 1.5rem; background: #f8f9fa; border-radius: 12px;">
+                            <h4>Supported Formats:</h4>
+                            <ul style="list-style: none; padding: 0;">
+                                <li>✓ OBJ (.obj)</li>
+                                <li>✓ STL (.stl)</li>
+                                <li>✓ glTF (.gltf, .glb)</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Video Consult Tab -->
+            <div id="telemed" class="tab-pane">
+                <div class="telemed-panel">
+                    <h2>Video Consultation</h2>
+                    <p>Start a secure video consultation with specialists or patients.</p>
+                    
+                    <div class="video-setup-section">
+                        <div class="form-group">
+                            <label for="telemedCaseId">Related Case ID (optional)</label>
+                            <input type="number" id="telemedCaseId" placeholder="Enter case ID">
+                        </div>
+
+                        <div class="form-group">
+                            <label for="sessionName">Session Name (optional)</label>
+                            <input type="text" id="sessionName" placeholder="e.g., Patient Follow-up">
+                        </div>
+                        
+                        <div class="video-controls-setup">
+                            <button class="btn btn-primary" onclick="createVideoSession()">
+                                <span>▶ Start Session</span>
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <div id="telemedResult" style="display: none; margin-top: 2rem;">
+                        <div class="video-session-card">
+                            <h3>✓ Session Created Successfully!</h3>
+                            
+                            <div class="session-details">
+                                <div class="detail-item">
+                                    <strong>Session ID:</strong>
+                                    <span id="roomName" class="session-id"></span>
+                                </div>
+                                
+                                <div class="detail-item">
+                                    <strong>Share Link:</strong>
+                                    <div class="share-link-container">
+                                        <input type="text" id="joinUrl" readonly class="share-link-input">
+                                        <button class="btn btn-secondary btn-sm" onclick="copyJoinUrl()">📋 Copy</button>
+                                    </div>
+                                </div>
+                                
+                                <div class="detail-item">
+                                    <strong>QR Code:</strong>
+                                    <div class="qr-code-container">
+                                        <img id="qrCodeImage" src="" alt="QR Code" style="max-width: 200px; border-radius: 8px; border: 2px solid #e2e8f0;">
+                                        <p class="qr-note">Scan to join session</p>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="session-actions">
+                                <button class="btn btn-primary btn-large" onclick="joinAsHost()">
+                                    🎥 Join as Host
+                                </button>
+                                <button class="btn btn-secondary" id="recordBtn" onclick="toggleRecording()" style="display: none;">
+                                    ⏺ Start Recording
+                                </button>
+                                <button class="btn btn-secondary" onclick="endVideoSession()">
+                                    ⏹ End Session
+                                </button>
+                            </div>
+                            
+                            <p class="session-note">Share this link or QR code with participants. Session expires in 2 hours.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Profile Tab -->
+            <div id="profile" class="tab-pane">
+                <div class="form-panel">
+                    <h2>My Professional Profile</h2>
+                    <form id="profileForm" class="form" onsubmit="updateProfile(event)">
+                        <div class="form-section">
+                            <h3>Personal Information</h3>
+                            <div class="form-group">
+                                <label for="profile_full_name">Full Name</label>
+                                <input type="text" id="profile_full_name" placeholder="Dr. Your Name">
+                            </div>
+                            <div class="form-group">
+                                <label for="profile_email">Email</label>
+                                <input type="email" id="profile_email" placeholder="email@example.com">
+                            </div>
+                            <div class="form-group">
+                                <label for="profile_phone">Phone</label>
+                                <input type="tel" id="profile_phone" placeholder="+1234567890">
+                            </div>
+                        </div>
+
+                        <div class="form-section">
+                            <h3>Professional Details</h3>
+                            <div class="form-group">
+                                <label for="profile_specialty">Specialty</label>
+                                <input type="text" id="profile_specialty" placeholder="e.g., Gastroenterology">
+                            </div>
+                            <div class="form-group">
+                                <label for="profile_license">License Number</label>
+                                <input type="text" id="profile_license" placeholder="MD12345">
+                            </div>
+                            <div class="form-group">
+                                <label for="profile_institution">Institution</label>
+                                <input type="text" id="profile_institution" placeholder="Your Hospital/Clinic">
+                            </div>
+                            <div class="form-group">
+                                <label for="profile_bio">Bio</label>
+                                <textarea id="profile_bio" rows="4" placeholder="Brief professional bio..."></textarea>
+                            </div>
+                        </div>
+
+                        <button type="submit" class="btn btn-primary">Save Profile</button>
+                    </form>
+                </div>
+            </div>
+
+            <!-- Admin Panel Tab -->
+            <div id="admin" class="tab-pane">
+                <div style="text-align: center; padding: 60px;">
+                    <h2>Admin Panel</h2>
+                    <p>Access the full admin interface for user management and system statistics</p>
+                    <button class="btn btn-primary" onclick="window.location.href='admin.html'" style="margin-top: 20px;">
+                        Go to Admin Panel
+                    </button>
+                </div>
+            </div>
+            
+            <!-- Settings Tab -->
+            <div id="settings" class="tab-pane">
+                <div class="settings-panel">
+                    <h2>System Settings</h2>
+                    
+                    <div class="settings-section">
+                        <h3>System Version</h3>
+                        <div id="versionInfo" class="info-grid">
+                            <div class="info-item">
+                                <span class="info-label">Service Version:</span>
+                                <span class="info-value" id="serviceVersion">Loading...</span>
+                            </div>
+                            <div class="info-item">
+                                <span class="info-label">Scikit-learn:</span>
+                                <span class="info-value" id="sklearnVersion">Loading...</span>
+                            </div>
+                            <div class="info-item">
+                                <span class="info-label">Pandas:</span>
+                                <span class="info-value" id="pandasVersion">Loading...</span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="settings-section">
+                        <h3>Model Configuration</h3>
+                        <div id="modelInfo" class="info-grid">
+                            <div class="info-item">
+                                <span class="info-label">Screening Model:</span>
+                                <span class="info-value" id="screeningModel">Loading...</span>
+                            </div>
+                            <div class="info-item">
+                                <span class="info-label">Staging Model:</span>
+                                <span class="info-value" id="stagingModel">Loading...</span>
+                            </div>
+                            <div class="info-item">
+                                <span class="info-label">Risk Threshold:</span>
+                                <span class="info-value" id="riskThreshold">Loading...</span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="settings-section" id="modelRetrainSection" style="display: none;">
+                        <h3>Model Retraining</h3>
+                        <div class="info-box">
+                            <p>Retrain ML models based on current case data to improve accuracy. This feature is available only to administrators.</p>
+                            <div style="margin-top: 1.5rem;">
+                                <button class="btn btn-primary" onclick="retrainModels()">
+                                    <span>Retrain Models</span>
+                                </button>
+                            </div>
+                            <div id="retrainStatus" style="margin-top: 1rem; display: none;">
+                                <p class="status-message"></p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+    
+    <!-- Case Detail Modal -->
+    <div id="caseModal" class="modal" style="display: none;">
+        <div class="modal-content modal-large">
+            <div class="modal-header">
+                <h2>Case Details</h2>
+                <button class="modal-close" onclick="closeCaseModal()">&times;</button>
+            </div>
+            <div class="modal-body">
+                <pre id="caseDetailJSON"></pre>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Signature Modal -->
+    <div id="signatureModal" class="modal" style="display: none;">
+        <div class="modal-content modal-large">
+            <div class="modal-header">
+                <h2>Sign and Send Recommendations</h2>
+                <button class="modal-close" onclick="closeSignatureModal()">&times;</button>
+            </div>
+            <div class="modal-body">
+                <!-- Step 1: Edit Recommendations -->
+                <div id="editStep" class="signature-step active">
+                    <h3>Step 1: Review and Edit Recommendations</h3>
+                    <div class="form-group">
+                        <label for="patientName">Patient Name</label>
+                        <input type="text" id="patientName" placeholder="Enter patient name" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="patientEmail">Patient Email (optional)</label>
+                        <input type="email" id="patientEmail" placeholder="patient@example.com">
+                    </div>
+                    <div class="form-group">
+                        <label for="patientPhone">Patient Phone (required for SMS)</label>
+                        <input type="tel" id="patientPhone" placeholder="+1234567890">
+                    </div>
+                    <div class="form-group">
+                        <label for="editedRecommendations">Recommendations</label>
+                        <textarea id="editedRecommendations" rows="10" placeholder="Edit recommendations here..." required></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label for="clinicianNotes">Additional Notes</label>
+                        <textarea id="clinicianNotes" rows="4" placeholder="Add any additional notes for the patient..."></textarea>
+                    </div>
+                    <button class="btn btn-primary" onclick="goToSignatureStep()">Next: Add Signature</button>
+                </div>
+                
+                <!-- Step 2: Digital Signature -->
+                <div id="signatureStep" class="signature-step">
+                    <h3>Step 2: Add Your Digital Signature</h3>
+                    <div class="signature-pad-container">
+                        <canvas id="signaturePad" width="600" height="200"></canvas>
+                    </div>
+                    <div class="signature-actions">
+                        <button class="btn btn-secondary" onclick="clearSignature()">Clear Signature</button>
+                        <button class="btn btn-secondary" onclick="goBackToEdit()">Back to Edit</button>
+                        <button class="btn btn-primary" onclick="finalizeAndSend()">Finalize & Send to Patient</button>
+                    </div>
+                </div>
+                
+                <!-- Step 3: Confirmation -->
+                <div id="confirmationStep" class="signature-step">
+                    <h3>Success!</h3>
+                    <div class="success-message">
+                        <svg class="checkmark" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 52 52">
+                            <circle class="checkmark-circle" cx="26" cy="26" r="25" fill="none"/>
+                            <path class="checkmark-check" fill="none" d="M14.1 27.2l7.1 7.2 16.7-16.8"/>
+                        </svg>
+                        <p>Recommendation has been signed and sent successfully!</p>
+                        <p class="pdf-link" id="pdfDownloadLink" style="display: none;">
+                            <a href="#" id="pdfUrl" target="_blank">Download PDF</a>
+                        </p>
+                    </div>
+                    <button class="btn btn-primary" onclick="closeSignatureModal()">Done</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+    <script src="gauge.js"></script>
+    <script src="app.js"></script>
+</body>
+</html>

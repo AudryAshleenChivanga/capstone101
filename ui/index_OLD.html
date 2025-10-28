@@ -1,0 +1,708 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>H. pylori CDSS - Clinical Decision Support</title>
+    <link rel="stylesheet" href="styles.css">
+    <style>
+        /* Landing page specific styles */
+        .landing-page {
+            min-height: 100vh;
+            display: flex;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 50%, #f093fb 100%);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .landing-page::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.05'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+            opacity: 0.3;
+        }
+        
+        .landing-content {
+            display: flex;
+            flex: 1;
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 2rem;
+            gap: 3rem;
+            align-items: center;
+            position: relative;
+            z-index: 1;
+        }
+        
+        .landing-hero {
+            flex: 1;
+            color: white;
+            padding: 2rem;
+        }
+        
+        .landing-hero h1 {
+            font-size: 3.5rem;
+            font-weight: 800;
+            margin-bottom: 1.5rem;
+            line-height: 1.2;
+            text-shadow: 0 2px 20px rgba(0, 0, 0, 0.2);
+        }
+        
+        .landing-hero .subtitle {
+            font-size: 1.5rem;
+            margin-bottom: 1rem;
+            font-weight: 300;
+            opacity: 0.95;
+        }
+        
+        .landing-hero p {
+            font-size: 1.125rem;
+            line-height: 1.8;
+            margin-bottom: 2rem;
+            opacity: 0.9;
+        }
+        
+        .feature-list {
+            list-style: none;
+            margin: 2rem 0;
+        }
+        
+        .feature-list li {
+            padding: 0.75rem 0;
+            font-size: 1.125rem;
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+        
+        .feature-list li::before {
+            content: '✓';
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 50%;
+            width: 28px;
+            height: 28px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            flex-shrink: 0;
+        }
+        
+        .landing-auth {
+            flex: 0 0 480px;
+            display: flex;
+            flex-direction: column;
+            gap: 1.5rem;
+        }
+        
+        .auth-card {
+            background: rgba(255, 255, 255, 0.98);
+            backdrop-filter: blur(20px);
+            border-radius: 20px;
+            padding: 3rem;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+        }
+        
+        .auth-card-header {
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+        
+        .auth-card-header .logo {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+        }
+        
+        .auth-card-header h2 {
+            font-size: 1.75rem;
+            color: #1e293b;
+            margin-bottom: 0.5rem;
+            font-weight: 700;
+        }
+        
+        .auth-card-header p {
+            color: #64748b;
+            font-size: 0.95rem;
+        }
+        
+        .form-group-enhanced {
+            margin-bottom: 1.5rem;
+        }
+        
+        .form-group-enhanced label {
+            display: block;
+            font-size: 0.875rem;
+            font-weight: 600;
+            color: #334155;
+            margin-bottom: 0.5rem;
+        }
+        
+        .input-wrapper {
+            position: relative;
+        }
+        
+        .input-wrapper input {
+            width: 100%;
+            padding: 0.875rem 1rem;
+            border: 2px solid #e2e8f0;
+            border-radius: 10px;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+            background: #f8fafc;
+        }
+        
+        .input-wrapper input:focus {
+            outline: none;
+            border-color: #667eea;
+            background: white;
+            box-shadow: 0 0 0 4px rgba(102, 126, 234, 0.1);
+        }
+        
+        .btn-enhanced {
+            width: 100%;
+            padding: 1rem;
+            border: none;
+            border-radius: 10px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+        }
+        
+        .btn-primary-enhanced {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+        }
+        
+        .btn-primary-enhanced:hover:not(:disabled) {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 25px rgba(102, 126, 234, 0.5);
+        }
+        
+        .btn-primary-enhanced:disabled {
+            opacity: 0.7;
+            cursor: not-allowed;
+        }
+        
+        .divider {
+            display: flex;
+            align-items: center;
+            text-align: center;
+            margin: 1.5rem 0;
+            color: #64748b;
+            font-size: 0.875rem;
+        }
+        
+        .divider::before,
+        .divider::after {
+            content: '';
+            flex: 1;
+            border-bottom: 1px solid #e2e8f0;
+        }
+        
+        .divider span {
+            padding: 0 1rem;
+        }
+        
+        .btn-secondary-enhanced {
+            background: white;
+            color: #667eea;
+            border: 2px solid #667eea;
+        }
+        
+        .btn-secondary-enhanced:hover:not(:disabled) {
+            background: #667eea;
+            color: white;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 25px rgba(102, 126, 234, 0.3);
+        }
+        
+        .info-badge {
+            background: rgba(102, 126, 234, 0.1);
+            color: #667eea;
+            padding: 0.75rem 1rem;
+            border-radius: 10px;
+            text-align: center;
+            font-size: 0.875rem;
+            border: 1px solid rgba(102, 126, 234, 0.2);
+        }
+        
+        .message-enhanced {
+            padding: 1rem;
+            border-radius: 10px;
+            margin-bottom: 1.5rem;
+            font-size: 0.95rem;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            animation: slideDown 0.3s ease;
+        }
+        
+        @keyframes slideDown {
+            from {
+                opacity: 0;
+                transform: translateY(-10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        .message-success-enhanced {
+            background: #d1fae5;
+            color: #065f46;
+            border: 1px solid #6ee7b7;
+        }
+        
+        .message-error-enhanced {
+            background: #fee2e2;
+            color: #991b1b;
+            border: 1px solid #fecaca;
+        }
+        
+        .message-info-enhanced {
+            background: #dbeafe;
+            color: #1e40af;
+            border: 1px solid #93c5fd;
+        }
+        
+        .modal-enhanced {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.6);
+            backdrop-filter: blur(5px);
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+            animation: fadeIn 0.3s ease;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+        
+        .modal-content-enhanced {
+            background: white;
+            border-radius: 20px;
+            max-width: 500px;
+            width: 90%;
+            max-height: 90vh;
+            overflow: auto;
+            box-shadow: 0 25px 50px rgba(0, 0, 0, 0.3);
+            animation: slideUp 0.3s ease;
+        }
+        
+        @keyframes slideUp {
+            from {
+                opacity: 0;
+                transform: translateY(50px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        .modal-header-enhanced {
+            padding: 2rem 2rem 1rem;
+            border-bottom: 1px solid #e2e8f0;
+        }
+        
+        .modal-header-enhanced h2 {
+            font-size: 1.5rem;
+            color: #1e293b;
+            margin-bottom: 0.5rem;
+        }
+        
+        .modal-header-enhanced p {
+            color: #64748b;
+            font-size: 0.9rem;
+        }
+        
+        .modal-body-enhanced {
+            padding: 2rem;
+        }
+        
+        .modal-close {
+            position: absolute;
+            top: 1.5rem;
+            right: 1.5rem;
+            background: #f1f5f9;
+            border: none;
+            width: 36px;
+            height: 36px;
+            border-radius: 8px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.25rem;
+            color: #64748b;
+            transition: all 0.2s;
+        }
+        
+        .modal-close:hover {
+            background: #e2e8f0;
+            color: #1e293b;
+        }
+        
+        @media (max-width: 1024px) {
+            .landing-content {
+                flex-direction: column;
+                text-align: center;
+            }
+            
+            .landing-hero h1 {
+                font-size: 2.5rem;
+            }
+            
+            .landing-auth {
+                flex: 0 0 auto;
+                width: 100%;
+                max-width: 480px;
+            }
+            
+            .feature-list li {
+                justify-content: center;
+            }
+        }
+        
+        @media (max-width: 640px) {
+            .landing-hero h1 {
+                font-size: 2rem;
+            }
+            
+            .landing-hero .subtitle {
+                font-size: 1.25rem;
+            }
+            
+            .auth-card {
+                padding: 2rem 1.5rem;
+            }
+        }
+    </style>
+</head>
+<body class="landing-page">
+    <div class="landing-content">
+        <!-- Hero Section -->
+        <div class="landing-hero">
+            <h1>H. pylori Clinical Decision Support System</h1>
+            <p class="subtitle">Evidence-based diagnostic and treatment recommendations</p>
+            <p>
+                Advanced machine learning-powered platform for H. pylori infection screening 
+                and antibiotic resistance staging. Empowering clinicians with intelligent 
+                decision support for improved patient outcomes.
+            </p>
+            
+            <ul class="feature-list">
+                <li>AI-Powered Screening Assessment</li>
+                <li>Antibiotic Resistance Staging</li>
+                <li>Evidence-Based Recommendations</li>
+                <li>Comprehensive Case Management</li>
+                <li>Batch Processing Capability</li>
+                <li>Secure & HIPAA-Compliant</li>
+            </ul>
+        </div>
+        
+        <!-- Authentication Section -->
+        <div class="landing-auth">
+            <div class="auth-card">
+                <div class="auth-card-header">
+                    <div class="logo">H.pylori CDSS</div>
+                    <h2>Welcome Back</h2>
+                    <p>Sign in to access your dashboard</p>
+                </div>
+                
+                <div id="messageArea"></div>
+                
+                <form id="loginForm">
+                    <div class="form-group-enhanced">
+                        <label for="username">Username</label>
+                        <div class="input-wrapper">
+                            <input 
+                                type="text" 
+                                id="username" 
+                                name="username" 
+                                required 
+                                placeholder="Enter your username"
+                                autocomplete="username"
+                            >
+                        </div>
+                    </div>
+                    
+                    <div class="form-group-enhanced">
+                        <label for="password">Password</label>
+                        <div class="input-wrapper">
+                            <input 
+                                type="password" 
+                                id="password" 
+                                name="password" 
+                                required 
+                                placeholder="Enter your password"
+                                autocomplete="current-password"
+                            >
+                        </div>
+                    </div>
+                    
+                    <button type="submit" class="btn-enhanced btn-primary-enhanced" id="loginBtn">
+                        <span class="btn-text">Sign In</span>
+                        <span class="spinner" style="display: none;"></span>
+                    </button>
+                </form>
+                
+                <div class="divider">
+                    <span>or</span>
+                </div>
+                
+                <button type="button" class="btn-enhanced btn-secondary-enhanced" id="showRegisterBtn">
+                    Create New Account
+                </button>
+                
+                <div class="info-badge" style="margin-top: 1.5rem;">
+                    First time using the system? Register as the initial administrator
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Registration Modal -->
+    <div id="registerModal" class="modal-enhanced">
+        <div class="modal-content-enhanced">
+            <button class="modal-close" id="closeModal">&times;</button>
+            
+            <div class="modal-header-enhanced">
+                <h2>Create Your Account</h2>
+                <p>Register to access the clinical decision support system</p>
+            </div>
+            
+            <div class="modal-body-enhanced">
+                <div id="registerMessageArea"></div>
+                
+                <form id="registerForm">
+                    <div class="form-group-enhanced">
+                        <label for="regUsername">Username *</label>
+                        <div class="input-wrapper">
+                            <input 
+                                type="text" 
+                                id="regUsername" 
+                                required 
+                                minlength="3"
+                                placeholder="Choose a username"
+                            >
+                        </div>
+                    </div>
+                    
+                    <div class="form-group-enhanced">
+                        <label for="regEmail">Email Address *</label>
+                        <div class="input-wrapper">
+                            <input 
+                                type="email" 
+                                id="regEmail" 
+                                required
+                                placeholder="your.email@hospital.com"
+                            >
+                        </div>
+                    </div>
+                    
+                    <div class="form-group-enhanced">
+                        <label for="regPassword">Password *</label>
+                        <div class="input-wrapper">
+                            <input 
+                                type="password" 
+                                id="regPassword" 
+                                required 
+                                minlength="6"
+                                placeholder="Minimum 6 characters"
+                            >
+                        </div>
+                    </div>
+                    
+                    <div class="form-group-enhanced">
+                        <label for="regPasswordConfirm">Confirm Password *</label>
+                        <div class="input-wrapper">
+                            <input 
+                                type="password" 
+                                id="regPasswordConfirm" 
+                                required 
+                                minlength="6"
+                                placeholder="Re-enter your password"
+                            >
+                        </div>
+                    </div>
+                    
+                    <div style="display: flex; gap: 1rem; margin-top: 2rem;">
+                        <button type="button" class="btn-enhanced btn-secondary-enhanced" id="cancelRegister">
+                            Cancel
+                        </button>
+                        <button type="submit" class="btn-enhanced btn-primary-enhanced" id="registerBtn" style="flex: 1;">
+                            <span class="btn-text">Create Account</span>
+                            <span class="spinner" style="display: none;"></span>
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        const API_BASE = 'http://localhost:8000';
+        
+        // Show message
+        function showMessage(message, type = 'info', targetArea = 'messageArea') {
+            const messageArea = document.getElementById(targetArea);
+            const messageClass = `message-${type}-enhanced`;
+            const icon = type === 'success' ? '✓' : type === 'error' ? '✕' : 'ℹ';
+            
+            messageArea.innerHTML = `
+                <div class="message-enhanced ${messageClass}">
+                    <span style="font-weight: bold;">${icon}</span>
+                    <span>${message}</span>
+                </div>
+            `;
+            
+            setTimeout(() => {
+                messageArea.innerHTML = '';
+            }, 5000);
+        }
+        
+        // Login form handler
+        document.getElementById('loginForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const username = document.getElementById('username').value;
+            const password = document.getElementById('password').value;
+            const loginBtn = document.getElementById('loginBtn');
+            const btnText = loginBtn.querySelector('.btn-text');
+            const spinner = loginBtn.querySelector('.spinner');
+            
+            loginBtn.disabled = true;
+            btnText.textContent = 'Signing in...';
+            spinner.style.display = 'inline-block';
+            
+            try {
+                const response = await fetch(`${API_BASE}/auth/login`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ username, password })
+                });
+                
+                if (response.ok) {
+                    const data = await response.json();
+                    
+                    // Store JWT in sessionStorage
+                    sessionStorage.setItem('jwt_token', data.access_token);
+                    sessionStorage.setItem('user', JSON.stringify(data.user));
+                    
+                    showMessage('Login successful! Redirecting...', 'success');
+                    
+                    setTimeout(() => {
+                        window.location.href = 'dashboard.html';
+                    }, 800);
+                } else {
+                    const error = await response.json();
+                    showMessage(error.detail || 'Invalid credentials. Please try again.', 'error');
+                }
+            } catch (error) {
+                showMessage('Network error. Please check your connection.', 'error');
+                console.error('Login error:', error);
+            } finally {
+                loginBtn.disabled = false;
+                btnText.textContent = 'Sign In';
+                spinner.style.display = 'none';
+            }
+        });
+        
+        // Show registration modal
+        document.getElementById('showRegisterBtn').addEventListener('click', () => {
+            document.getElementById('registerModal').style.display = 'flex';
+        });
+        
+        // Close modal
+        function closeRegistrationModal() {
+            document.getElementById('registerModal').style.display = 'none';
+            document.getElementById('registerForm').reset();
+            document.getElementById('registerMessageArea').innerHTML = '';
+        }
+        
+        document.getElementById('closeModal').addEventListener('click', closeRegistrationModal);
+        document.getElementById('cancelRegister').addEventListener('click', closeRegistrationModal);
+        
+        // Close modal on background click
+        document.getElementById('registerModal').addEventListener('click', (e) => {
+            if (e.target.id === 'registerModal') {
+                closeRegistrationModal();
+            }
+        });
+        
+        // Registration form handler
+        document.getElementById('registerForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const username = document.getElementById('regUsername').value;
+            const email = document.getElementById('regEmail').value;
+            const password = document.getElementById('regPassword').value;
+            const passwordConfirm = document.getElementById('regPasswordConfirm').value;
+            
+            if (password !== passwordConfirm) {
+                showMessage('Passwords do not match', 'error', 'registerMessageArea');
+                return;
+            }
+            
+            const registerBtn = document.getElementById('registerBtn');
+            const btnText = registerBtn.querySelector('.btn-text');
+            const spinner = registerBtn.querySelector('.spinner');
+            
+            registerBtn.disabled = true;
+            btnText.textContent = 'Creating Account...';
+            spinner.style.display = 'inline-block';
+            
+            try {
+                const response = await fetch(`${API_BASE}/auth/register/first`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ username, email, password, role: 'admin' })
+                });
+                
+                if (response.ok) {
+                    showMessage('Account created successfully! Please login.', 'success', 'registerMessageArea');
+                    
+                    setTimeout(() => {
+                        closeRegistrationModal();
+                        document.getElementById('username').value = username;
+                        document.getElementById('password').focus();
+                    }, 1500);
+                } else {
+                    const error = await response.json();
+                    showMessage(error.detail || 'Registration failed. Please try again.', 'error', 'registerMessageArea');
+                }
+            } catch (error) {
+                showMessage('Network error. Please try again.', 'error', 'registerMessageArea');
+                console.error('Registration error:', error);
+            } finally {
+                registerBtn.disabled = false;
+                btnText.textContent = 'Create Account';
+                spinner.style.display = 'none';
+            }
+        });
+        
+        // Auto-focus username field
+        document.getElementById('username').focus();
+    </script>
+</body>
+</html>

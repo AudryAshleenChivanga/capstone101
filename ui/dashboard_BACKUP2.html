@@ -1,0 +1,295 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>H. pylori CDSS - Dashboard</title>
+    <link rel="stylesheet" href="styles_new.css">
+</head>
+<body>
+    <!-- Sidebar Navigation -->
+    <aside class="sidebar" id="sidebar">
+        <div class="sidebar-header">
+            <div class="logo-section">
+                <img src="/images/digestive_system+hpylori.webp" alt="H. pylori" class="logo-image">
+                <h2>H. pylori CDSS</h2>
+            </div>
+            <button class="sidebar-toggle" id="sidebarToggle">
+                <span class="hamburger"></span>
+            </button>
+        </div>
+        
+        <nav class="sidebar-nav">
+            <a href="#dashboard" class="nav-item active" data-page="dashboard">
+                <svg class="nav-icon" viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
+                <span>Dashboard</span>
+            </a>
+            <a href="#screening" class="nav-item" data-page="screening">
+                <svg class="nav-icon" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/></svg>
+                <span>Screening</span>
+            </a>
+            <a href="#staging" class="nav-item" data-page="staging">
+                <svg class="nav-icon" viewBox="0 0 24 24"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
+                <span>Staging</span>
+            </a>
+            <a href="#cases" class="nav-item" data-page="cases">
+                <svg class="nav-icon" viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+                <span>Case History</span>
+            </a>
+            <a href="#biopsy" class="nav-item" data-page="biopsy">
+                <svg class="nav-icon" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/></svg>
+                <span>3D Biopsy</span>
+            </a>
+            <a href="#video" class="nav-item" data-page="video">
+                <svg class="nav-icon" viewBox="0 0 24 24"><polygon points="23 7 16 12 23 17 23 7"/><rect x="1" y="5" width="15" height="14" rx="2" ry="2"/></svg>
+                <span>Video Consult</span>
+            </a>
+            <a href="#profile" class="nav-item" data-page="profile">
+                <svg class="nav-icon" viewBox="0 0 24 24"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+                <span>Profile</span>
+            </a>
+            <a href="#admin" class="nav-item" id="adminNavItem" style="display: none;" data-page="admin">
+                <svg class="nav-icon" viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M12 1v6m0 6v6m5.7-13.7l-4.2 4.2m0 3l-4.2 4.2m13.7-5.7h-6m-6 0H1m13.7 5.7l-4.2-4.2m0-3l-4.2-4.2"/></svg>
+                <span>Admin Panel</span>
+            </a>
+            <a href="#settings" class="nav-item" data-page="settings">
+                <svg class="nav-icon" viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M12 1v6m0 6v6M5.64 5.64l4.24 4.24m4.24 4.24l4.24 4.24M1 12h6m6 0h6m-10.36 6.36l4.24-4.24m4.24-4.24l4.24-4.24"/></svg>
+                <span>Settings</span>
+            </a>
+        </nav>
+        
+        <div class="sidebar-footer">
+            <div class="theme-toggle">
+                <button id="themeToggle" class="theme-btn">
+                    <svg class="sun-icon" viewBox="0 0 24 24"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg>
+                    <svg class="moon-icon" viewBox="0 0 24 24"><path d="M21 12.79A9 9 0 1111.21 3 7 7 0 0021 12.79z"/></svg>
+                </button>
+                <span class="theme-label">Dark Mode</span>
+            </div>
+        </div>
+    </aside>
+    
+    <!-- Main Content -->
+    <main class="main-container">
+        <!-- Top Bar -->
+        <div class="top-bar">
+            <div class="top-bar-left">
+                <h1 class="page-title" id="pageTitle">Dashboard</h1>
+            </div>
+            <div class="top-bar-right">
+                <div class="user-profile">
+                    <img src="/images/Dr_Angie.webp" alt="Doctor" class="user-avatar">
+                    <div class="user-info">
+                        <span class="user-name" id="userName">Loading...</span>
+                        <span class="user-role" id="userRole">...</span>
+                    </div>
+                </div>
+                <button class="btn-logout" id="logoutBtn">
+                    <svg viewBox="0 0 24 24"><path d="M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4M16 17l5-5-5-5M21 12H9"/></svg>
+                    Logout
+                </button>
+            </div>
+        </div>
+        
+        <!-- Page Content -->
+        <div class="page-content" id="pageContent">
+            <!-- Dashboard Page -->
+            <div class="page" id="page-dashboard" style="display: block;">
+                <!-- Stats Cards -->
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <div class="stat-icon blue">
+                            <svg viewBox="0 0 24 24"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11"/></svg>
+                        </div>
+                        <div class="stat-content">
+                            <h3>Total Cases</h3>
+                            <p class="stat-value" id="statTotalCases">0</p>
+                            <span class="stat-change positive">+12% from last month</span>
+                        </div>
+                    </div>
+                    
+                    <div class="stat-card">
+                        <div class="stat-icon green">
+                            <svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/></svg>
+                        </div>
+                        <div class="stat-content">
+                            <h3>Screening</h3>
+                            <p class="stat-value" id="statScreening">0</p>
+                            <span class="stat-change positive">+8% from last month</span>
+                        </div>
+                    </div>
+                    
+                    <div class="stat-card">
+                        <div class="stat-icon yellow">
+                            <svg viewBox="0 0 24 24"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
+                        </div>
+                        <div class="stat-content">
+                            <h3>Staging</h3>
+                            <p class="stat-value" id="statStaging">0</p>
+                            <span class="stat-change positive">+5% from last month</span>
+                        </div>
+                    </div>
+                    
+                    <div class="stat-card">
+                        <div class="stat-icon red">
+                            <svg viewBox="0 0 24 24"><path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+                        </div>
+                        <div class="stat-content">
+                            <h3>High Risk</h3>
+                            <p class="stat-value" id="statHighRisk">0</p>
+                            <span class="stat-change negative">-3% from last month</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Charts Section -->
+                <div class="charts-section">
+                    <div class="chart-card large">
+                        <div class="chart-header">
+                            <h3>Cases Overview</h3>
+                            <select class="chart-period">
+                                <option value="7">Last 7 days</option>
+                                <option value="30" selected>Last 30 days</option>
+                                <option value="90">Last 90 days</option>
+                            </select>
+                        </div>
+                        <canvas id="casesLineChart"></canvas>
+                    </div>
+                    
+                    <div class="chart-card">
+                        <div class="chart-header">
+                            <h3>Risk Distribution</h3>
+                        </div>
+                        <canvas id="riskDoughnutChart"></canvas>
+                    </div>
+                </div>
+                
+                <!-- Additional Charts -->
+                <div class="charts-section">
+                    <div class="chart-card">
+                        <div class="chart-header">
+                            <h3>Monthly Trends</h3>
+                        </div>
+                        <canvas id="monthlyBarChart"></canvas>
+                    </div>
+                    
+                    <div class="chart-card">
+                        <div class="chart-header">
+                            <h3>Treatment Success Rate</h3>
+                        </div>
+                        <canvas id="successRateChart"></canvas>
+                    </div>
+                </div>
+                
+                <!-- Recent Activity -->
+                <div class="activity-card">
+                    <div class="card-header">
+                        <h3>Recent Activity</h3>
+                        <button class="btn-sm">View All</button>
+                    </div>
+                    <div class="activity-list" id="recentActivity">
+                        <p class="loading">Loading recent activity...</p>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Other pages will be loaded dynamically -->
+            <div class="page" id="page-screening" style="display: none;">
+                <div class="page-header-with-image">
+                    <div>
+                        <h2>Screening Assessment</h2>
+                        <p>AI-powered H. pylori infection screening</p>
+                    </div>
+                    <img src="/images/capsulepills.avif" alt="Medication" class="page-header-image">
+                </div>
+                <div class="content-section">
+                    <p>Screening form will be loaded here...</p>
+                </div>
+            </div>
+            
+            <div class="page" id="page-staging" style="display: none;">
+                <div class="page-header-with-image">
+                    <div>
+                        <h2>Staging Assessment</h2>
+                        <p>Antibiotic resistance staging analysis</p>
+                    </div>
+                    <img src="/images/capsulepills.avif" alt="Medication" class="page-header-image">
+                </div>
+                <div class="content-section">
+                    <p>Staging form will be loaded here...</p>
+                </div>
+            </div>
+            
+            <div class="page" id="page-cases" style="display: none;">
+                <h2>Case History</h2>
+                <p>Case history will be loaded here...</p>
+            </div>
+            
+            <div class="page" id="page-profile" style="display: none;">
+                <div class="profile-page">
+                    <div class="profile-card">
+                        <div class="profile-header">
+                            <img id="profileAvatar" src="/images/Dr_Angie.webp" alt="Profile" class="profile-avatar-large">
+                            <div>
+                                <h2 id="profileName">Loading...</h2>
+                                <p id="profileRole" class="profile-role">...</p>
+                            </div>
+                        </div>
+                        <div class="profile-details">
+                            <div class="profile-field">
+                                <label>Username</label>
+                                <span id="profileUsername">...</span>
+                            </div>
+                            <div class="profile-field">
+                                <label>Email</label>
+                                <span id="profileEmail">...</span>
+                            </div>
+                            <div class="profile-field">
+                                <label>Institution</label>
+                                <span id="profileInstitution">Not set</span>
+                            </div>
+                            <div class="profile-field">
+                                <label>Specialty</label>
+                                <span id="profileSpecialty">Not set</span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Medical Team Section -->
+                    <div class="team-section">
+                        <h3>Medical Team</h3>
+                        <div class="team-grid">
+                            <div class="team-member">
+                                <img src="/images/Dr_Angie.webp" alt="Dr. Angie">
+                                <h4>Dr. Angie</h4>
+                                <p>Administrator</p>
+                            </div>
+                            <div class="team-member">
+                                <img src="/images/Dr_Ishimwe.webp" alt="Dr. Ishimwe">
+                                <h4>Dr. Ishimwe</h4>
+                                <p>Clinician</p>
+                            </div>
+                            <div class="team-member">
+                                <img src="/images/Dr_Mugisha.webp" alt="Dr. Mugisha">
+                                <h4>Dr. Mugisha</h4>
+                                <p>Specialist</p>
+                            </div>
+                            <div class="team-member">
+                                <img src="/images/Dr_Tatenda.webp" alt="Dr. Tatenda">
+                                <h4>Dr. Tatenda</h4>
+                                <p>Gastroenterologist</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+    
+    <!-- Toast Container -->
+    <div id="toastContainer" class="toast-container"></div>
+    
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+    <script src="app_new.js"></script>
+</body>
+</html>

@@ -1,0 +1,536 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Panel - H. pylori CDSS</title>
+    <link rel="stylesheet" href="styles.css">
+    <style>
+        .admin-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .admin-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+            padding-bottom: 20px;
+            border-bottom: 2px solid var(--border-color);
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .stat-card {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 20px;
+            border-radius: 12px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .stat-card::before {
+            content: attr(data-icon);
+            position: absolute;
+            right: 15px;
+            top: 15px;
+            font-size: 3rem;
+            opacity: 0.2;
+        }
+
+        .stat-number {
+            font-size: 2.5em;
+            font-weight: bold;
+            margin: 10px 0;
+        }
+
+        .stat-label {
+            font-size: 0.9em;
+            opacity: 0.9;
+        }
+
+        .users-table {
+            background: white;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+
+        .table-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 20px;
+            background: var(--primary-color);
+            color: white;
+        }
+
+        .search-box {
+            padding: 8px 15px;
+            border: none;
+            border-radius: 20px;
+            width: 300px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        th {
+            background: var(--secondary-color);
+            color: white;
+            padding: 12px;
+            text-align: left;
+        }
+
+        td {
+            padding: 12px;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        tr:hover {
+            background: #f8f9fa;
+        }
+
+        .role-badge {
+            display: inline-block;
+            padding: 4px 12px;
+            border-radius: 12px;
+            font-size: 0.85em;
+            font-weight: 500;
+        }
+
+        .role-admin {
+            background: #dc3545;
+            color: white;
+        }
+
+        .role-clinician {
+            background: #007bff;
+            color: white;
+        }
+
+        .role-specialist {
+            background: #28a745;
+            color: white;
+        }
+
+        .action-btn {
+            padding: 6px 12px;
+            margin: 0 4px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 0.85em;
+        }
+
+        .btn-edit {
+            background: #ffc107;
+            color: #333;
+        }
+
+        .btn-deactivate {
+            background: #dc3545;
+            color: white;
+        }
+
+        .btn-activate {
+            background: #28a745;
+            color: white;
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.5);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .modal-content {
+            background: white;
+            padding: 30px;
+            border-radius: 12px;
+            max-width: 500px;
+            width: 90%;
+            max-height: 90vh;
+            overflow-y: auto;
+        }
+
+        .form-group {
+            margin-bottom: 15px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: 500;
+        }
+
+        .form-group input,
+        .form-group select {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid var(--border-color);
+            border-radius: 4px;
+        }
+
+        .status-active {
+            color: #28a745;
+            font-weight: 500;
+        }
+
+        .status-inactive {
+            color: #dc3545;
+            font-weight: 500;
+        }
+    </style>
+</head>
+<body>
+    <div class="admin-container">
+        <div class="admin-header">
+            <div>
+                <h1>🏥 Admin Control Panel</h1>
+                <p>Manage doctors and view system statistics</p>
+            </div>
+            <div>
+                <button class="btn btn-primary" onclick="showCreateUserModal()">👨‍⚕️ Add New Doctor</button>
+                <button class="btn btn-secondary" onclick="window.location.href='dashboard.html'">↩️ Back to Dashboard</button>
+            </div>
+        </div>
+
+        <!-- Stats Section -->
+        <div class="stats-grid" id="stats-grid">
+            <div class="stat-card" data-icon="👨‍⚕️">
+                <div class="stat-label">👨‍⚕️ Total Doctors</div>
+                <div class="stat-number" id="stat-total-users">0</div>
+            </div>
+            <div class="stat-card" data-icon="✅" style="background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);">
+                <div class="stat-label">✅ Active Doctors</div>
+                <div class="stat-number" id="stat-active-users">0</div>
+            </div>
+            <div class="stat-card" data-icon="🔬" style="background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);">
+                <div class="stat-label">🔬 Total Cases</div>
+                <div class="stat-number" id="stat-total-cases">0</div>
+            </div>
+            <div class="stat-card" data-icon="💊" style="background: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%);">
+                <div class="stat-label">💊 Treatments</div>
+                <div class="stat-number" id="stat-approved-cases">0</div>
+            </div>
+        </div>
+
+        <!-- Users Table -->
+        <div class="users-table">
+            <div class="table-header">
+                <h2>👨‍⚕️ Doctor Management</h2>
+                <input type="text" class="search-box" placeholder="🔍 Search doctors..." oninput="searchUsers(this.value)">
+            </div>
+            <table>
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Username</th>
+                        <th>Email</th>
+                        <th>Full Name</th>
+                        <th>Role</th>
+                        <th>Status</th>
+                        <th>Created</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody id="users-tbody">
+                    <tr>
+                        <td colspan="8" style="text-align: center; padding: 40px;">
+                            Loading users...
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- Create/Edit User Modal -->
+    <div class="modal" id="user-modal">
+        <div class="modal-content">
+            <h2 id="modal-title">Create New User</h2>
+            <form id="user-form" onsubmit="submitUserForm(event)">
+                <input type="hidden" id="user-id">
+                
+                <div class="form-group">
+                    <label>Username *</label>
+                    <input type="text" id="username" required>
+                </div>
+
+                <div class="form-group">
+                    <label>Email *</label>
+                    <input type="email" id="email" required>
+                </div>
+
+                <div class="form-group" id="password-group">
+                    <label>Password *</label>
+                    <input type="password" id="password" required>
+                </div>
+
+                <div class="form-group">
+                    <label>Full Name</label>
+                    <input type="text" id="full_name">
+                </div>
+
+                <div class="form-group">
+                    <label>Role *</label>
+                    <select id="role" required>
+                        <option value="clinician">👨‍⚕️ Clinician</option>
+                        <option value="specialist">🔬 Specialist</option>
+                        <option value="admin">🏥 Administrator</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label>Specialty</label>
+                    <input type="text" id="specialty" placeholder="e.g., Gastroenterology">
+                </div>
+
+                <div style="display: flex; gap: 10px; margin-top: 20px;">
+                    <button type="submit" class="btn btn-primary" style="flex: 1;">Save</button>
+                    <button type="button" class="btn btn-secondary" style="flex: 1;" onclick="closeModal()">Cancel</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        const API_BASE = '';
+        let allUsers = [];
+
+        // Load data on page load
+        document.addEventListener('DOMContentLoaded', () => {
+            loadStats();
+            loadUsers();
+        });
+
+        async function loadStats() {
+            try {
+                const token = sessionStorage.getItem('jwt_token');
+                const response = await fetch(`${API_BASE}/admin/stats`, {
+                    headers: {
+                        'Authorization': `Bearer ${token}`
+                    }
+                });
+
+                if (!response.ok) throw new Error('Failed to load stats');
+
+                const stats = await response.json();
+                
+                document.getElementById('stat-total-users').textContent = stats.users.total;
+                document.getElementById('stat-active-users').textContent = stats.users.active;
+                document.getElementById('stat-total-cases').textContent = stats.cases.total;
+                document.getElementById('stat-approved-cases').textContent = stats.cases.approved;
+            } catch (error) {
+                console.error('Error loading stats:', error);
+            }
+        }
+
+        async function loadUsers() {
+            try {
+                const token = sessionStorage.getItem('jwt_token');
+                const response = await fetch(`${API_BASE}/admin/users`, {
+                    headers: {
+                        'Authorization': `Bearer ${token}`
+                    }
+                });
+
+                if (!response.ok) throw new Error('Failed to load users');
+
+                allUsers = await response.json();
+                displayUsers(allUsers);
+            } catch (error) {
+                console.error('Error loading users:', error);
+                document.getElementById('users-tbody').innerHTML = `
+                    <tr><td colspan="8" style="text-align: center; color: red;">
+                        Error loading users. Make sure you're logged in as an administrator.
+                    </td></tr>
+                `;
+            }
+        }
+
+        function displayUsers(users) {
+            const tbody = document.getElementById('users-tbody');
+            
+            if (users.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="8" style="text-align: center;">No users found</td></tr>';
+                return;
+            }
+
+            tbody.innerHTML = users.map(user => `
+                <tr>
+                    <td>${user.id}</td>
+                    <td>${user.username}</td>
+                    <td>${user.email}</td>
+                    <td>${user.full_name || '-'}</td>
+                    <td><span class="role-badge role-${user.role}">${user.role}</span></td>
+                    <td class="${user.is_active ? 'status-active' : 'status-inactive'}">
+                        ${user.is_active ? 'Active' : 'Inactive'}
+                    </td>
+                    <td>${new Date(user.created_at).toLocaleDateString()}</td>
+                    <td>
+                        <button class="action-btn btn-edit" onclick="editUser(${user.id})">Edit</button>
+                        ${user.is_active ? 
+                            `<button class="action-btn btn-deactivate" onclick="deactivateUser(${user.id})">Deactivate</button>` :
+                            `<button class="action-btn btn-activate" onclick="activateUser(${user.id})">Activate</button>`
+                        }
+                    </td>
+                </tr>
+            `).join('');
+        }
+
+        function searchUsers(query) {
+            if (!query) {
+                displayUsers(allUsers);
+                return;
+            }
+
+            const filtered = allUsers.filter(user => 
+                user.username.toLowerCase().includes(query.toLowerCase()) ||
+                user.email.toLowerCase().includes(query.toLowerCase()) ||
+                (user.full_name && user.full_name.toLowerCase().includes(query.toLowerCase()))
+            );
+
+            displayUsers(filtered);
+        }
+
+        function showCreateUserModal() {
+            document.getElementById('modal-title').textContent = 'Create New User';
+            document.getElementById('user-form').reset();
+            document.getElementById('user-id').value = '';
+            document.getElementById('password-group').style.display = 'block';
+            document.getElementById('password').required = true;
+            document.getElementById('user-modal').style.display = 'flex';
+        }
+
+        async function editUser(userId) {
+            const user = allUsers.find(u => u.id === userId);
+            if (!user) return;
+
+            document.getElementById('modal-title').textContent = 'Edit User';
+            document.getElementById('user-id').value = user.id;
+            document.getElementById('username').value = user.username;
+            document.getElementById('username').disabled = true;
+            document.getElementById('email').value = user.email;
+            document.getElementById('full_name').value = user.full_name || '';
+            document.getElementById('role').value = user.role;
+            document.getElementById('specialty').value = user.specialty || '';
+            document.getElementById('password-group').style.display = 'none';
+            document.getElementById('password').required = false;
+            document.getElementById('user-modal').style.display = 'flex';
+        }
+
+        async function submitUserForm(event) {
+            event.preventDefault();
+
+            const userId = document.getElementById('user-id').value;
+            const isEdit = !!userId;
+
+            const userData = {
+                username: document.getElementById('username').value,
+                email: document.getElementById('email').value,
+                full_name: document.getElementById('full_name').value || null,
+                role: document.getElementById('role').value,
+                specialty: document.getElementById('specialty').value || null
+            };
+
+            if (!isEdit) {
+                userData.password = document.getElementById('password').value;
+            }
+
+            try {
+                const token = sessionStorage.getItem('jwt_token');
+                const url = isEdit ? `${API_BASE}/admin/users/${userId}` : `${API_BASE}/admin/users`;
+                const method = isEdit ? 'PUT' : 'POST';
+
+                const response = await fetch(url, {
+                    method,
+                    headers: {
+                        'Authorization': `Bearer ${token}`,
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(userData)
+                });
+
+                if (!response.ok) {
+                    const error = await response.json();
+                    throw new Error(error.detail || 'Failed to save user');
+                }
+
+                alert(`User ${isEdit ? 'updated' : 'created'} successfully!`);
+                closeModal();
+                loadUsers();
+                loadStats();
+            } catch (error) {
+                alert('Error: ' + error.message);
+            }
+        }
+
+        async function deactivateUser(userId) {
+            if (!confirm('Are you sure you want to deactivate this user?')) return;
+
+            try {
+                const token = sessionStorage.getItem('jwt_token');
+                const response = await fetch(`${API_BASE}/admin/users/${userId}`, {
+                    method: 'DELETE',
+                    headers: {
+                        'Authorization': `Bearer ${token}`
+                    }
+                });
+
+                if (!response.ok) throw new Error('Failed to deactivate user');
+
+                alert('User deactivated successfully');
+                loadUsers();
+                loadStats();
+            } catch (error) {
+                alert('Error: ' + error.message);
+            }
+        }
+
+        async function activateUser(userId) {
+            try {
+                const token = sessionStorage.getItem('jwt_token');
+                const response = await fetch(`${API_BASE}/admin/users/${userId}/activate`, {
+                    method: 'POST',
+                    headers: {
+                        'Authorization': `Bearer ${token}`
+                    }
+                });
+
+                if (!response.ok) throw new Error('Failed to activate user');
+
+                alert('User activated successfully');
+                loadUsers();
+                loadStats();
+            } catch (error) {
+                alert('Error: ' + error.message);
+            }
+        }
+
+        function closeModal() {
+            document.getElementById('user-modal').style.display = 'none';
+            document.getElementById('username').disabled = false;
+        }
+    </script>
+</body>
+</html>

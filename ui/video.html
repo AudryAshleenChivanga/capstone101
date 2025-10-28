@@ -1,0 +1,456 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Video Consultation - H. pylori CDSS</title>
+    <link rel="stylesheet" href="styles.css">
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            background: #1a1a2e;
+            color: white;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        .video-container {
+            display: grid;
+            grid-template-columns: 1fr 300px;
+            height: 100vh;
+        }
+
+        .video-area {
+            position: relative;
+            background: #0f0f1e;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .main-video {
+            flex: 1;
+            position: relative;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        video {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+            background: #000;
+        }
+
+        .local-video {
+            position: absolute;
+            bottom: 20px;
+            right: 20px;
+            width: 200px;
+            height: 150px;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.5);
+            border: 2px solid #667eea;
+        }
+
+        .video-placeholder {
+            width: 100%;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        }
+
+        .video-placeholder svg {
+            width: 100px;
+            height: 100px;
+            margin-bottom: 20px;
+        }
+
+        .controls {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 20px;
+            padding: 20px;
+            background: rgba(0,0,0,0.5);
+        }
+
+        .control-btn {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            border: none;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s;
+            font-size: 24px;
+        }
+
+        .btn-video {
+            background: #667eea;
+        }
+
+        .btn-audio {
+            background: #667eea;
+        }
+
+        .btn-end {
+            background: #dc3545;
+        }
+
+        .control-btn:hover {
+            transform: scale(1.1);
+        }
+
+        .control-btn.off {
+            background: #6c757d;
+        }
+
+        .sidebar {
+            background: #16213e;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .sidebar-header {
+            padding: 20px;
+            background: #0f3460;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+        }
+
+        .sidebar-content {
+            flex: 1;
+            overflow-y: auto;
+            padding: 20px;
+        }
+
+        .info-card {
+            background: rgba(255,255,255,0.05);
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 15px;
+        }
+
+        .info-card h3 {
+            margin: 0 0 10px 0;
+            font-size: 1.1em;
+        }
+
+        .info-card p {
+            margin: 5px 0;
+            font-size: 0.9em;
+            opacity: 0.8;
+        }
+
+        .participant-list {
+            list-style: none;
+            padding: 0;
+            margin: 10px 0 0 0;
+        }
+
+        .participant-item {
+            display: flex;
+            align-items: center;
+            padding: 10px;
+            background: rgba(255,255,255,0.05);
+            border-radius: 6px;
+            margin-bottom: 8px;
+        }
+
+        .participant-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 12px;
+            font-weight: bold;
+        }
+
+        .connection-status {
+            display: inline-block;
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            margin-right: 8px;
+        }
+
+        .status-connecting {
+            background: #ffc107;
+            animation: pulse 1.5s infinite;
+        }
+
+        .status-connected {
+            background: #28a745;
+        }
+
+        .status-error {
+            background: #dc3545;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+
+        .invite-link {
+            background: rgba(255,255,255,0.1);
+            padding: 10px;
+            border-radius: 6px;
+            font-family: monospace;
+            font-size: 0.85em;
+            word-break: break-all;
+            margin-top: 10px;
+            cursor: pointer;
+        }
+
+        .invite-link:hover {
+            background: rgba(255,255,255,0.15);
+        }
+
+        .btn-copy {
+            margin-top: 10px;
+            width: 100%;
+            padding: 10px;
+            background: #667eea;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+        }
+
+        .btn-copy:hover {
+            background: #764ba2;
+        }
+    </style>
+</head>
+<body>
+    <div class="video-container">
+        <!-- Video Area -->
+        <div class="video-area">
+            <div class="main-video" id="main-video">
+                <div class="video-placeholder">
+                    <svg fill="white" viewBox="0 0 24 24">
+                        <path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/>
+                    </svg>
+                    <h2>Waiting for participants...</h2>
+                    <p>Click "Start Video" to begin</p>
+                </div>
+                <video id="remoteVideo" style="display: none;" autoplay playsinline></video>
+            </div>
+
+            <div class="local-video">
+                <video id="localVideo" autoplay playsinline muted></video>
+            </div>
+
+            <div class="controls">
+                <button class="control-btn btn-video" id="toggleVideo" onclick="toggleVideo()" title="Toggle Video">
+                    <span id="videoIcon">Video</span>
+                </button>
+                <button class="control-btn btn-audio" id="toggleAudio" onclick="toggleAudio()" title="Toggle Audio">
+                    <span id="audioIcon">Audio</span>
+                </button>
+                <button class="control-btn btn-end" onclick="endCall()" title="End Call">
+                    <span>End</span>
+                </button>
+            </div>
+        </div>
+
+        <!-- Sidebar -->
+        <div class="sidebar">
+            <div class="sidebar-header">
+                <h2>Consultation Room</h2>
+                <p><span class="connection-status" id="connectionStatus"></span><span id="statusText">Connecting...</span></p>
+            </div>
+
+            <div class="sidebar-content">
+                <div class="info-card">
+                    <h3>Session Info</h3>
+                    <p><strong>Room:</strong> <span id="roomName">Loading...</span></p>
+                    <p><strong>Host:</strong> <span id="hostName">Loading...</span></p>
+                    <p><strong>Role:</strong> <span id="userRole">Loading...</span></p>
+                </div>
+
+                <div class="info-card">
+                    <h3>Participants</h3>
+                    <ul class="participant-list" id="participantList">
+                        <li class="participant-item">
+                            <div class="participant-avatar">?</div>
+                            <div>Loading...</div>
+                        </li>
+                    </ul>
+                </div>
+
+                <div class="info-card">
+                    <h3>Invite Others</h3>
+                    <p>Share this link:</p>
+                    <div class="invite-link" id="inviteLink" onclick="copyInviteLink()">
+                        Click to copy...
+                    </div>
+                    <button class="btn-copy" onclick="copyInviteLink()">Copy Invite Link</button>
+                </div>
+
+                <div class="info-card">
+                    <h3>Quick Actions</h3>
+                    <button class="btn btn-secondary" style="width: 100%; margin-bottom: 10px;" onclick="window.location.href='dashboard.html'">
+                        Back to Dashboard
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const API_BASE = '';
+        let localStream = null;
+        let remoteStream = null;
+        let peerConnection = null;
+        let sessionId = null;
+        let sessionToken = null;
+        let isVideoOn = false;
+        let isAudioOn = false;
+
+        // Get session info from URL
+        const urlParams = new URLSearchParams(window.location.search);
+        sessionId = urlParams.get('session');
+        sessionToken = urlParams.get('token');
+
+        document.addEventListener('DOMContentLoaded', () => {
+            if (!sessionId || !sessionToken) {
+                alert('Invalid session link');
+                window.location.href = 'dashboard.html';
+                return;
+            }
+
+            loadSessionInfo();
+        });
+
+        async function loadSessionInfo() {
+            try {
+                const token = sessionStorage.getItem('jwt_token');
+                const response = await fetch(`${API_BASE}/video/session/${sessionId}?token=${sessionToken}`, {
+                    headers: {
+                        'Authorization': `Bearer ${token}`
+                    }
+                });
+
+                if (!response.ok) throw new Error('Session not found or expired');
+
+                const sessionInfo = await response.json();
+                
+                document.getElementById('roomName').textContent = sessionInfo.room_name;
+                document.getElementById('hostName').textContent = sessionInfo.host_name;
+                document.getElementById('userRole').textContent = sessionInfo.role;
+                document.getElementById('inviteLink').textContent = window.location.href;
+
+                updateStatus('connected', 'Connected');
+
+                // Auto-start video
+                startLocalVideo();
+            } catch (error) {
+                console.error('Error loading session:', error);
+                updateStatus('error', 'Connection Error');
+                alert('Failed to join session: ' + error.message);
+            }
+        }
+
+        async function startLocalVideo() {
+            try {
+                localStream = await navigator.mediaDevices.getUserMedia({
+                    video: true,
+                    audio: true
+                });
+
+                document.getElementById('localVideo').srcObject = localStream;
+                isVideoOn = true;
+                isAudioOn = true;
+                
+                updateStatus('connected', 'Video Active');
+            } catch (error) {
+                console.error('Error accessing media devices:', error);
+                alert('Cannot access camera/microphone. Please grant permissions.');
+            }
+        }
+
+        function toggleVideo() {
+            if (!localStream) {
+                startLocalVideo();
+                return;
+            }
+
+            const videoTrack = localStream.getVideoTracks()[0];
+            if (videoTrack) {
+                videoTrack.enabled = !videoTrack.enabled;
+                isVideoOn = videoTrack.enabled;
+                
+                document.getElementById('videoIcon').textContent = isVideoOn ? 'Video' : 'Video Off';
+                document.getElementById('toggleVideo').classList.toggle('off', !isVideoOn);
+            }
+        }
+
+        function toggleAudio() {
+            if (!localStream) return;
+
+            const audioTrack = localStream.getAudioTracks()[0];
+            if (audioTrack) {
+                audioTrack.enabled = !audioTrack.enabled;
+                isAudioOn = audioTrack.enabled;
+                
+                document.getElementById('audioIcon').textContent = isAudioOn ? 'Audio' : 'Muted';
+                document.getElementById('toggleAudio').classList.toggle('off', !isAudioOn);
+            }
+        }
+
+        async function endCall() {
+            if (confirm('Are you sure you want to end this consultation?')) {
+                try {
+                    const token = sessionStorage.getItem('jwt_token');
+                    await fetch(`${API_BASE}/video/session/${sessionId}/end`, {
+                        method: 'POST',
+                        headers: {
+                            'Authorization': `Bearer ${token}`
+                        }
+                    });
+
+                    // Stop local stream
+                    if (localStream) {
+                        localStream.getTracks().forEach(track => track.stop());
+                    }
+
+                    window.location.href = 'dashboard.html';
+                } catch (error) {
+                    console.error('Error ending session:', error);
+                }
+            }
+        }
+
+        function updateStatus(status, text) {
+            const statusEl = document.getElementById('connectionStatus');
+            statusEl.className = 'connection-status status-' + status;
+            document.getElementById('statusText').textContent = text;
+        }
+
+        function copyInviteLink() {
+            const link = window.location.href;
+            navigator.clipboard.writeText(link).then(() => {
+                alert('Invite link copied to clipboard!');
+            });
+        }
+
+        // Cleanup on page unload
+        window.addEventListener('beforeunload', () => {
+            if (localStream) {
+                localStream.getTracks().forEach(track => track.stop());
+            }
+        });
+    </script>
+</body>
+</html>

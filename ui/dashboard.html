@@ -1,0 +1,966 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>H. pylori CDSS - Dashboard</title>
+    <link rel="stylesheet" href="styles.css?v=5.0">
+</head>
+<body>
+    <!-- Sidebar Navigation -->
+    <aside class="sidebar" id="sidebar">
+        <div class="sidebar-header">
+            <div class="logo-section">
+                <img src="/images/digestive_system+hpylori.webp" alt="H. pylori" class="logo-image">
+                <h2>H. pylori CDSS</h2>
+            </div>
+            <button class="sidebar-toggle" id="sidebarToggle" aria-label="Toggle Sidebar">
+                <span class="hamburger"></span>
+            </button>
+        </div>
+        
+        <nav class="sidebar-nav">
+            <a href="#dashboard" class="nav-item active" data-page="dashboard">
+                <svg class="nav-icon" viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
+                <span>Dashboard</span>
+            </a>
+            <a href="#screening" class="nav-item" data-page="screening">
+                <svg class="nav-icon" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/></svg>
+                <span>Screening</span>
+            </a>
+            <a href="#staging" class="nav-item" data-page="staging">
+                <svg class="nav-icon" viewBox="0 0 24 24"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
+                <span>Staging</span>
+            </a>
+            <a href="#cases" class="nav-item" data-page="cases">
+                <svg class="nav-icon" viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+                <span>Case History</span>
+            </a>
+            <a href="#biopsy" class="nav-item" data-page="biopsy">
+                <svg class="nav-icon" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/></svg>
+                <span>3D Biopsy</span>
+            </a>
+            <a href="#video" class="nav-item" data-page="video">
+                <svg class="nav-icon" viewBox="0 0 24 24"><polygon points="23 7 16 12 23 17 23 7"/><rect x="1" y="5" width="15" height="14" rx="2" ry="2"/></svg>
+                <span>Video Consult</span>
+            </a>
+            <a href="/ui/teleconsultation.html" class="nav-item" target="_blank">
+                <svg class="nav-icon" viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87m-4-12a4 4 0 010 7.75"/></svg>
+                <span>Book Gastroenterologist</span>
+            </a>
+            <a href="#profile" class="nav-item" data-page="profile">
+                <svg class="nav-icon" viewBox="0 0 24 24"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+                <span>Profile</span>
+            </a>
+            <a href="#admin" class="nav-item" id="adminNavItem" style="display: none;" data-page="admin">
+                <svg class="nav-icon" viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M12 1v6m0 6v6m5.7-13.7l-4.2 4.2m0 3l-4.2 4.2m13.7-5.7h-6m-6 0H1m13.7 5.7l-4.2-4.2m0-3l-4.2-4.2"/></svg>
+                <span>Admin Panel</span>
+            </a>
+            <a href="#settings" class="nav-item" data-page="settings">
+                <svg class="nav-icon" viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M12 1v6m0 6v6M5.64 5.64l4.24 4.24m4.24 4.24l4.24 4.24M1 12h6m6 0h6m-10.36 6.36l4.24-4.24m4.24-4.24l4.24-4.24"/></svg>
+                <span>Settings</span>
+            </a>
+        </nav>
+        
+        <div class="sidebar-footer">
+            <div class="theme-toggle">
+                <button id="themeToggle" class="theme-btn" aria-label="Toggle Theme">
+                    <svg class="sun-icon" viewBox="0 0 24 24"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg>
+                    <svg class="moon-icon" viewBox="0 0 24 24"><path d="M21 12.79A9 9 0 1111.21 3 7 7 0 0021 12.79z"/></svg>
+                </button>
+                <span class="theme-label">Dark Mode</span>
+            </div>
+        </div>
+    </aside>
+    
+    <!-- Main Content -->
+    <main class="main-container">
+        <!-- Top Bar -->
+        <div class="top-bar">
+            <div class="top-bar-left">
+                <h1 class="page-title" id="pageTitle">Dashboard</h1>
+            </div>
+            <div class="top-bar-right">
+                <div class="user-profile">
+                    <img src="/images/Dr_Angie.webp" alt="Doctor" class="user-avatar">
+                    <div class="user-info">
+                        <span class="user-name" id="userName">Loading...</span>
+                        <span class="user-role" id="userRole">...</span>
+                    </div>
+                </div>
+                <button class="btn-logout" id="logoutBtn">
+                    <svg viewBox="0 0 24 24"><path d="M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4M16 17l5-5-5-5M21 12H9"/></svg>
+                    Logout
+                </button>
+            </div>
+        </div>
+        
+        <!-- Page Content -->
+        <div class="page-content" id="pageContent">
+            <!-- Dashboard Page -->
+            <div class="page" id="page-dashboard" style="display: block;">
+                <!-- Stats Cards -->
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <div class="stat-icon blue">
+                            <svg viewBox="0 0 24 24"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11"/></svg>
+                        </div>
+                        <div class="stat-content">
+                            <h3>Total Cases</h3>
+                            <p class="stat-value" id="statTotalCases">0</p>
+                            <span class="stat-change positive">+12% from last month</span>
+                        </div>
+                    </div>
+                    
+                    <div class="stat-card">
+                        <div class="stat-icon green">
+                            <svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/></svg>
+                        </div>
+                        <div class="stat-content">
+                            <h3>Screening</h3>
+                            <p class="stat-value" id="statScreening">0</p>
+                            <span class="stat-change positive">+8% from last month</span>
+                        </div>
+                    </div>
+                    
+                    <div class="stat-card">
+                        <div class="stat-icon yellow">
+                            <svg viewBox="0 0 24 24"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
+                        </div>
+                        <div class="stat-content">
+                            <h3>Staging</h3>
+                            <p class="stat-value" id="statStaging">0</p>
+                            <span class="stat-change positive">+5% from last month</span>
+                        </div>
+                    </div>
+                    
+                    <div class="stat-card">
+                        <div class="stat-icon red">
+                            <svg viewBox="0 0 24 24"><path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+                        </div>
+                        <div class="stat-content">
+                            <h3>High Risk</h3>
+                            <p class="stat-value" id="statHighRisk">0</p>
+                            <span class="stat-change negative">-3% from last month</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Charts Section -->
+                <div class="charts-section">
+                    <div class="chart-card large">
+                        <div class="chart-header">
+                            <h3>Cases Overview</h3>
+                            <select class="chart-period">
+                                <option value="7">Last 7 days</option>
+                                <option value="30" selected>Last 30 days</option>
+                                <option value="90">Last 90 days</option>
+                            </select>
+                        </div>
+                        <canvas id="casesLineChart"></canvas>
+                    </div>
+                    
+                    <div class="chart-card">
+                        <div class="chart-header">
+                            <h3>Risk Distribution</h3>
+                        </div>
+                        <canvas id="riskDoughnutChart"></canvas>
+                    </div>
+                </div>
+                
+                <!-- Additional Charts -->
+                <div class="charts-section">
+                    <div class="chart-card">
+                        <div class="chart-header">
+                            <h3>Monthly Trends</h3>
+                        </div>
+                        <canvas id="monthlyBarChart"></canvas>
+                    </div>
+                    
+                    <div class="chart-card">
+                        <div class="chart-header">
+                            <h3>Treatment Success Rate</h3>
+                        </div>
+                        <canvas id="successRateChart"></canvas>
+                    </div>
+                </div>
+                
+                <!-- Recent Activity -->
+                <div class="activity-card">
+                    <div class="card-header">
+                        <h3>Recent Activity</h3>
+                        <button class="btn-sm" onclick="switchPage('cases')">View All</button>
+                    </div>
+                    <div class="activity-list" id="recentActivity">
+                        <p class="loading">Loading recent activity...</p>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Screening Page -->
+            <div class="page" id="page-screening" style="display: none;">
+                <div class="page-header-with-image">
+                    <div>
+                        <h2>Screening Assessment</h2>
+                        <p>AI-powered H. pylori infection screening</p>
+                    </div>
+                    <img src="/images/capsulepills.avif" alt="Medication" class="page-header-image">
+                </div>
+                
+                <div class="content-grid">
+                    <div class="form-panel">
+                        <form id="screeningForm" class="clinical-form">
+                            <div class="form-section">
+                                <h3>Patient Demographics</h3>
+                                <div class="form-row">
+                                    <div class="form-group">
+                                        <label for="screen_age">Age</label>
+                                        <input type="number" id="screen_age" name="age" min="0" max="120" required>
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="screen_sex">Sex</label>
+                                        <select id="screen_sex" name="sex" required>
+                                            <option value="">Select...</option>
+                                            <option value="M">Male</option>
+                                            <option value="F">Female</option>
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="form-section">
+                                <h3>Clinical Symptoms</h3>
+                                <div class="form-row">
+                                    <div class="form-group">
+                                        <label>Abdominal Pain</label>
+                                        <div class="radio-group">
+                                            <label><input type="radio" name="abdominal_pain" value="0" required> No</label>
+                                            <label><input type="radio" name="abdominal_pain" value="1"> Yes</label>
+                                        </div>
+                                    </div>
+                                    <div class="form-group">
+                                        <label>Nausea</label>
+                                        <div class="radio-group">
+                                            <label><input type="radio" name="nausea" value="0" required> No</label>
+                                            <label><input type="radio" name="nausea" value="1"> Yes</label>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <div class="form-row">
+                                    <div class="form-group">
+                                        <label>Bloating</label>
+                                        <div class="radio-group">
+                                            <label><input type="radio" name="bloating" value="0" required> No</label>
+                                            <label><input type="radio" name="bloating" value="1"> Yes</label>
+                                        </div>
+                                    </div>
+                                    <div class="form-group">
+                                        <label>Early Satiety</label>
+                                        <div class="radio-group">
+                                            <label><input type="radio" name="early_satiety" value="0" required> No</label>
+                                            <label><input type="radio" name="early_satiety" value="1"> Yes</label>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <div class="form-row">
+                                    <div class="form-group">
+                                        <label>Weight Loss</label>
+                                        <div class="radio-group">
+                                            <label><input type="radio" name="weight_loss" value="0" required> No</label>
+                                            <label><input type="radio" name="weight_loss" value="1"> Yes</label>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="form-section">
+                                <h3>Lab Tests</h3>
+                                <div class="form-row">
+                                    <div class="form-group">
+                                        <label>Stool Antigen</label>
+                                        <div class="radio-group">
+                                            <label><input type="radio" name="stool_ag" value="0" required> Negative</label>
+                                            <label><input type="radio" name="stool_ag" value="1"> Positive</label>
+                                        </div>
+                                    </div>
+                                    <div class="form-group">
+                                        <label>Stool Antibody</label>
+                                        <div class="radio-group">
+                                            <label><input type="radio" name="stool_ab" value="0" required> Negative</label>
+                                            <label><input type="radio" name="stool_ab" value="1"> Positive</label>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <div class="form-row">
+                                    <div class="form-group">
+                                        <label for="hemoglobin">Hemoglobin (g/dL)</label>
+                                        <input type="number" id="hemoglobin" name="hemoglobin" step="0.1" min="0" required>
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="crp">CRP (mg/L)</label>
+                                        <input type="number" id="crp" name="crp" step="0.1" min="0" required>
+                                    </div>
+                                </div>
+                                
+                                <div class="form-row">
+                                    <div class="form-group">
+                                        <label for="wbc">WBC (×10³/μL)</label>
+                                        <input type="number" id="wbc" name="wbc" step="0.1" min="0" required>
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="patient_pseudo_id">Patient ID (optional)</label>
+                                        <input type="text" id="patient_pseudo_id" name="patient_pseudo_id">
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="form-actions">
+                                <button type="reset" class="btn btn-secondary">Clear Form</button>
+                                <button type="submit" class="btn btn-primary">
+                                    <span class="btn-text">Get Recommendation</span>
+                                    <span class="spinner" style="display: none;"></span>
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                    
+                    <div class="results-panel" id="screeningResults" style="display: none;">
+                        <h2>Screening Results</h2>
+                        <div class="gauge-container">
+                            <canvas id="screeningGauge" width="200" height="120"></canvas>
+                            <p class="gauge-label">Infection Likelihood</p>
+                        </div>
+                        
+                        <div class="recommendations">
+                            <h3>Clinical Recommendations</h3>
+                            <ul id="recommendationList"></ul>
+                        </div>
+                        
+                        <div class="result-actions">
+                            <button class="btn btn-secondary" onclick="copyResults()">Copy Results</button>
+                            <button class="btn btn-primary" onclick="saveCase()">Save Case</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Staging Page -->
+            <div class="page" id="page-staging" style="display: none;">
+                <div class="page-header-with-image">
+                    <div>
+                        <h2>Staging Assessment</h2>
+                        <p>Antibiotic resistance staging analysis</p>
+                    </div>
+                    <img src="/images/capsulepills.avif" alt="Medication" class="page-header-image">
+                </div>
+                
+                <div class="content-grid">
+                    <div class="form-panel">
+                        <form id="stagingForm" class="clinical-form">
+                            <div class="form-section">
+                                <h3>Patient Demographics</h3>
+                                <div class="form-row">
+                                    <div class="form-group">
+                                        <label for="stage_age">Age</label>
+                                        <input type="number" id="stage_age" name="age" min="0" max="120" required>
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="stage_sex">Sex</label>
+                                        <select id="stage_sex" name="sex" required>
+                                            <option value="">Select...</option>
+                                            <option value="M">Male</option>
+                                            <option value="F">Female</option>
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="form-section">
+                                <h3>Resistance Markers</h3>
+                                <div class="form-row">
+                                    <div class="form-group">
+                                        <label for="mic_clari">MIC Clarithromycin (μg/mL)</label>
+                                        <input type="number" id="mic_clari" name="mic_clari" step="0.01" min="0" required>
+                                    </div>
+                                </div>
+                                
+                                <div class="form-row">
+                                    <div class="form-group">
+                                        <label>Mutation A2143G</label>
+                                        <div class="radio-group">
+                                            <label><input type="radio" name="mut_A2143G" value="0" required> Absent</label>
+                                            <label><input type="radio" name="mut_A2143G" value="1"> Present</label>
+                                        </div>
+                                    </div>
+                                    <div class="form-group">
+                                        <label>Mutation A2144G</label>
+                                        <div class="radio-group">
+                                            <label><input type="radio" name="mut_A2144G" value="0" required> Absent</label>
+                                            <label><input type="radio" name="mut_A2144G" value="1"> Present</label>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <div class="form-row">
+                                    <div class="form-group">
+                                        <label>Double Mutation</label>
+                                        <div class="radio-group">
+                                            <label><input type="radio" name="double_mut" value="0" required> No</label>
+                                            <label><input type="radio" name="double_mut" value="1"> Yes</label>
+                                        </div>
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="stage_patient_id">Patient ID (optional)</label>
+                                        <input type="text" id="stage_patient_id" name="patient_pseudo_id">
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="form-actions">
+                                <button type="reset" class="btn btn-secondary">Clear Form</button>
+                                <button type="submit" class="btn btn-primary">
+                                    <span class="btn-text">Get Stage Prediction</span>
+                                    <span class="spinner" style="display: none;"></span>
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                    
+                    <div class="results-panel" id="stagingResults" style="display: none;">
+                        <h2>Staging Results</h2>
+                        <div id="stageBadge">
+                            <h3>Resistance Stage</h3>
+                            <span class="badge badge-large" id="stageValue"></span>
+                        </div>
+                        
+                        <div class="recommendations">
+                            <h3>Treatment Recommendations</h3>
+                            <ul id="stagingRecommendationList"></ul>
+                        </div>
+                        
+                        <div class="result-actions">
+                            <button class="btn btn-secondary" onclick="copyResults()">Copy Results</button>
+                            <button class="btn btn-primary" onclick="saveCase()">Save Case</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Case History Page -->
+            <div class="page" id="page-cases" style="display: none;">
+                <div class="history-panel">
+                    <div class="card-header">
+                        <h2>📋 Case History & Patient Management</h2>
+                        <div class="panel-actions">
+                            <button class="btn btn-secondary" onclick="loadCaseHistory()">
+                                <svg viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" stroke-width="2" fill="none">
+                                    <polyline points="23 4 23 10 17 10"></polyline>
+                                    <path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"></path>
+                                </svg>
+                                Refresh
+                            </button>
+                            <button class="btn btn-primary" onclick="generateCaseReport()">
+                                <svg viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" stroke-width="2" fill="none">
+                                    <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                                    <polyline points="14 2 14 8 20 8"></polyline>
+                                </svg>
+                                Generate Report
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <!-- Advanced Filters -->
+                    <div class="filters-panel" style="background: rgba(255, 255, 255, 0.05); backdrop-filter: blur(10px); border-radius: 12px; padding: 20px; margin-bottom: 20px; border: 1px solid rgba(255, 255, 255, 0.1);">
+                        <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 15px;">
+                            <h3 style="margin: 0; font-size: 1.1rem; color: #00d4ff;">🔍 Advanced Filters</h3>
+                            <button class="btn btn-secondary" onclick="clearAllFilters()" style="padding: 8px 16px; font-size: 0.9rem;">Clear All</button>
+                        </div>
+                        <div class="filter-grid" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px;">
+                            <div class="form-group">
+                                <label for="filterSearch" style="font-size: 0.9rem; margin-bottom: 5px; display: block;">🔎 Search</label>
+                                <input type="text" id="filterSearch" placeholder="Patient ID or Name..." style="width: 100%; padding: 10px; background: rgba(0, 0, 0, 0.3); border: 1px solid rgba(255, 255, 255, 0.2); border-radius: 8px; color: white;">
+                            </div>
+                            <div class="form-group">
+                                <label for="filterCaseType" style="font-size: 0.9rem; margin-bottom: 5px; display: block;">📋 Case Type</label>
+                                <select id="filterCaseType" style="width: 100%; padding: 10px; background: rgba(0, 0, 0, 0.3); border: 1px solid rgba(255, 255, 255, 0.2); border-radius: 8px; color: white;">
+                                    <option value="">All Types</option>
+                                    <option value="screening">Screening</option>
+                                    <option value="staging">Staging</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label for="filterRiskLevel" style="font-size: 0.9rem; margin-bottom: 5px; display: block;">⚠️ Risk Level</label>
+                                <select id="filterRiskLevel" style="width: 100%; padding: 10px; background: rgba(0, 0, 0, 0.3); border: 1px solid rgba(255, 255, 255, 0.2); border-radius: 8px; color: white;">
+                                    <option value="">All Levels</option>
+                                    <option value="high">High Risk</option>
+                                    <option value="moderate">Moderate Risk</option>
+                                    <option value="low">Low Risk</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label for="filterStartDate" style="font-size: 0.9rem; margin-bottom: 5px; display: block;">📅 From Date</label>
+                                <input type="date" id="filterStartDate" style="width: 100%; padding: 10px; background: rgba(0, 0, 0, 0.3); border: 1px solid rgba(255, 255, 255, 0.2); border-radius: 8px; color: white;">
+                            </div>
+                            <div class="form-group">
+                                <label for="filterEndDate" style="font-size: 0.9rem; margin-bottom: 5px; display: block;">📅 To Date</label>
+                                <input type="date" id="filterEndDate" style="width: 100%; padding: 10px; background: rgba(0, 0, 0, 0.3); border: 1px solid rgba(255, 255, 255, 0.2); border-radius: 8px; color: white;">
+                            </div>
+                            <div class="form-group" style="display: flex; align-items: flex-end;">
+                                <button class="btn btn-primary" onclick="applyFilters()" style="width: 100%; padding: 10px;">
+                                    Apply Filters
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Statistics Dashboard -->
+                    <div class="stats-grid" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 20px; margin-bottom: 20px;">
+                        <div class="stat-card" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); padding: 20px; border-radius: 12px; color: white;">
+                            <div style="font-size: 0.9rem; opacity: 0.9;">Total Cases</div>
+                            <div style="font-size: 2rem; font-weight: bold;" id="statTotalCases">0</div>
+                        </div>
+                        <div class="stat-card" style="background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%); padding: 20px; border-radius: 12px; color: white;">
+                            <div style="font-size: 0.9rem; opacity: 0.9;">High Risk</div>
+                            <div style="font-size: 2rem; font-weight: bold;" id="statHighRisk">0</div>
+                        </div>
+                        <div class="stat-card" style="background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%); padding: 20px; border-radius: 12px; color: white;">
+                            <div style="font-size: 0.9rem; opacity: 0.9;">Screenings</div>
+                            <div style="font-size: 2rem; font-weight: bold;" id="statScreenings">0</div>
+                        </div>
+                        <div class="stat-card" style="background: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%); padding: 20px; border-radius: 12px; color: white;">
+                            <div style="font-size: 0.9rem; opacity: 0.9;">Stagings</div>
+                            <div style="font-size: 2rem; font-weight: bold;" id="statStagings">0</div>
+                        </div>
+                    </div>
+                    
+                    <!-- Cases Table -->
+                    <div class="results-table-container" style="background: rgba(255, 255, 255, 0.05); backdrop-filter: blur(10px); border-radius: 12px; padding: 20px; border: 1px solid rgba(255, 255, 255, 0.1); overflow-x: auto;">
+                        <table class="data-table" id="historyTable" style="width: 100%; border-collapse: collapse;">
+                            <thead>
+                                <tr style="border-bottom: 2px solid rgba(0, 212, 255, 0.3);">
+                                    <th style="padding: 15px; text-align: left; font-weight: 600; color: #00d4ff;">📅 Date</th>
+                                    <th style="padding: 15px; text-align: left; font-weight: 600; color: #00d4ff;">🆔 Patient ID</th>
+                                    <th style="padding: 15px; text-align: left; font-weight: 600; color: #00d4ff;">👤 Patient Name</th>
+                                    <th style="padding: 15px; text-align: left; font-weight: 600; color: #00d4ff;">📋 Type</th>
+                                    <th style="padding: 15px; text-align: left; font-weight: 600; color: #00d4ff;">⚠️ Risk</th>
+                                    <th style="padding: 15px; text-align: left; font-weight: 600; color: #00d4ff;">📊 Result</th>
+                                    <th style="padding: 15px; text-align: left; font-weight: 600; color: #00d4ff;">👨‍⚕️ Clinician</th>
+                                    <th style="padding: 15px; text-align: center; font-weight: 600; color: #00d4ff;">⚙️ Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="caseTableBody">
+                                <tr>
+                                    <td colspan="8" class="loading" style="text-align: center; padding: 40px; color: rgba(255, 255, 255, 0.6);">
+                                        <div class="spinner" style="display: inline-block; margin-bottom: 10px;"></div>
+                                        <div>Loading case history...</div>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    
+                    <!-- Pagination -->
+                    <div class="pagination-controls" style="display: flex; justify-content: space-between; align-items: center; margin-top: 20px; padding: 15px; background: rgba(255, 255, 255, 0.05); border-radius: 12px;">
+                        <div style="color: rgba(255, 255, 255, 0.7);">
+                            Showing <span id="paginationInfo">0</span> cases
+                        </div>
+                        <div style="display: flex; gap: 10px;">
+                            <button class="btn btn-secondary" onclick="previousPage()" id="btnPrevPage">← Previous</button>
+                            <span style="padding: 10px 20px; background: rgba(0, 0, 0, 0.3); border-radius: 8px; color: white;">
+                                Page <span id="currentPage">1</span> of <span id="totalPages">1</span>
+                            </span>
+                            <button class="btn btn-secondary" onclick="nextPage()" id="btnNextPage">Next →</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Profile Page -->
+            <div class="page" id="page-profile" style="display: none;">
+                <div class="profile-page">
+                    <div class="profile-card">
+                        <div class="profile-header">
+                            <img id="profileAvatar" src="/images/Dr_Angie.webp" alt="Profile" class="profile-avatar-large">
+                            <div>
+                                <h2 id="profileName">Loading...</h2>
+                                <p id="profileRole" class="profile-role">...</p>
+                            </div>
+                        </div>
+                        <div class="profile-details">
+                            <div class="profile-field">
+                                <label>Username</label>
+                                <span id="profileUsername">...</span>
+                            </div>
+                            <div class="profile-field">
+                                <label>Email</label>
+                                <span id="profileEmail">...</span>
+                            </div>
+                            <div class="profile-field">
+                                <label>Institution</label>
+                                <span id="profileInstitution">Not set</span>
+                            </div>
+                            <div class="profile-field">
+                                <label>Specialty</label>
+                                <span id="profileSpecialty">Not set</span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Medical Team Section -->
+                    <div class="team-section">
+                        <h3>Medical Team</h3>
+                        <div class="team-grid">
+                            <div class="team-member">
+                                <img src="/images/Dr_Angie.webp" alt="Dr. Angie">
+                                <h4>Dr. Angie</h4>
+                                <p>Administrator</p>
+                            </div>
+                            <div class="team-member">
+                                <img src="/images/Dr_Ishimwe.webp" alt="Dr. Ishimwe">
+                                <h4>Dr. Ishimwe</h4>
+                                <p>Clinician</p>
+                            </div>
+                            <div class="team-member">
+                                <img src="/images/Dr_Mugisha.webp" alt="Dr. Mugisha">
+                                <h4>Dr. Mugisha</h4>
+                                <p>Specialist</p>
+                            </div>
+                            <div class="team-member">
+                                <img src="/images/Dr_Tatenda.webp" alt="Dr. Tatenda">
+                                <h4>Dr. Tatenda</h4>
+                                <p>Gastroenterologist</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Video Consultation Page -->
+            <div class="page" id="page-video" style="display: none;">
+                <!-- Scheduling Section -->
+                <div class="scheduling-section">
+                    <div class="card">
+                        <div class="card-header">
+                            <h2>📅 Schedule Consultation</h2>
+                            <p>Book an appointment with a gastroenterologist before starting a video consultation</p>
+                        </div>
+                        
+                        <!-- Tabs for different views -->
+                        <div class="tabs">
+                            <button class="tab-btn active" onclick="switchScheduleTab('book')">Book Appointment</button>
+                            <button class="tab-btn" onclick="switchScheduleTab('my-requests')">My Requests</button>
+                            <button class="tab-btn" onclick="switchScheduleTab('pending')" id="pendingTab" style="display: none;">
+                                Pending Requests
+                                <span class="notification-badge" id="pendingBadge" style="display: none;">0</span>
+                            </button>
+                            <button class="tab-btn" onclick="switchScheduleTab('upcoming')">Upcoming</button>
+                        </div>
+                        
+                        <!-- Book Appointment Tab -->
+                        <div class="tab-content" id="tab-book" style="display: block;">
+                            <div class="specialists-grid" id="specialistsList">
+                                <div class="loading-spinner">Loading gastroenterologists...</div>
+                            </div>
+                        </div>
+                        
+                        <!-- My Requests Tab -->
+                        <div class="tab-content" id="tab-my-requests" style="display: none;">
+                            <div class="appointments-list" id="myRequestsList">
+                                <div class="loading-spinner">Loading your requests...</div>
+                            </div>
+                        </div>
+                        
+                        <!-- Pending Requests Tab (Specialists only) -->
+                        <div class="tab-content" id="tab-pending" style="display: none;">
+                            <div class="appointments-list" id="pendingRequestsList">
+                                <div class="loading-spinner">Loading pending requests...</div>
+                            </div>
+                        </div>
+                        
+                        <!-- Upcoming Appointments Tab -->
+                        <div class="tab-content" id="tab-upcoming" style="display: none;">
+                            <div class="appointments-list" id="upcomingAppointmentsList">
+                                <div class="loading-spinner">Loading upcoming appointments...</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Video Controls (shown after appointment is accepted) -->
+                <div class="video-consultation-panel" style="margin-top: 2rem;">
+                    <div class="card">
+                        <h2>🎥 Video Consultation</h2>
+                        <p>Start a video session with an accepted appointment or directly</p>
+                        
+                        <div class="video-controls" id="videoControls">
+                            <div class="control-group">
+                                <label for="sessionName">Session Name (Optional)</label>
+                                <input type="text" id="sessionName" placeholder="e.g., Patient John Consultation">
+                            </div>
+                            
+                            <div class="control-group">
+                                <label for="appointmentSelect">Link to Appointment (Optional)</label>
+                                <select id="appointmentSelect" class="form-control">
+                                    <option value="">No appointment (Direct session)</option>
+                                </select>
+                            </div>
+                            
+                            <button class="btn btn-primary btn-large" id="startVideoBtn" onclick="startVideoSession()">
+                                <svg viewBox="0 0 24 24" width="20" height="20" style="margin-right: 10px;"><polygon points="5 3 19 12 5 21 5 3"/></svg>
+                                Start Video Session
+                            </button>
+                        </div>
+                        
+                        <div class="video-session-info" id="videoSessionInfo" style="display: none;">
+                            <h3>Session Active</h3>
+                            <div class="session-details">
+                                <div class="session-field">
+                                    <strong>Session ID:</strong>
+                                    <span id="sessionIdDisplay"></span>
+                                </div>
+                                <div class="session-field">
+                                    <strong>Room Name:</strong>
+                                    <span id="roomNameDisplay"></span>
+                                </div>
+                                <div class="session-field">
+                                    <strong>Guest Join URL:</strong>
+                                    <input type="text" id="guestUrlDisplay" readonly>
+                                    <button class="btn-sm btn-secondary" onclick="copyGuestUrl()">Copy</button>
+                                </div>
+                            </div>
+                            
+                            <div class="qr-code-section">
+                                <h4>QR Code for Guest</h4>
+                                <div style="min-height: 220px; display: flex; align-items: center; justify-content: center;">
+                                    <img id="qrCodeImage" src="" alt="Loading QR Code..." style="max-width: 200px; border: 2px solid #ddd; border-radius: 8px; background: white; padding: 10px;">
+                                </div>
+                                <p style="font-size: 0.875rem; color: var(--text-secondary); margin-top: 0.5rem;">Scan this code to join the session</p>
+                            </div>
+                            
+                            <div class="video-actions">
+                                <button class="btn btn-secondary" id="recordBtn" onclick="toggleRecording()">
+                                    <svg viewBox="0 0 24 24" width="16" height="16" style="margin-right: 5px;"><circle cx="12" cy="12" r="10"/></svg>
+                                    Start Recording
+                                </button>
+                                <button class="btn btn-danger" onclick="endVideoSession()">
+                                    <svg viewBox="0 0 24 24" width="16" height="16" style="margin-right: 5px;"><rect x="6" y="6" width="12" height="12"/></svg>
+                                    End Session
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Booking Modal -->
+            <div id="bookingModal" class="modal" style="display: none;">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h3>Book Appointment</h3>
+                        <button class="modal-close" onclick="closeBookingModal()">&times;</button>
+                    </div>
+                    <div class="modal-body">
+                        <form id="bookingForm" onsubmit="submitAppointmentRequest(event)">
+                            <input type="hidden" id="bookingSpecialistId">
+                            
+                            <div class="form-group">
+                                <label>Specialist</label>
+                                <p id="bookingSpecialistName" style="font-weight: 600;"></p>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label for="bookingDate">Preferred Date & Time *</label>
+                                <input type="datetime-local" id="bookingDate" required class="form-control">
+                            </div>
+                            
+                            <div class="form-group">
+                                <label for="bookingDuration">Duration (minutes) *</label>
+                                <select id="bookingDuration" required class="form-control">
+                                    <option value="15">15 minutes</option>
+                                    <option value="30" selected>30 minutes</option>
+                                    <option value="45">45 minutes</option>
+                                    <option value="60">60 minutes</option>
+                                </select>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label for="bookingCase">Link to Case (Optional)</label>
+                                <select id="bookingCase" class="form-control">
+                                    <option value="">No case</option>
+                                </select>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label for="bookingReason">Reason for Consultation *</label>
+                                <textarea id="bookingReason" required class="form-control" rows="3" placeholder="Describe why you need this consultation..."></textarea>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label for="bookingNotes">Additional Notes</label>
+                                <textarea id="bookingNotes" class="form-control" rows="2" placeholder="Any additional information..."></textarea>
+                            </div>
+                            
+                            <div class="modal-actions">
+                                <button type="button" class="btn btn-secondary" onclick="closeBookingModal()">Cancel</button>
+                                <button type="submit" class="btn btn-primary">Request Appointment</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Response Modal (for specialists) -->
+            <div id="responseModal" class="modal" style="display: none;">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h3>Respond to Appointment Request</h3>
+                        <button class="modal-close" onclick="closeResponseModal()">&times;</button>
+                    </div>
+                    <div class="modal-body">
+                        <form id="responseForm" onsubmit="submitAppointmentResponse(event)">
+                            <input type="hidden" id="responseAppointmentId">
+                            
+                            <div class="form-group">
+                                <label>Clinician</label>
+                                <p id="responseClinicianName" style="font-weight: 600;"></p>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label>Requested Date & Time</label>
+                                <p id="responseRequestedDate" style="font-weight: 600;"></p>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label>Reason</label>
+                                <p id="responseReason" style="white-space: pre-wrap;"></p>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label for="responseStatus">Response *</label>
+                                <select id="responseStatus" required class="form-control" onchange="toggleScheduledDate()">
+                                    <option value="">-- Select --</option>
+                                    <option value="accepted">Accept</option>
+                                    <option value="rejected">Reject</option>
+                                </select>
+                            </div>
+                            
+                            <div class="form-group" id="scheduledDateGroup" style="display: none;">
+                                <label for="responseScheduledDate">Propose Different Time (Optional)</label>
+                                <input type="datetime-local" id="responseScheduledDate" class="form-control">
+                                <small>Leave empty to accept the requested time</small>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label for="responseNotes">Notes</label>
+                                <textarea id="responseNotes" class="form-control" rows="3" placeholder="Add notes for the clinician..."></textarea>
+                            </div>
+                            
+                            <div class="modal-actions">
+                                <button type="button" class="btn btn-secondary" onclick="closeResponseModal()">Cancel</button>
+                                <button type="submit" class="btn btn-primary">Submit Response</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- 3D Biopsy Page -->
+            <div class="page" id="page-biopsy" style="display: none;">
+                <div class="biopsy-panel">
+                    <h2>🔬 3D Biopsy Simulation</h2>
+                    <p>Advanced 3D visualization with AI-powered tissue analysis using reinforcement learning</p>
+                    <div class="biopsy-placeholder" style="padding: 60px; text-align: center;">
+                        <div class="placeholder-icon" style="margin-bottom: 30px;">
+                            <svg viewBox="0 0 24 24" width="80" height="80" fill="none" stroke="currentColor" stroke-width="2">
+                                <circle cx="12" cy="12" r="10"/>
+                                <circle cx="12" cy="12" r="6"/>
+                                <circle cx="12" cy="12" r="2"/>
+                            </svg>
+                        </div>
+                        <h3 style="font-size: 28px; margin-bottom: 15px;">Interactive 3D Biopsy Simulation</h3>
+                        <p style="font-size: 16px; color: #666; max-width: 600px; margin: 0 auto 30px;">
+                            Launch the full-screen 3D simulation with real-time AI analysis. Features reinforcement learning algorithms that detect H. pylori, peptic ulcers, abnormal cells, and cancer risk factors.
+                        </p>
+                        
+                        <div style="display: flex; gap: 20px; justify-content: center; margin-bottom: 40px;">
+                            <div style="background: #f0f9ff; padding: 20px; border-radius: 12px; min-width: 150px;">
+                                <div style="font-size: 32px; font-weight: bold; color: #0ea5e9;">3D</div>
+                                <div style="font-size: 14px; color: #666;">Real-time Rendering</div>
+                            </div>
+                            <div style="background: #f0fdf4; padding: 20px; border-radius: 12px; min-width: 150px;">
+                                <div style="font-size: 32px; font-weight: bold; color: #10b981;">AI</div>
+                                <div style="font-size: 14px; color: #666;">RL Analysis</div>
+                            </div>
+                            <div style="background: #fef3f2; padding: 20px; border-radius: 12px; min-width: 150px;">
+                                <div style="font-size: 32px; font-weight: bold; color: #ef4444;">5+</div>
+                                <div style="font-size: 14px; color: #666;">Finding Types</div>
+                            </div>
+                        </div>
+                        
+                        <a href="biopsy-simulation.html" target="_blank" class="btn btn-primary" style="font-size: 18px; padding: 15px 40px; display: inline-block; text-decoration: none;">
+                            🚀 Launch Simulation
+                        </a>
+                        
+                        <p style="margin-top: 20px; font-size: 13px; color: #999;">
+                            Opens in a new window for optimal performance
+                        </p>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Settings Page -->
+            <div class="page" id="page-settings" style="display: none;">
+                <div class="settings-panel">
+                    <h2>Settings</h2>
+                    <div class="settings-section">
+                        <h3>System Preferences</h3>
+                        <div class="settings-item">
+                            <label>Theme</label>
+                            <select id="themeSelect" class="form-control">
+                                <option value="light">Light Mode</option>
+                                <option value="dark">Dark Mode</option>
+                            </select>
+                        </div>
+                        <div class="settings-item">
+                            <label>Language</label>
+                            <select class="form-control">
+                                <option value="en">English</option>
+                            </select>
+                        </div>
+                    </div>
+                    
+                    <div class="settings-section" id="modelRetrainSection" style="display: none;">
+                        <h3>Model Management</h3>
+                        <p>Retrain the AI models with the latest case data</p>
+                        <button class="btn btn-primary" onclick="retrainModels()">Retrain Models</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+    
+    <!-- Toast Container -->
+    <div id="toastContainer" class="toast-container"></div>
+    
+    <!-- Version Indicator (will fade out) -->
+    <div id="versionIndicator" style="position: fixed; bottom: 20px; right: 20px; background: linear-gradient(135deg, #38ef7d 0%, #11998e 100%); color: white; padding: 15px 25px; border-radius: 10px; font-weight: bold; z-index: 10000; box-shadow: 0 4px 15px rgba(0,0,0,0.3); animation: fadeInOut 5s ease-in-out;">
+        ✅ VIDEO & REPORTS WORKING - v4.1
+    </div>
+    <style>
+        @keyframes fadeInOut {
+            0% { opacity: 0; transform: translateY(20px); }
+            20% { opacity: 1; transform: translateY(0); }
+            80% { opacity: 1; transform: translateY(0); }
+            100% { opacity: 0; transform: translateY(20px); }
+        }
+    </style>
+    
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+    <script src="gauge.js?v=5.0"></script>
+    <script src="case_management.js?v=6.0"></script>
+    <script src="app.js?v=5.0"></script>
+</body>
+</html>

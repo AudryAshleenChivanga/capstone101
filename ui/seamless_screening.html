@@ -1,0 +1,975 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Seamless H. pylori Screening - Complete Clinical Workflow</title>
+    <link rel="stylesheet" href="styles.css">
+    <style>
+        .workflow-container {
+            max-width: 1200px;
+            margin: 50px auto;
+            padding: 30px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+        }
+        
+        .workflow-header {
+            text-align: center;
+            color: white;
+            margin-bottom: 40px;
+        }
+        
+        .workflow-header h1 {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+        }
+        
+        .workflow-header p {
+            font-size: 1.2rem;
+            opacity: 0.9;
+        }
+        
+        .workflow-steps {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 40px;
+            position: relative;
+        }
+        
+        .workflow-steps::before {
+            content: '';
+            position: absolute;
+            top: 30px;
+            left: 10%;
+            right: 10%;
+            height: 3px;
+            background: rgba(255, 255, 255, 0.3);
+            z-index: 0;
+        }
+        
+        .step-indicator {
+            flex: 1;
+            text-align: center;
+            position: relative;
+            z-index: 1;
+        }
+        
+        .step-circle {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.2);
+            border: 3px solid rgba(255, 255, 255, 0.5);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 15px;
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: white;
+            transition: all 0.3s;
+        }
+        
+        .step-indicator.active .step-circle {
+            background: #00d4ff;
+            border-color: #00d4ff;
+            box-shadow: 0 0 20px rgba(0, 212, 255, 0.6);
+            transform: scale(1.2);
+        }
+        
+        .step-indicator.completed .step-circle {
+            background: #4caf50;
+            border-color: #4caf50;
+        }
+        
+        .step-label {
+            color: white;
+            font-size: 0.9rem;
+            opacity: 0.7;
+        }
+        
+        .step-indicator.active .step-label {
+            opacity: 1;
+            font-weight: 600;
+        }
+        
+        .step-content {
+            background: white;
+            border-radius: 16px;
+            padding: 40px;
+            min-height: 500px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
+        }
+        
+        .step-content h2 {
+            color: #667eea;
+            margin-bottom: 10px;
+        }
+        
+        .step-content p {
+            color: #666;
+            margin-bottom: 30px;
+        }
+        
+        .form-section {
+            margin-bottom: 30px;
+        }
+        
+        .form-section h3 {
+            color: #333;
+            font-size: 1.2rem;
+            margin-bottom: 15px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid #667eea;
+        }
+        
+        .form-row {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin-bottom: 20px;
+        }
+        
+        .form-group {
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .form-group label {
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 8px;
+            font-size: 0.95rem;
+        }
+        
+        .form-group input,
+        .form-group select {
+            padding: 12px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 1rem;
+            transition: all 0.3s;
+        }
+        
+        .form-group input:focus,
+        .form-group select:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+        
+        .radio-group {
+            display: flex;
+            gap: 20px;
+        }
+        
+        .radio-group label {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            cursor: pointer;
+        }
+        
+        .button-group {
+            display: flex;
+            gap: 15px;
+            justify-content: flex-end;
+            margin-top: 30px;
+        }
+        
+        .btn {
+            padding: 12px 30px;
+            border: none;
+            border-radius: 8px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .btn-primary {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+        
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(102, 126, 234, 0.3);
+        }
+        
+        .btn-secondary {
+            background: #f0f0f0;
+            color: #333;
+        }
+        
+        .btn-secondary:hover {
+            background: #e0e0e0;
+        }
+        
+        .result-card {
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            padding: 30px;
+            border-radius: 12px;
+            color: white;
+            margin-bottom: 20px;
+        }
+        
+        .result-card h3 {
+            margin-bottom: 15px;
+            font-size: 1.5rem;
+        }
+        
+        .risk-badge {
+            display: inline-block;
+            padding: 10px 20px;
+            border-radius: 20px;
+            font-weight: bold;
+            font-size: 1.2rem;
+            margin: 10px 0;
+        }
+        
+        .risk-high {
+            background: #ff4444;
+        }
+        
+        .risk-moderate {
+            background: #ffaa00;
+        }
+        
+        .risk-low {
+            background: #44ff44;
+            color: #333;
+        }
+        
+        .recommendations-list {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 20px;
+            border-radius: 8px;
+            margin-top: 15px;
+        }
+        
+        .recommendations-list li {
+            margin-bottom: 10px;
+            padding-left: 25px;
+            position: relative;
+        }
+        
+        .recommendations-list li::before {
+            content: '✓';
+            position: absolute;
+            left: 0;
+            font-weight: bold;
+        }
+        
+        .patient-info {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 12px;
+            margin-bottom: 20px;
+        }
+        
+        .patient-info h4 {
+            color: #667eea;
+            margin-bottom: 15px;
+        }
+        
+        .patient-info .info-row {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+        }
+        
+        .patient-info .info-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 10px;
+            background: white;
+            border-radius: 8px;
+        }
+        
+        .patient-info .info-label {
+            font-weight: 600;
+            color: #666;
+        }
+        
+        .patient-info .info-value {
+            color: #333;
+        }
+        
+        .alert {
+            padding: 15px 20px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            font-weight: 500;
+        }
+        
+        .alert-info {
+            background: #e3f2fd;
+            color: #1976d2;
+            border-left: 4px solid #1976d2;
+        }
+        
+        .alert-warning {
+            background: #fff3e0;
+            color: #f57c00;
+            border-left: 4px solid #f57c00;
+        }
+        
+        .alert-success {
+            background: #e8f5e9;
+            color: #388e3c;
+            border-left: 4px solid #388e3c;
+        }
+        
+        .hidden {
+            display: none !important;
+        }
+        
+        .loading {
+            text-align: center;
+            padding: 40px;
+        }
+        
+        .spinner {
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid #667eea;
+            border-radius: 50%;
+            width: 50px;
+            height: 50px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 20px;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+    </style>
+</head>
+<body style="background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%); min-height: 100vh; padding: 20px;">
+    
+    <div class="workflow-container">
+        <div class="workflow-header">
+            <h1>🏥 Complete H. pylori Clinical Workflow</h1>
+            <p>Seamless patient registration, screening, staging & biopsy analysis</p>
+        </div>
+        
+        <!-- Workflow Steps Indicator -->
+        <div class="workflow-steps">
+            <div class="step-indicator active" id="stepInd1">
+                <div class="step-circle">1</div>
+                <div class="step-label">Patient<br>Registration</div>
+            </div>
+            <div class="step-indicator" id="stepInd2">
+                <div class="step-circle">2</div>
+                <div class="step-label">Symptom<br>Assessment</div>
+            </div>
+            <div class="step-indicator" id="stepInd3">
+                <div class="step-circle">3</div>
+                <div class="step-label">Lab<br>Screening</div>
+            </div>
+            <div class="step-indicator" id="stepInd4">
+                <div class="step-circle">4</div>
+                <div class="step-label">Resistance<br>Staging</div>
+            </div>
+            <div class="step-indicator" id="stepInd5">
+                <div class="step-circle">5</div>
+                <div class="step-label">3D<br>Biopsy</div>
+            </div>
+        </div>
+        
+        <!-- Step Content -->
+        <div class="step-content">
+            
+            <!-- STEP 1: Patient Registration -->
+            <div id="step1" class="step-page">
+                <h2>📋 Step 1: Patient Registration & Demographics</h2>
+                <p>Start by registering the patient. A unique Patient ID will be automatically generated.</p>
+                
+                <form id="registrationForm">
+                    <div class="form-section">
+                        <h3>Patient Information</h3>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="patientName">Full Name *</label>
+                                <input type="text" id="patientName" required placeholder="Enter patient's full name">
+                            </div>
+                            <div class="form-group">
+                                <label for="patientAge">Age *</label>
+                                <input type="number" id="patientAge" required min="0" max="120" placeholder="Enter age">
+                            </div>
+                        </div>
+                        
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="patientSex">Sex *</label>
+                                <select id="patientSex" required>
+                                    <option value="">Select...</option>
+                                    <option value="M">Male</option>
+                                    <option value="F">Female</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label for="patientResidence">Residence Type</label>
+                                <select id="patientResidence">
+                                    <option value="">Select...</option>
+                                    <option value="urban">Urban</option>
+                                    <option value="rural">Rural</option>
+                                </select>
+                            </div>
+                        </div>
+                        
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="patientPhone">Phone Number</label>
+                                <input type="tel" id="patientPhone" placeholder="+250XXXXXXXXX">
+                            </div>
+                            <div class="form-group">
+                                <label for="patientEmail">Email (Optional)</label>
+                                <input type="email" id="patientEmail" placeholder="patient@email.com">
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="button-group">
+                        <button type="button" class="btn btn-secondary" onclick="window.location.href='/ui/dashboard.html'">Cancel</button>
+                        <button type="submit" class="btn btn-primary">Next: Symptom Assessment →</button>
+                    </div>
+                </form>
+            </div>
+            
+            <!-- STEP 2: Symptom Assessment -->
+            <div id="step2" class="step-page hidden">
+                <h2>🩺 Step 2: Symptom Assessment</h2>
+                <p>The AI will analyze symptoms and recommend next steps based on risk level.</p>
+                
+                <div class="patient-info" id="patientInfoDisplay"></div>
+                
+                <form id="symptomForm">
+                    <div class="form-section">
+                        <h3>Primary Symptoms</h3>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label>Abdominal Pain</label>
+                                <div class="radio-group">
+                                    <label><input type="radio" name="abdominalPain" value="0" required> No</label>
+                                    <label><input type="radio" name="abdominalPain" value="1"> Yes</label>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label>Nausea/Vomiting</label>
+                                <div class="radio-group">
+                                    <label><input type="radio" name="nausea" value="0" required> No</label>
+                                    <label><input type="radio" name="nausea" value="1"> Yes</label>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label>Bloating</label>
+                                <div class="radio-group">
+                                    <label><input type="radio" name="bloating" value="0" required> No</label>
+                                    <label><input type="radio" name="bloating" value="1"> Yes</label>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label>Weight Loss</label>
+                                <div class="radio-group">
+                                    <label><input type="radio" name="weightLoss" value="0" required> No</label>
+                                    <label><input type="radio" name="weightLoss" value="1"> Yes</label>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label>Family History of H. pylori</label>
+                                <div class="radio-group">
+                                    <label><input type="radio" name="familyHistory" value="0" required> No</label>
+                                    <label><input type="radio" name="familyHistory" value="1"> Yes</label>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="button-group">
+                        <button type="button" class="btn btn-secondary" onclick="goToStep(1)">← Back</button>
+                        <button type="submit" class="btn btn-primary">Get AI Recommendation</button>
+                    </div>
+                </form>
+                
+                <div id="symptomResults" class="hidden"></div>
+            </div>
+            
+            <!-- STEP 3: Lab Screening -->
+            <div id="step3" class="step-page hidden">
+                <h2>🔬 Step 3: Laboratory Screening</h2>
+                <p>Enter laboratory test results for comprehensive H. pylori screening.</p>
+                
+                <div class="patient-info" id="patientInfoDisplay2"></div>
+                
+                <div class="alert alert-info" id="labRecommendation"></div>
+                
+                <form id="labForm">
+                    <div class="form-section">
+                        <h3>Laboratory Tests</h3>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label>Stool Antigen Test</label>
+                                <div class="radio-group">
+                                    <label><input type="radio" name="stoolAg" value="0" required> Negative</label>
+                                    <label><input type="radio" name="stoolAg" value="1"> Positive</label>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label>Stool Antibody Test</label>
+                                <div class="radio-group">
+                                    <label><input type="radio" name="stoolAb" value="0" required> Negative</label>
+                                    <label><input type="radio" name="stoolAb" value="1"> Positive</label>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="hemoglobin">Hemoglobin (g/dL) *</label>
+                                <input type="number" id="hemoglobin" name="hemoglobin" step="0.1" min="0" max="20" required placeholder="e.g., 12.5">
+                            </div>
+                            <div class="form-group">
+                                <label for="crp">CRP (mg/L) *</label>
+                                <input type="number" id="crp" name="crp" step="0.1" min="0" required placeholder="e.g., 5.2">
+                            </div>
+                        </div>
+                        
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="wbc">WBC Count (×10³/μL) *</label>
+                                <input type="number" id="wbc" name="wbc" step="0.1" min="0" required placeholder="e.g., 7.5">
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="button-group">
+                        <button type="button" class="btn btn-secondary" onclick="goToStep(2)">← Back</button>
+                        <button type="submit" class="btn btn-primary">Get Screening Results</button>
+                    </div>
+                </form>
+                
+                <div id="labResults" class="hidden"></div>
+            </div>
+            
+            <!-- STEP 4: Resistance Staging -->
+            <div id="step4" class="step-page hidden">
+                <h2>🧬 Step 4: Antibiotic Resistance Staging</h2>
+                <p>Determine resistance level using MIC values and genetic mutations.</p>
+                
+                <div class="patient-info" id="patientInfoDisplay3"></div>
+                
+                <div class="alert alert-warning" id="stagingRecommendation"></div>
+                
+                <form id="stagingForm">
+                    <div class="form-section">
+                        <h3>Resistance Markers</h3>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="micClari">MIC Clarithromycin (μg/mL) *</label>
+                                <input type="number" id="micClari" name="micClari" step="0.01" min="0" required placeholder="e.g., 0.25">
+                            </div>
+                        </div>
+                        
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label>Mutation A2143G</label>
+                                <div class="radio-group">
+                                    <label><input type="radio" name="mutA2143G" value="0" required> Absent</label>
+                                    <label><input type="radio" name="mutA2143G" value="1"> Present</label>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label>Mutation A2144G</label>
+                                <div class="radio-group">
+                                    <label><input type="radio" name="mutA2144G" value="0" required> Absent</label>
+                                    <label><input type="radio" name="mutA2144G" value="1"> Present</label>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label>Double Mutation</label>
+                                <div class="radio-group">
+                                    <label><input type="radio" name="doubleMut" value="0" required> No</label>
+                                    <label><input type="radio" name="doubleMut" value="1"> Yes</label>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="button-group">
+                        <button type="button" class="btn btn-secondary" onclick="goToStep(3)">← Back</button>
+                        <button type="submit" class="btn btn-primary">Get Staging Results</button>
+                    </div>
+                </form>
+                
+                <div id="stagingResults" class="hidden"></div>
+            </div>
+            
+            <!-- STEP 5: 3D Biopsy -->
+            <div id="step5" class="step-page hidden">
+                <h2>🔬 Step 5: 3D Biopsy Simulation</h2>
+                <p>Advanced RL-powered tissue analysis for critical/risky cases.</p>
+                
+                <div class="patient-info" id="patientInfoDisplay4"></div>
+                
+                <div class="alert alert-warning">
+                    <strong>Critical Case Detected!</strong> 3D Biopsy simulation recommended for detailed tissue analysis.
+                </div>
+                
+                <div style="text-align: center; padding: 40px;">
+                    <p style="font-size: 1.2rem; margin-bottom: 30px;">
+                        Launch the interactive 3D biopsy simulation environment with reinforcement learning-powered analysis.
+                    </p>
+                    
+                    <button type="button" class="btn btn-primary" style="padding: 20px 40px; font-size: 1.2rem;" onclick="launch3DBiopsy()">
+                        🚀 Launch 3D Biopsy Simulation
+                    </button>
+                </div>
+                
+                <div class="button-group" style="margin-top: 40px;">
+                    <button type="button" class="btn btn-secondary" onclick="goToStep(4)">← Back to Staging</button>
+                    <button type="button" class="btn btn-primary" onclick="completeWorkflow()">Complete Assessment</button>
+                </div>
+            </div>
+            
+        </div>
+    </div>
+    
+    <script>
+        // Global state
+        let currentStep = 1;
+        let patientData = {};
+        let patientId = null;
+        let caseId = null;
+        
+        // Get token
+        const token = localStorage.getItem('token');
+        
+        if (!token) {
+            alert('Please login first');
+            window.location.href = '/ui/login.html';
+        }
+        
+        // Step navigation
+        function goToStep(step) {
+            // Hide all steps
+            document.querySelectorAll('.step-page').forEach(page => page.classList.add('hidden'));
+            
+            // Show target step
+            document.getElementById(`step${step}`).classList.remove('hidden');
+            
+            // Update indicators
+            document.querySelectorAll('.step-indicator').forEach((ind, idx) => {
+                ind.classList.remove('active');
+                if (idx + 1 < step) {
+                    ind.classList.add('completed');
+                } else {
+                    ind.classList.remove('completed');
+                }
+            });
+            document.getElementById(`stepInd${step}`).classList.add('active');
+            
+            currentStep = step;
+        }
+        
+        // Step 1: Patient Registration
+        document.getElementById('registrationForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            patientData = {
+                name: document.getElementById('patientName').value,
+                age: parseInt(document.getElementById('patientAge').value),
+                sex: document.getElementById('patientSex').value,
+                residence: document.getElementById('patientResidence').value,
+                phone: document.getElementById('patientPhone').value,
+                email: document.getElementById('patientEmail').value
+            };
+            
+            // Display patient info
+            displayPatientInfo();
+            
+            // Move to step 2
+            goToStep(2);
+        });
+        
+        function displayPatientInfo() {
+            const infoHTML = `
+                <h4>👤 Patient Information</h4>
+                <div class="info-row">
+                    <div class="info-item">
+                        <span class="info-label">Name:</span>
+                        <span class="info-value">${patientData.name}</span>
+                    </div>
+                    <div class="info-item">
+                        <span class="info-label">Age:</span>
+                        <span class="info-value">${patientData.age} years</span>
+                    </div>
+                    <div class="info-item">
+                        <span class="info-label">Sex:</span>
+                        <span class="info-value">${patientData.sex === 'M' ? 'Male' : 'Female'}</span>
+                    </div>
+                    <div class="info-item">
+                        <span class="info-label">Patient ID:</span>
+                        <span class="info-value" style="font-weight: 700; color: #667eea;">${patientId || 'Generating...'}</span>
+                    </div>
+                </div>
+            `;
+            
+            ['patientInfoDisplay', 'patientInfoDisplay2', 'patientInfoDisplay3', 'patientInfoDisplay4'].forEach(id => {
+                const elem = document.getElementById(id);
+                if (elem) elem.innerHTML = infoHTML;
+            });
+        }
+        
+        // Step 2: Symptom Assessment
+        document.getElementById('symptomForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const formData = new FormData(e.target);
+            const symptomData = {
+                ...patientData,
+                task: 'screening',
+                abdominal_pain: parseInt(formData.get('abdominalPain')),
+                nausea: parseInt(formData.get('nausea')),
+                bloating: parseInt(formData.get('bloating')),
+                weight_loss: parseInt(formData.get('weightLoss')),
+                family_history: parseInt(formData.get('familyHistory'))
+            };
+            
+            // Initial AI assessment (symptom-based)
+            try {
+                const response = await fetch('/recommend', {
+                    method: 'POST',
+                    headers: {
+                        'Authorization': `Bearer ${token}`,
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        ...symptomData,
+                        patient_name: patientData.name,
+                        age: patientData.age,
+                        sex: patientData.sex,
+                        residence: patientData.residence,
+                        patient_phone: patientData.phone,
+                        patient_email: patientData.email,
+                        // Dummy lab values for symptom assessment
+                        stool_ag: 0,
+                        stool_ab: 0,
+                        hemoglobin: 13.0,
+                        crp: 5.0,
+                        wbc: 7.0
+                    })
+                });
+                
+                const result = await response.json();
+                patientId = result.input_data.patient_pseudo_id;
+                caseId = result.case_id;
+                
+                displayPatientInfo();
+                
+                // Show symptom results
+                const resultsDiv = document.getElementById('symptomResults');
+                const riskLevel = result.screen_prob > 0.7 ? 'high' : (result.screen_prob > 0.4 ? 'moderate' : 'low');
+                
+                resultsDiv.innerHTML = `
+                    <div class="result-card">
+                        <h3>Initial Assessment Results</h3>
+                        <div class="risk-badge risk-${riskLevel}">
+                            Risk Level: ${riskLevel.toUpperCase()}
+                        </div>
+                        <p style="margin-top: 15px;">Based on symptoms, AI recommends:</p>
+                        <div class="recommendations-list">
+                            <ul>
+                                ${result.recommendations.map(rec => `<li>${rec}</li>`).join('')}
+                            </ul>
+                        </div>
+                    </div>
+                    
+                    <div class="button-group">
+                        <button class="btn btn-primary" onclick="proceedToLab()">Proceed to Lab Tests →</button>
+                    </div>
+                `;
+                resultsDiv.classList.remove('hidden');
+                
+                document.getElementById('labRecommendation').textContent = 
+                    riskLevel === 'high' ? 
+                    '⚠️ HIGH RISK DETECTED: Laboratory testing strongly recommended' : 
+                    '✓ Laboratory testing recommended for confirmation';
+                
+            } catch (error) {
+                alert('Error: ' + error.message);
+            }
+        });
+        
+        function proceedToLab() {
+            goToStep(3);
+        }
+        
+        // Step 3: Lab Screening
+        document.getElementById('labForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const formData = new FormData(e.target);
+            const labData = {
+                ...patientData,
+                task: 'screening',
+                patient_pseudo_id: patientId,
+                patient_name: patientData.name,
+                age: patientData.age,
+                sex: patientData.sex,
+                residence: patientData.residence,
+                patient_phone: patientData.phone,
+                patient_email: patientData.email,
+                stool_ag: parseInt(formData.get('stoolAg')),
+                stool_ab: parseInt(formData.get('stoolAb')),
+                hemoglobin: parseFloat(formData.get('hemoglobin')),
+                crp: parseFloat(formData.get('crp')),
+                wbc: parseFloat(formData.get('wbc')),
+                // Include symptoms from step 2
+                abdominal_pain: 1,
+                nausea: 1,
+                bloating: 1,
+                weight_loss: 0
+            };
+            
+            try {
+                const response = await fetch('/recommend', {
+                    method: 'POST',
+                    headers: {
+                        'Authorization': `Bearer ${token}`,
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(labData)
+                });
+                
+                const result = await response.json();
+                
+                const resultsDiv = document.getElementById('labResults');
+                const riskLevel = result.screen_prob > 0.7 ? 'high' : (result.screen_prob > 0.4 ? 'moderate' : 'low');
+                
+                resultsDiv.innerHTML = `
+                    <div class="result-card">
+                        <h3>Laboratory Screening Results</h3>
+                        <div class="risk-badge risk-${riskLevel}">
+                            H. pylori Probability: ${(result.screen_prob * 100).toFixed(1)}%
+                        </div>
+                        <p style="margin-top: 15px;">Clinical Recommendations:</p>
+                        <div class="recommendations-list">
+                            <ul>
+                                ${result.recommendations.map(rec => `<li>${rec}</li>`).join('')}
+                            </ul>
+                        </div>
+                    </div>
+                    
+                    <div class="button-group">
+                        ${result.screen_prob > 0.5 ? 
+                            `<button class="btn btn-primary" onclick="proceedToStaging()">Proceed to Resistance Staging →</button>` :
+                            `<button class="btn btn-primary" onclick="completeWorkflow()">Complete Assessment</button>`
+                        }
+                    </div>
+                `;
+                resultsDiv.classList.remove('hidden');
+                
+                if (result.screen_prob > 0.5) {
+                    document.getElementById('stagingRecommendation').textContent = 
+                        '⚠️ POSITIVE RESULT: Proceed with antibiotic resistance staging to determine optimal treatment';
+                }
+                
+            } catch (error) {
+                alert('Error: ' + error.message);
+            }
+        });
+        
+        function proceedToStaging() {
+            goToStep(4);
+        }
+        
+        // Step 4: Resistance Staging
+        document.getElementById('stagingForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const formData = new FormData(e.target);
+            const stagingData = {
+                ...patientData,
+                task: 'staging',
+                patient_pseudo_id: patientId,
+                patient_name: patientData.name,
+                age: patientData.age,
+                sex: patientData.sex,
+                mic_clari: parseFloat(formData.get('micClari')),
+                mut_A2143G: parseInt(formData.get('mutA2143G')),
+                mut_A2144G: parseInt(formData.get('mutA2144G')),
+                double_mut: parseInt(formData.get('doubleMut'))
+            };
+            
+            try {
+                const response = await fetch('/recommend', {
+                    method: 'POST',
+                    headers: {
+                        'Authorization': `Bearer ${token}`,
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(stagingData)
+                });
+                
+                const result = await response.json();
+                
+                const resultsDiv = document.getElementById('stagingResults');
+                const stageClass = result.stage_pred === 'high' ? 'high' : (result.stage_pred === 'moderate' ? 'moderate' : 'low');
+                
+                resultsDiv.innerHTML = `
+                    <div class="result-card">
+                        <h3>Antibiotic Resistance Staging Results</h3>
+                        <div class="risk-badge risk-${stageClass}">
+                            Resistance Level: ${result.stage_pred.toUpperCase()}
+                        </div>
+                        <p style="margin-top: 15px;">Treatment Recommendations:</p>
+                        <div class="recommendations-list">
+                            <ul>
+                                ${result.recommendations.map(rec => `<li>${rec}</li>`).join('')}
+                            </ul>
+                        </div>
+                    </div>
+                    
+                    <div class="button-group">
+                        ${result.stage_pred === 'high' || result.stage_pred === 'moderate' ? 
+                            `<button class="btn btn-primary" onclick="proceedToBiopsy()">🔬 Proceed to 3D Biopsy →</button>` :
+                            `<button class="btn btn-primary" onclick="completeWorkflow()">Complete Assessment</button>`
+                        }
+                    </div>
+                `;
+                resultsDiv.classList.remove('hidden');
+                
+            } catch (error) {
+                alert('Error: ' + error.message);
+            }
+        });
+        
+        function proceedToBiopsy() {
+            goToStep(5);
+        }
+        
+        function launch3DBiopsy() {
+            window.open('/ui/biopsy.html', '_blank');
+        }
+        
+        function completeWorkflow() {
+            alert('Assessment Complete! Redirecting to Case History...');
+            window.location.href = '/ui/dashboard.html#cases';
+        }
+    </script>
+</body>
+</html>
+

@@ -1,0 +1,239 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>H. pylori CDSS - Elite Healthcare Services</title>
+    <link rel="stylesheet" href="styles_modern.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/vanta@latest/dist/vanta.cells.min.js"></script>
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar">
+        <div class="nav-container">
+            <div class="logo">
+                <div class="logo-icon">🔬</div>
+                <span class="logo-text">H. pylori CDSS</span>
+            </div>
+            <ul class="nav-menu">
+                <li><a href="#home">Home</a></li>
+                <li><a href="#about">About Us</a></li>
+                <li><a href="#doctors">Doctors</a></li>
+                <li><a href="#contact">Contact Us</a></li>
+                <li><a href="dashboard_new.html" class="btn-join">Join Doctor</a></li>
+            </ul>
+            <button class="mobile-menu-toggle">☰</button>
+        </div>
+    </nav>
+
+    <!-- Hero Section with 3D Background -->
+    <section id="home" class="hero">
+        <div id="vanta-bg"></div>
+        <div class="hero-content">
+            <div class="hero-text">
+                <h1 class="hero-title">Elite Health Services</h1>
+                <div class="hero-features">
+                    <div class="feature-badge">
+                        <span class="badge-icon">🩺</span>
+                        <span class="badge-text">Reduce HbA1c</span>
+                    </div>
+                    <div class="feature-badge">
+                        <span class="badge-icon">💊</span>
+                        <span class="badge-text">No more medications</span>
+                    </div>
+                </div>
+                <p class="hero-subtitle">
+                    Providing the highest level of medical expertise and care, 
+                    tailored to support your well-being
+                </p>
+                <div class="hero-buttons">
+                    <button class="btn-primary" onclick="window.location.href='dashboard_new.html'">
+                        Schedule An Appointment
+                    </button>
+                    <button class="btn-secondary-hero" onclick="window.location.href='dashboard_new.html'">
+                        Try The System →
+                    </button>
+                </div>
+            </div>
+            <div class="hero-image">
+                <div class="doctor-card">
+                    <img src="../images/Dr_Angie.webp" alt="Doctor" class="doctor-img">
+                    <div class="doctor-badge">Expert Care</div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Services Section -->
+    <section class="services">
+        <div class="container">
+            <div class="service-card">
+                <div class="service-icon">👨‍⚕️</div>
+                <h3>Expert Doctors</h3>
+                <p>Book your health consultation with top Medicare doctors for exceptional and personalized care today</p>
+                <button class="btn-schedule" onclick="openScheduling()">
+                    Scheduling Now →
+                </button>
+            </div>
+
+            <div class="service-card featured">
+                <div class="service-icon">📅</div>
+                <h3>Appointment</h3>
+                <p>Schedule your appointment with the best Medicare doctors for expert healthcare and personalized advice.</p>
+                <button class="btn-schedule" onclick="openScheduling()">
+                    Scheduling Now →
+                </button>
+            </div>
+
+            <div class="service-card">
+                <div class="service-icon">💬</div>
+                <h3>Constant Support</h3>
+                <p>Reserve your consultation with leading Medicare doctors for trusted, high-quality care and treatment</p>
+                <button class="btn-schedule" onclick="openScheduling()">
+                    Scheduling Now →
+                </button>
+            </div>
+        </div>
+    </section>
+
+    <!-- About Section -->
+    <section id="about" class="about">
+        <div class="container">
+            <h2 class="section-title">About Our H. pylori CDSS</h2>
+            <div class="about-content">
+                <div class="about-text">
+                    <h3>Advanced Clinical Decision Support</h3>
+                    <p>Our system uses state-of-the-art machine learning models to provide accurate H. pylori screening and staging predictions. We combine medical expertise with artificial intelligence to deliver the best patient outcomes.</p>
+                    <div class="stats">
+                        <div class="stat">
+                            <div class="stat-number">92%</div>
+                            <div class="stat-label">Accuracy</div>
+                        </div>
+                        <div class="stat">
+                            <div class="stat-number">1000+</div>
+                            <div class="stat-label">Patients</div>
+                        </div>
+                        <div class="stat">
+                            <div class="stat-number">50+</div>
+                            <div class="stat-label">Specialists</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="about-image">
+                    <div class="image-grid">
+                        <img src="../images/Dr_Mugisha.webp" alt="Dr. Mugisha">
+                        <img src="../images/Dr_Tatenda.webp" alt="Dr. Tatenda">
+                        <img src="../images/Dr_Ishimwe.webp" alt="Dr. Ishimwe">
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Doctors Section -->
+    <section id="doctors" class="doctors">
+        <div class="container">
+            <h2 class="section-title">Our Specialist Team</h2>
+            <div class="doctors-grid">
+                <div class="doctor-profile">
+                    <img src="../images/Dr_Angie.webp" alt="Dr. Angie">
+                    <h4>Dr. Angie</h4>
+                    <p class="specialty">Gastroenterology</p>
+                    <button class="btn-consult" onclick="bookConsultation('Dr. Angie')">Book Consultation</button>
+                </div>
+                <div class="doctor-profile">
+                    <img src="../images/Dr_Mugisha.webp" alt="Dr. Mugisha">
+                    <h4>Dr. Mugisha</h4>
+                    <p class="specialty">Internal Medicine</p>
+                    <button class="btn-consult" onclick="bookConsultation('Dr. Mugisha')">Book Consultation</button>
+                </div>
+                <div class="doctor-profile">
+                    <img src="../images/Dr_Tatenda.webp" alt="Dr. Tatenda">
+                    <h4>Dr. Tatenda</h4>
+                    <p class="specialty">Pediatrics</p>
+                    <button class="btn-consult" onclick="bookConsultation('Dr. Tatenda')">Book Consultation</button>
+                </div>
+                <div class="doctor-profile">
+                    <img src="../images/Dr_Ishimwe.webp" alt="Dr. Ishimwe">
+                    <h4>Dr. Ishimwe</h4>
+                    <p class="specialty">Radiology</p>
+                    <button class="btn-consult" onclick="bookConsultation('Dr. Ishimwe')">Book Consultation</button>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Contact Section -->
+    <section id="contact" class="contact">
+        <div class="container">
+            <h2 class="section-title">Get In Touch</h2>
+            <div class="contact-content">
+                <div class="contact-info">
+                    <div class="info-item">
+                        <span class="info-icon">📧</span>
+                        <div>
+                            <h4>Email</h4>
+                            <p>support@hpyloricdss.com</p>
+                        </div>
+                    </div>
+                    <div class="info-item">
+                        <span class="info-icon">📞</span>
+                        <div>
+                            <h4>Phone</h4>
+                            <p>+250 788 123 456</p>
+                        </div>
+                    </div>
+                    <div class="info-item">
+                        <span class="info-icon">📍</span>
+                        <div>
+                            <h4>Location</h4>
+                            <p>Kigali, Rwanda</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="contact-form">
+                    <form id="contactForm">
+                        <input type="text" placeholder="Your Name" required>
+                        <input type="email" placeholder="Your Email" required>
+                        <textarea placeholder="Your Message" rows="5" required></textarea>
+                        <button type="submit" class="btn-primary">Send Message</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-section">
+                    <h4>H. pylori CDSS</h4>
+                    <p>Advanced clinical decision support for H. pylori diagnosis and treatment.</p>
+                </div>
+                <div class="footer-section">
+                    <h4>Quick Links</h4>
+                    <ul>
+                        <li><a href="#home">Home</a></li>
+                        <li><a href="#about">About</a></li>
+                        <li><a href="#doctors">Doctors</a></li>
+                        <li><a href="dashboard_new.html">Dashboard</a></li>
+                    </ul>
+                </div>
+                <div class="footer-section">
+                    <h4>Contact</h4>
+                    <p>📧 support@hpyloricdss.com</p>
+                    <p>📞 +250 788 123 456</p>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2024 H. pylori CDSS. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script src="landing_modern.js"></script>
+</body>
+</html>
+

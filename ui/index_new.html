@@ -1,0 +1,290 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>H. pylori CDSS - Clinical Decision Support</title>
+    <link rel="stylesheet" href="styles_landing.css">
+</head>
+<body>
+    <div class="landing-wrapper">
+        <!-- Left Section - Rotating Digestive System -->
+        <div class="landing-left">
+            <div class="rotating-container">
+                <img src="/images/digestive_system+hpylori.webp" alt="H. pylori Digestive System" class="rotating-image">
+                <div class="image-badge">H. pylori Detection System</div>
+            </div>
+            <div class="hero-content">
+                <h1>H. pylori Clinical Decision Support System</h1>
+                <p>Advanced AI-powered platform for gastric health screening and antibiotic resistance staging</p>
+                <div class="features">
+                    <div class="feature-item">
+                        <svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>
+                        <span>Evidence-Based Diagnostics</span>
+                    </div>
+                    <div class="feature-item">
+                        <svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>
+                        <span>AI-Powered Risk Assessment</span>
+                    </div>
+                    <div class="feature-item">
+                        <svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>
+                        <span>Treatment Recommendations</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Right Section - Authentication -->
+        <div class="landing-right">
+            <div class="auth-container">
+                <div class="auth-header">
+                    <h2>Welcome</h2>
+                    <p>Sign in to access your clinical dashboard</p>
+                </div>
+                
+                <div id="messageContainer"></div>
+                
+                <form id="loginForm" class="auth-form">
+                    <div class="form-field">
+                        <label for="username">Username</label>
+                        <input 
+                            type="text" 
+                            id="username" 
+                            placeholder="Enter your username" 
+                            required
+                            autocomplete="username"
+                        >
+                    </div>
+                    
+                    <div class="form-field">
+                        <label for="password">Password</label>
+                        <input 
+                            type="password" 
+                            id="password" 
+                            placeholder="Enter your password" 
+                            required
+                            autocomplete="current-password"
+                        >
+                    </div>
+                    
+                    <button type="submit" class="btn-primary" id="loginBtn">
+                        <span id="loginBtnText">Sign In</span>
+                        <div class="loading-spinner" id="loginSpinner"></div>
+                    </button>
+                </form>
+                
+                <div class="divider">or</div>
+                
+                <button type="button" class="btn-secondary" id="showRegisterBtn">
+                    Create New Account
+                </button>
+                
+                <div class="info-text">
+                    First time? Register as the initial administrator
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Registration Modal -->
+    <div id="registerModal" class="modal">
+        <div class="modal-content">
+            <button class="modal-close" id="closeModal">×</button>
+            
+            <div class="modal-header">
+                <h2>Create Account</h2>
+                <p>Register to access the clinical platform</p>
+            </div>
+            
+            <div id="registerMessageContainer"></div>
+            
+            <form id="registerForm" class="auth-form">
+                <div class="form-field">
+                    <label for="regUsername">Username</label>
+                    <input 
+                        type="text" 
+                        id="regUsername" 
+                        placeholder="Choose a username" 
+                        required
+                        minlength="3"
+                    >
+                </div>
+                
+                <div class="form-field">
+                    <label for="regEmail">Email</label>
+                    <input 
+                        type="email" 
+                        id="regEmail" 
+                        placeholder="your.email@hospital.com" 
+                        required
+                    >
+                </div>
+                
+                <div class="form-field">
+                    <label for="regPassword">Password</label>
+                    <input 
+                        type="password" 
+                        id="regPassword" 
+                        placeholder="Minimum 6 characters" 
+                        required
+                        minlength="6"
+                    >
+                </div>
+                
+                <div class="form-field">
+                    <label for="regPasswordConfirm">Confirm Password</label>
+                    <input 
+                        type="password" 
+                        id="regPasswordConfirm" 
+                        placeholder="Re-enter your password" 
+                        required
+                        minlength="6"
+                    >
+                </div>
+                
+                <div class="button-group">
+                    <button type="button" class="btn-secondary" id="cancelRegister">Cancel</button>
+                    <button type="submit" class="btn-primary" id="registerBtn">
+                        <span id="registerBtnText">Create Account</span>
+                        <div class="loading-spinner" id="registerSpinner"></div>
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+    
+    <script>
+        const API_BASE = 'http://localhost:8000';
+        
+        // Message display
+        function showMessage(message, type, container = 'messageContainer') {
+            const messageEl = document.getElementById(container);
+            const colors = {
+                success: { bg: '#d1fae5', text: '#065f46', border: '#6ee7b7' },
+                error: { bg: '#fee2e2', text: '#991b1b', border: '#fecaca' },
+                info: { bg: '#dbeafe', text: '#1e40af', border: '#93c5fd' }
+            };
+            
+            const color = colors[type] || colors.info;
+            
+            messageEl.innerHTML = `
+                <div style="padding: 1rem; border-radius: 8px; margin-bottom: 1.5rem; background: ${color.bg}; color: ${color.text}; border: 1px solid ${color.border}; animation: slideIn 0.3s;">
+                    ${message}
+                </div>
+            `;
+            
+            setTimeout(() => messageEl.innerHTML = '', 5000);
+        }
+        
+        // Login handler
+        document.getElementById('loginForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const username = document.getElementById('username').value;
+            const password = document.getElementById('password').value;
+            const btn = document.getElementById('loginBtn');
+            const btnText = document.getElementById('loginBtnText');
+            const spinner = document.getElementById('loginSpinner');
+            
+            btn.disabled = true;
+            btnText.textContent = 'Signing in...';
+            spinner.style.display = 'inline-block';
+            
+            try {
+                const response = await fetch(`${API_BASE}/auth/login`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ username, password })
+                });
+                
+                if (response.ok) {
+                    const data = await response.json();
+                    localStorage.setItem('token', data.access_token);
+                    localStorage.setItem('user', JSON.stringify(data.user));
+                    
+                    showMessage('Login successful! Redirecting...', 'success');
+                    setTimeout(() => window.location.href = 'dashboard_new.html', 800);
+                } else {
+                    const error = await response.json();
+                    showMessage(error.detail || 'Invalid credentials', 'error');
+                }
+            } catch (error) {
+                showMessage('Network error. Please try again.', 'error');
+            } finally {
+                btn.disabled = false;
+                btnText.textContent = 'Sign In';
+                spinner.style.display = 'none';
+            }
+        });
+        
+        // Show/hide registration modal
+        document.getElementById('showRegisterBtn').onclick = () => {
+            document.getElementById('registerModal').style.display = 'flex';
+        };
+        
+        function closeModal() {
+            document.getElementById('registerModal').style.display = 'none';
+            document.getElementById('registerForm').reset();
+            document.getElementById('registerMessageContainer').innerHTML = '';
+        }
+        
+        document.getElementById('closeModal').onclick = closeModal;
+        document.getElementById('cancelRegister').onclick = closeModal;
+        
+        document.getElementById('registerModal').onclick = (e) => {
+            if (e.target.id === 'registerModal') closeModal();
+        };
+        
+        // Registration handler
+        document.getElementById('registerForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const username = document.getElementById('regUsername').value;
+            const email = document.getElementById('regEmail').value;
+            const password = document.getElementById('regPassword').value;
+            const passwordConfirm = document.getElementById('regPasswordConfirm').value;
+            
+            if (password !== passwordConfirm) {
+                showMessage('Passwords do not match', 'error', 'registerMessageContainer');
+                return;
+            }
+            
+            const btn = document.getElementById('registerBtn');
+            const btnText = document.getElementById('registerBtnText');
+            const spinner = document.getElementById('registerSpinner');
+            
+            btn.disabled = true;
+            btnText.textContent = 'Creating...';
+            spinner.style.display = 'inline-block';
+            
+            try {
+                const response = await fetch(`${API_BASE}/auth/register/first`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ username, email, password, role: 'admin' })
+                });
+                
+                if (response.ok) {
+                    showMessage('Account created! Please login.', 'success', 'registerMessageContainer');
+                    setTimeout(() => {
+                        closeModal();
+                        document.getElementById('username').value = username;
+                    }, 1500);
+                } else {
+                    const error = await response.json();
+                    showMessage(error.detail || 'Registration failed', 'error', 'registerMessageContainer');
+                }
+            } catch (error) {
+                showMessage('Network error. Please try again.', 'error', 'registerMessageContainer');
+            } finally {
+                btn.disabled = false;
+                btnText.textContent = 'Create Account';
+                spinner.style.display = 'none';
+            }
+        });
+        
+        // Auto-focus
+        document.getElementById('username').focus();
+    </script>
+</body>
+</html>

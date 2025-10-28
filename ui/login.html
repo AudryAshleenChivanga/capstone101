@@ -1,0 +1,760 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>H. pylori CDSS - Sign In</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            height: 100vh;
+            overflow: hidden;
+        }
+
+        .login-container {
+            display: flex;
+            height: 100vh;
+        }
+
+        /* Left Side - 3D Model with Gradient */
+        .left-panel {
+            flex: 1;
+            background: linear-gradient(135deg, #7c5cdb 0%, #9b7fd9 50%, #b897d8 100%);
+            position: relative;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 4rem;
+            overflow: hidden;
+        }
+
+        /* 3D Model Background */
+        .model-container {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            opacity: 0.3;
+            z-index: 0;
+            overflow: hidden;
+        }
+
+        .model-container iframe {
+            width: 100%;
+            height: 100%;
+            border: none;
+            filter: blur(1px);
+            pointer-events: none;
+        }
+        
+        /* Hide any Sketchfab UI that might appear */
+        .model-container iframe::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            height: 60px;
+            background: transparent;
+            z-index: 999;
+        }
+
+        .left-content {
+            position: relative;
+            z-index: 1;
+            max-width: 600px;
+        }
+
+        .system-title {
+            font-size: 3.5rem;
+            font-weight: 700;
+            color: white;
+            margin-bottom: 1.5rem;
+            line-height: 1.2;
+            text-shadow: 0 2px 20px rgba(0, 0, 0, 0.2);
+        }
+
+        .system-subtitle {
+            font-size: 1.25rem;
+            color: rgba(255, 255, 255, 0.95);
+            margin-bottom: 3rem;
+            line-height: 1.6;
+        }
+
+        .features-card {
+            background: rgba(255, 255, 255, 0.15);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            padding: 2.5rem;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+        }
+
+        .feature-item {
+            display: flex;
+            align-items: center;
+            margin-bottom: 1.5rem;
+            color: white;
+            font-size: 1.15rem;
+        }
+
+        .feature-item:last-child {
+            margin-bottom: 0;
+        }
+
+        .feature-icon {
+            width: 24px;
+            height: 24px;
+            margin-right: 1rem;
+            flex-shrink: 0;
+        }
+
+        .feature-icon svg {
+            width: 100%;
+            height: 100%;
+            fill: #4ade80;
+            filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.2));
+        }
+
+        /* Right Side - Login Form */
+        .right-panel {
+            flex: 0 0 520px;
+            background: #f8f9fb;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 4rem 3rem;
+            position: relative;
+        }
+
+        .user-avatar {
+            position: absolute;
+            top: 2rem;
+            right: 2rem;
+            width: 60px;
+            height: 60px;
+            background: linear-gradient(135deg, #7c5cdb 0%, #9b7fd9 100%);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 4px 12px rgba(124, 92, 219, 0.3);
+            padding: 12px;
+        }
+
+        .user-avatar svg {
+            width: 100%;
+            height: 100%;
+            stroke: white;
+            fill: none;
+        }
+
+        .login-form-container {
+            width: 100%;
+            max-width: 420px;
+        }
+
+        .welcome-header {
+            margin-bottom: 3rem;
+        }
+
+        .welcome-title {
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: #1e293b;
+            margin-bottom: 0.75rem;
+        }
+
+        .welcome-subtitle {
+            font-size: 1rem;
+            color: #64748b;
+        }
+
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .form-group label {
+            display: block;
+            font-size: 0.95rem;
+            font-weight: 600;
+            color: #334155;
+            margin-bottom: 0.5rem;
+        }
+
+        .form-group input {
+            width: 100%;
+            padding: 1rem 1.25rem;
+            border: 2px solid #e2e8f0;
+            border-radius: 12px;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+            background: white;
+            color: #1e293b;
+        }
+
+        .form-group input::placeholder {
+            color: #cbd5e1;
+        }
+
+        .form-group input:focus {
+            outline: none;
+            border-color: #7c5cdb;
+            box-shadow: 0 0 0 4px rgba(124, 92, 219, 0.1);
+        }
+
+        .btn-primary {
+            width: 100%;
+            padding: 1.1rem;
+            background: linear-gradient(135deg, #7c5cdb 0%, #9b7fd9 100%);
+            color: white;
+            border: none;
+            border-radius: 12px;
+            font-size: 1.05rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(124, 92, 219, 0.3);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+            margin-top: 2rem;
+        }
+
+        .btn-primary:hover:not(:disabled) {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 25px rgba(124, 92, 219, 0.4);
+        }
+
+        .btn-primary:disabled {
+            opacity: 0.7;
+            cursor: not-allowed;
+        }
+
+        .spinner {
+            display: none;
+            width: 20px;
+            height: 20px;
+            border: 3px solid rgba(255, 255, 255, 0.3);
+            border-radius: 50%;
+            border-top-color: white;
+            animation: spin 0.8s linear infinite;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        .divider {
+            display: flex;
+            align-items: center;
+            text-align: center;
+            margin: 2rem 0 1.5rem 0;
+            color: #94a3b8;
+            font-size: 0.9rem;
+        }
+
+        .divider::before,
+        .divider::after {
+            content: '';
+            flex: 1;
+            border-bottom: 1px solid #e2e8f0;
+        }
+
+        .divider span {
+            padding: 0 1rem;
+        }
+
+        .btn-secondary {
+            width: 100%;
+            padding: 1rem;
+            background: white;
+            color: #7c5cdb;
+            border: 2px solid #7c5cdb;
+            border-radius: 12px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .btn-secondary:hover {
+            background: #f8f9fb;
+            transform: translateY(-1px);
+        }
+
+        .register-note {
+            text-align: center;
+            margin-top: 1.5rem;
+            color: #64748b;
+            font-size: 0.9rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+        }
+
+        .register-note svg {
+            width: 18px;
+            height: 18px;
+            fill: #7c5cdb;
+        }
+
+        .message-area {
+            padding: 1rem;
+            border-radius: 10px;
+            margin-bottom: 1.5rem;
+            font-size: 0.9rem;
+            display: none;
+        }
+
+        .message-area.error {
+            background: #fee;
+            color: #c00;
+            border: 1px solid #fcc;
+            display: block;
+        }
+
+        .message-area.success {
+            background: #efe;
+            color: #060;
+            border: 1px solid #cfc;
+            display: block;
+        }
+
+        /* Modal Styles */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            backdrop-filter: blur(5px);
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal-content {
+            background: white;
+            border-radius: 20px;
+            padding: 2.5rem;
+            max-width: 500px;
+            width: 90%;
+            max-height: 90vh;
+            overflow-y: auto;
+            position: relative;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2rem;
+        }
+
+        .modal-header h2 {
+            color: #1e293b;
+            font-size: 1.75rem;
+            font-weight: 700;
+        }
+
+        .close-modal {
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            cursor: pointer;
+            color: #64748b;
+            width: 36px;
+            height: 36px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 10px;
+            transition: all 0.2s ease;
+        }
+
+        .close-modal:hover {
+            background: #f1f5f9;
+            color: #1e293b;
+        }
+
+        @media (max-width: 1024px) {
+            .login-container {
+                flex-direction: column;
+            }
+
+            .left-panel {
+                flex: 0 0 40%;
+                padding: 2rem;
+            }
+
+            .system-title {
+                font-size: 2.5rem;
+            }
+
+            .features-card {
+                padding: 1.5rem;
+            }
+
+            .right-panel {
+                flex: 1;
+                padding: 2rem;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .left-panel {
+                flex: 0 0 30%;
+            }
+
+            .system-title {
+                font-size: 1.75rem;
+            }
+
+            .system-subtitle {
+                font-size: 1rem;
+            }
+
+            .features-card {
+                display: none;
+            }
+
+            .welcome-title {
+                font-size: 2rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="login-container">
+        <!-- Left Panel with 3D Model -->
+        <div class="left-panel">
+            <!-- Live 3D Model Background -->
+            <div class="model-container">
+                <iframe 
+                    title="3D Model" 
+                    frameborder="0" 
+                    allowfullscreen 
+                    mozallowfullscreen="true" 
+                    webkitallowfullscreen="true" 
+                    allow="autoplay; fullscreen; xr-spatial-tracking" 
+                    xr-spatial-tracking 
+                    execution-while-out-of-viewport 
+                    execution-while-not-rendered 
+                    web-share 
+                    src="https://sketchfab.com/models/c98532301b3f42f8b5ecf2e0063e9d73/embed?autostart=1&autospin=0.5&camera=0&ui_theme=dark&ui_hint=0&ui_controls=0&ui_infos=0&ui_inspector=0&ui_stop=0&ui_watermark=0&ui_watermark_link=0&ui_help=0&ui_settings=0&ui_vr=0&ui_ar=0&ui_fullscreen=0&ui_annotations=0&ui_fadeout=0&ui_loading=0&transparent=1&preload=1&dnt=1">
+                </iframe>
+            </div>
+
+            <div class="left-content">
+                <h1 class="system-title">H. pylori Clinical Decision Support System</h1>
+                <p class="system-subtitle">Advanced AI-powered platform for gastric health screening and antibiotic resistance staging</p>
+                
+                <div class="features-card">
+                    <div class="feature-item">
+                        <div class="feature-icon">
+                            <svg viewBox="0 0 24 24">
+                                <path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/>
+                            </svg>
+                        </div>
+                        <span>Evidence-Based Diagnostics</span>
+                    </div>
+                    <div class="feature-item">
+                        <div class="feature-icon">
+                            <svg viewBox="0 0 24 24">
+                                <path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/>
+                            </svg>
+                        </div>
+                        <span>AI-Powered Risk Assessment</span>
+                    </div>
+                    <div class="feature-item">
+                        <div class="feature-icon">
+                            <svg viewBox="0 0 24 24">
+                                <path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/>
+                            </svg>
+                        </div>
+                        <span>Antibiotic Resistance Staging</span>
+                    </div>
+                    <div class="feature-item">
+                        <div class="feature-icon">
+                            <svg viewBox="0 0 24 24">
+                                <path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/>
+                            </svg>
+                        </div>
+                        <span>Digital Treatment Signatures</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Right Panel - Login Form -->
+        <div class="right-panel">
+            <div class="user-avatar">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <circle cx="12" cy="12" r="10"/>
+                    <circle cx="12" cy="12" r="6"/>
+                    <circle cx="12" cy="12" r="2"/>
+                </svg>
+            </div>
+            
+            <div class="login-form-container">
+                <div class="welcome-header">
+                    <h2 class="welcome-title">Welcome Back</h2>
+                    <p class="welcome-subtitle">Sign in to access your clinical dashboard</p>
+                </div>
+
+                <div id="messageArea" class="message-area"></div>
+
+                <form id="loginForm">
+                    <div class="form-group">
+                        <label for="username">Username</label>
+                        <input 
+                            type="text" 
+                            id="username" 
+                            name="username" 
+                            required 
+                            placeholder="Enter your username"
+                            autocomplete="username"
+                        >
+                    </div>
+
+                    <div class="form-group">
+                        <label for="password">Password</label>
+                        <input 
+                            type="password" 
+                            id="password" 
+                            name="password" 
+                            required 
+                            placeholder="Enter your password"
+                            autocomplete="current-password"
+                        >
+                    </div>
+
+                    <button type="submit" id="loginBtn" class="btn-primary">
+                        <span class="btn-text">Sign In to Dashboard</span>
+                        <div class="spinner"></div>
+                    </button>
+                </form>
+
+                <div class="divider">
+                    <span>or</span>
+                </div>
+
+                <button type="button" id="showRegisterBtn" class="btn-secondary">
+                    Create Administrator Account
+                </button>
+
+                <div class="register-note">
+                    <svg viewBox="0 0 24 24">
+                        <circle cx="12" cy="12" r="10" fill="none" stroke="currentColor" stroke-width="2"/>
+                        <path d="M12 16v-4M12 8h.01" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                    </svg>
+                    <span>First time? Register as the initial system administrator</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Registration Modal -->
+    <div id="registerModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Create Administrator Account</h2>
+                <button class="close-modal" id="closeModal">&times;</button>
+            </div>
+
+            <div id="registerMessageArea" class="message-area"></div>
+
+            <form id="registerForm">
+                <div class="form-group">
+                    <label for="regUsername">Username</label>
+                    <input 
+                        type="text" 
+                        id="regUsername" 
+                        name="username" 
+                        required 
+                        placeholder="Choose a username"
+                        autocomplete="username"
+                    >
+                </div>
+
+                <div class="form-group">
+                    <label for="regEmail">Email</label>
+                    <input 
+                        type="email" 
+                        id="regEmail" 
+                        name="email" 
+                        required 
+                        placeholder="your@email.com"
+                        autocomplete="email"
+                    >
+                </div>
+
+                <div class="form-group">
+                    <label for="regPassword">Password</label>
+                    <input 
+                        type="password" 
+                        id="regPassword" 
+                        name="password" 
+                        required 
+                        placeholder="Create a strong password"
+                        autocomplete="new-password"
+                    >
+                </div>
+
+                <button type="submit" id="registerBtn" class="btn-primary">
+                    <span class="btn-text">Create Account</span>
+                    <div class="spinner"></div>
+                </button>
+
+                <button type="button" id="cancelRegister" class="btn-secondary" style="margin-top: 1rem;">
+                    Cancel
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        // Dynamic API URL detection
+        const API_BASE = window.location.hostname === 'localhost' ? 'http://localhost:8000' : window.location.origin;
+        
+        function showMessage(message, type) {
+            const messageArea = document.getElementById('messageArea');
+            messageArea.textContent = message;
+            messageArea.className = `message-area ${type}`;
+        }
+
+        function showRegisterMessage(message, type) {
+            const messageArea = document.getElementById('registerMessageArea');
+            messageArea.textContent = message;
+            messageArea.className = `message-area ${type}`;
+        }
+
+        document.getElementById('loginForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+
+            const username = document.getElementById('username').value;
+            const password = document.getElementById('password').value;
+            const loginBtn = document.getElementById('loginBtn');
+            const btnText = loginBtn.querySelector('.btn-text');
+            const spinner = loginBtn.querySelector('.spinner');
+
+            loginBtn.disabled = true;
+            btnText.textContent = 'Signing in...';
+            spinner.style.display = 'block';
+
+            try {
+                const response = await fetch(`${API_BASE}/auth/login`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ username, password })
+                });
+
+                if (response.ok) {
+                    const data = await response.json();
+
+                    // Store JWT in localStorage (matching dashboard expectations)
+                    localStorage.setItem('token', data.access_token);
+                    localStorage.setItem('user', JSON.stringify(data.user));
+
+                    showMessage('Login successful! Redirecting...', 'success');
+
+                    setTimeout(() => {
+                        // Redirect to dashboard with cache-busting
+                        window.location.href = '/ui/dashboard_new.html?v=' + Date.now();
+                    }, 500);
+                } else {
+                    const error = await response.json();
+                    showMessage(error.detail || 'Invalid credentials. Please try again.', 'error');
+                }
+            } catch (error) {
+                showMessage('Network error. Please check your connection.', 'error');
+                console.error('Login error:', error);
+            } finally {
+                loginBtn.disabled = false;
+                btnText.textContent = 'Sign In to Dashboard';
+                spinner.style.display = 'none';
+            }
+        });
+
+        // Show registration modal
+        document.getElementById('showRegisterBtn').addEventListener('click', () => {
+            document.getElementById('registerModal').style.display = 'flex';
+        });
+
+        // Close modal
+        function closeRegistrationModal() {
+            document.getElementById('registerModal').style.display = 'none';
+            document.getElementById('registerForm').reset();
+            document.getElementById('registerMessageArea').innerHTML = '';
+        }
+
+        document.getElementById('closeModal').addEventListener('click', closeRegistrationModal);
+        document.getElementById('cancelRegister').addEventListener('click', closeRegistrationModal);
+
+        // Close modal on background click
+        document.getElementById('registerModal').addEventListener('click', (e) => {
+            if (e.target.id === 'registerModal') {
+                closeRegistrationModal();
+            }
+        });
+
+        // Registration form handler
+        document.getElementById('registerForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+
+            const username = document.getElementById('regUsername').value;
+            const email = document.getElementById('regEmail').value;
+            const password = document.getElementById('regPassword').value;
+            const registerBtn = document.getElementById('registerBtn');
+            const btnText = registerBtn.querySelector('.btn-text');
+            const spinner = registerBtn.querySelector('.spinner');
+
+            registerBtn.disabled = true;
+            btnText.textContent = 'Creating...';
+            spinner.style.display = 'block';
+
+            try {
+                const response = await fetch(`${API_BASE}/auth/register/first`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ username, email, password, full_name: username, role: 'admin' })
+                });
+
+                if (response.ok) {
+                    const data = await response.json();
+                    showRegisterMessage('Account created successfully! Please sign in.', 'success');
+
+                    setTimeout(() => {
+                        closeRegistrationModal();
+                        document.getElementById('username').value = username;
+                    }, 1500);
+                } else {
+                    const error = await response.json();
+                    showRegisterMessage(error.detail || 'Registration failed. Please try again.', 'error');
+                }
+            } catch (error) {
+                showRegisterMessage('Network error. Please try again.', 'error');
+                console.error('Registration error:', error);
+            } finally {
+                registerBtn.disabled = false;
+                btnText.textContent = 'Create Account';
+                spinner.style.display = 'none';
+            }
+        });
+    </script>
+</body>
+</html>

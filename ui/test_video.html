@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test Video API</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 50px auto;
+            padding: 20px;
+        }
+        .test-section {
+            background: #f5f5f5;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 8px;
+        }
+        button {
+            background: #667eea;
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            font-size: 16px;
+            border-radius: 6px;
+            cursor: pointer;
+            margin: 10px 0;
+        }
+        button:hover {
+            background: #5568d3;
+        }
+        .output {
+            background: #fff;
+            padding: 15px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            margin-top: 10px;
+            white-space: pre-wrap;
+            font-family: monospace;
+            max-height: 400px;
+            overflow-y: auto;
+        }
+        .success { color: #38ef7d; }
+        .error { color: #ff6b6b; }
+    </style>
+</head>
+<body>
+    <h1>Video API Test</h1>
+    
+    <div class="test-section">
+        <h2>Step 1: Get Auth Token</h2>
+        <p>Current token: <span id="tokenStatus" class="error">Not set</span></p>
+        <button onclick="checkToken()">Check Token</button>
+    </div>
+    
+    <div class="test-section">
+        <h2>Step 2: Test Video Endpoint</h2>
+        <button onclick="testVideoEndpoint()">Create Video Session</button>
+        <div id="videoOutput" class="output"></div>
+    </div>
+    
+    <div class="test-section">
+        <h2>Debug Information</h2>
+        <div id="debugOutput" class="output"></div>
+    </div>
+
+    <script>
+        const API_BASE = 'http://localhost:8000';
+        let authToken = localStorage.getItem('token');
+        
+        function log(message, type = 'info') {
+            const debugOutput = document.getElementById('debugOutput');
+            const timestamp = new Date().toLocaleTimeString();
+            const color = type === 'error' ? '#ff6b6b' : type === 'success' ? '#38ef7d' : '#333';
+            debugOutput.innerHTML += `<div style="color: ${color}">[${timestamp}] ${message}</div>`;
+        }
+        
+        function checkToken() {
+            authToken = localStorage.getItem('token');
+            const tokenStatus = document.getElementById('tokenStatus');
+            
+            if (authToken) {
+                tokenStatus.textContent = 'Present ✓';
+                tokenStatus.className = 'success';
+                log('Auth token found in localStorage', 'success');
+                log(`Token preview: ${authToken.substring(0, 20)}...`, 'info');
+            } else {
+                tokenStatus.textContent = 'Missing ✗';
+                tokenStatus.className = 'error';
+                log('No auth token found - you need to login first!', 'error');
+            }
+        }
+        
+        async function testVideoEndpoint() {
+            const output = document.getElementById('videoOutput');
+            output.innerHTML = 'Testing...\n\n';
+            
+            if (!authToken) {
+                output.innerHTML = 'ERROR: No auth token! Please login first at /ui/index.html';
+                log('Test failed: No auth token', 'error');
+                return;
+            }
+            
+            try {
+                log('Sending POST request to /video/session/create', 'info');
+                log(`Authorization: Bearer ${authToken.substring(0, 20)}...`, 'info');
+                
+                const requestBody = {
+                    session_name: 'Test Session',
+                    case_id: null
+                };
+                log(`Request body: ${JSON.stringify(requestBody)}`, 'info');
+                
+                const response = await fetch(`${API_BASE}/video/session/create`, {
+                    method: 'POST',
+                    headers: {
+                        'Authorization': `Bearer ${authToken}`,
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(requestBody)
+                });
+                
+                log(`Response status: ${response.status} ${response.statusText}`, 
+                    response.ok ? 'success' : 'error');
+                
+                if (!response.ok) {
+                    let errorText;
+                    const contentType = response.headers.get('content-type');
+                    
+                    if (contentType && contentType.includes('application/json')) {
+                        const errorData = await response.json();
+                        errorText = JSON.stringify(errorData, null, 2);
+                        log(`Error response (JSON): ${errorText}`, 'error');
+                    } else {
+                        errorText = await response.text();
+                        log(`Error response (text): ${errorText}`, 'error');
+                    }
+                    output.innerHTML = `ERROR (${response.status}):\n\n${errorText}`;
+                    return;
+                }
+                
+                const session = await response.json();
+                output.innerHTML = 'SUCCESS!\n\n' + JSON.stringify(session, null, 2);
+                log('Video session created successfully!', 'success');
+                log(`Session ID: ${session.session_id}`, 'success');
+                
+            } catch (error) {
+                output.innerHTML = `EXCEPTION:\n\n${error.message}\n\nStack:\n${error.stack}`;
+                log(`Exception caught: ${error.message}`, 'error');
+            }
+        }
+        
+        // Auto-check token on load
+        window.onload = function() {
+            checkToken();
+            log('Test page loaded', 'info');
+            log(`API Base: ${API_BASE}`, 'info');
+        };
+    </script>
+</body>
+</html>

@@ -1,0 +1,517 @@
+/**
+ * H. pylori CDSS - Professional Clinical UI Stylesheet
+ * Clean, medical-grade interface without decorative elements
+ */
+
+:root {
+    /* Clinical Color Palette */
+    --primary-blue: #0066CC;
+    --primary-blue-dark: #004C99;
+    --secondary-blue: #E6F2FF;
+    --success-green: #28A745;
+    --warning-orange: #FF8C00;
+    --danger-red: #DC3545;
+    --neutral-gray: #6C757D;
+    --light-gray: #F8F9FA;
+    --border-gray: #DEE2E6;
+    --text-dark: #212529;
+    --text-muted: #6C757D;
+    --white: #FFFFFF;
+    
+    /* Spacing */
+    --spacing-xs: 0.25rem;
+    --spacing-sm: 0.5rem;
+    --spacing-md: 1rem;
+    --spacing-lg: 1.5rem;
+    --spacing-xl: 2rem;
+    
+    /* Typography */
+    --font-family: 'Segoe UI', 'Helvetica Neue', Arial, sans-serif;
+    --font-size-base: 14px;
+    --font-size-sm: 12px;
+    --font-size-lg: 16px;
+    --font-size-xl: 20px;
+    --font-weight-normal: 400;
+    --font-weight-medium: 500;
+    --font-weight-semibold: 600;
+    --font-weight-bold: 700;
+    
+    /* Border Radius */
+    --border-radius-sm: 4px;
+    --border-radius-md: 6px;
+    --border-radius-lg: 8px;
+    
+    /* Shadows */
+    --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.05);
+    --shadow-md: 0 2px 4px rgba(0, 0, 0, 0.08);
+    --shadow-lg: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+/* Clinical Table Styles */
+.clinical-table {
+    width: 100%;
+    border-collapse: collapse;
+    background: var(--white);
+    border: 1px solid var(--border-gray);
+    border-radius: var(--border-radius-lg);
+    overflow: hidden;
+}
+
+.clinical-table thead {
+    background: var(--light-gray);
+    border-bottom: 2px solid var(--primary-blue);
+}
+
+.clinical-table th {
+    padding: var(--spacing-md);
+    text-align: left;
+    font-weight: var(--font-weight-semibold);
+    font-size: var(--font-size-sm);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    color: var(--text-dark);
+}
+
+.clinical-table td {
+    padding: var(--spacing-md);
+    border-bottom: 1px solid var(--border-gray);
+    font-size: var(--font-size-base);
+    color: var(--text-dark);
+}
+
+.clinical-table tbody tr:hover {
+    background: var(--secondary-blue);
+}
+
+.clinical-table tbody tr:last-child td {
+    border-bottom: none;
+}
+
+/* Clinical Badges */
+.badge {
+    display: inline-block;
+    padding: var(--spacing-xs) var(--spacing-sm);
+    border-radius: var(--border-radius-sm);
+    font-size: var(--font-size-sm);
+    font-weight: var(--font-weight-medium);
+    text-transform: uppercase;
+    letter-spacing: 0.3px;
+}
+
+.badge-high {
+    background: #FEE;
+    color: var(--danger-red);
+    border: 1px solid var(--danger-red);
+}
+
+.badge-moderate {
+    background: #FFF8E6;
+    color: var(--warning-orange);
+    border: 1px solid var(--warning-orange);
+}
+
+.badge-low {
+    background: #E8F8F0;
+    color: var(--success-green);
+    border: 1px solid var(--success-green);
+}
+
+.badge-screening {
+    background: #E6F2FF;
+    color: var(--primary-blue);
+    border: 1px solid var(--primary-blue);
+}
+
+.badge-staging {
+    background: #F3E8FF;
+    color: #7C3AED;
+    border: 1px solid #7C3AED;
+}
+
+.badge-prescription {
+    background: #FFF4E6;
+    color: #D97706;
+    border: 1px solid #D97706;
+}
+
+/* Clinical Cards */
+.clinical-card {
+    background: var(--white);
+    border: 1px solid var(--border-gray);
+    border-radius: var(--border-radius-lg);
+    padding: var(--spacing-lg);
+    box-shadow: var(--shadow-sm);
+    margin-bottom: var(--spacing-lg);
+}
+
+.clinical-card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: var(--spacing-lg);
+    padding-bottom: var(--spacing-md);
+    border-bottom: 2px solid var(--border-gray);
+}
+
+.clinical-card-title {
+    font-size: var(--font-size-xl);
+    font-weight: var(--font-weight-semibold);
+    color: var(--text-dark);
+    margin: 0;
+}
+
+.clinical-card-subtitle {
+    font-size: var(--font-size-base);
+    color: var(--text-muted);
+    margin: var(--spacing-xs) 0 0 0;
+}
+
+/* Clinical Buttons */
+.btn-clinical {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--spacing-sm);
+    padding: var(--spacing-sm) var(--spacing-md);
+    font-size: var(--font-size-base);
+    font-weight: var(--font-weight-medium);
+    border: 1px solid transparent;
+    border-radius: var(--border-radius-md);
+    cursor: pointer;
+    transition: all 0.2s ease;
+    text-decoration: none;
+}
+
+.btn-clinical-primary {
+    background: var(--primary-blue);
+    color: var(--white);
+    border-color: var(--primary-blue);
+}
+
+.btn-clinical-primary:hover {
+    background: var(--primary-blue-dark);
+    border-color: var(--primary-blue-dark);
+}
+
+.btn-clinical-secondary {
+    background: var(--white);
+    color: var(--primary-blue);
+    border-color: var(--primary-blue);
+}
+
+.btn-clinical-secondary:hover {
+    background: var(--secondary-blue);
+}
+
+.btn-clinical-success {
+    background: var(--success-green);
+    color: var(--white);
+    border-color: var(--success-green);
+}
+
+.btn-clinical-danger {
+    background: var(--danger-red);
+    color: var(--white);
+    border-color: var(--danger-red);
+}
+
+.btn-clinical-sm {
+    padding: 4px 8px;
+    font-size: var(--font-size-sm);
+}
+
+/* Clinical Form Elements */
+.form-clinical {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-md);
+}
+
+.form-group-clinical {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-xs);
+}
+
+.form-label-clinical {
+    font-size: var(--font-size-base);
+    font-weight: var(--font-weight-medium);
+    color: var(--text-dark);
+}
+
+.form-label-clinical.required::after {
+    content: ' *';
+    color: var(--danger-red);
+}
+
+.form-input-clinical,
+.form-select-clinical,
+.form-textarea-clinical {
+    padding: var(--spacing-sm) var(--spacing-md);
+    font-size: var(--font-size-base);
+    border: 1px solid var(--border-gray);
+    border-radius: var(--border-radius-md);
+    background: var(--white);
+    color: var(--text-dark);
+    transition: border-color 0.2s ease;
+}
+
+.form-input-clinical:focus,
+.form-select-clinical:focus,
+.form-textarea-clinical:focus {
+    outline: none;
+    border-color: var(--primary-blue);
+    box-shadow: 0 0 0 3px rgba(0, 102, 204, 0.1);
+}
+
+.form-textarea-clinical {
+    min-height: 100px;
+    resize: vertical;
+}
+
+/* Clinical Statistics */
+.stats-clinical {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: var(--spacing-lg);
+    margin-bottom: var(--spacing-xl);
+}
+
+.stat-clinical {
+    background: var(--white);
+    border: 1px solid var(--border-gray);
+    border-left: 4px solid var(--primary-blue);
+    border-radius: var(--border-radius-md);
+    padding: var(--spacing-lg);
+    box-shadow: var(--shadow-sm);
+}
+
+.stat-clinical-label {
+    font-size: var(--font-size-sm);
+    color: var(--text-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin-bottom: var(--spacing-xs);
+}
+
+.stat-clinical-value {
+    font-size: 2rem;
+    font-weight: var(--font-weight-bold);
+    color: var(--text-dark);
+}
+
+.stat-clinical.high-risk {
+    border-left-color: var(--danger-red);
+}
+
+.stat-clinical.high-risk .stat-clinical-value {
+    color: var(--danger-red);
+}
+
+.stat-clinical.moderate-risk {
+    border-left-color: var(--warning-orange);
+}
+
+.stat-clinical.screenings {
+    border-left-color: var(--primary-blue);
+}
+
+.stat-clinical.stagings {
+    border-left-color: #7C3AED;
+}
+
+/* Clinical Filter Panel */
+.filter-panel-clinical {
+    background: var(--light-gray);
+    border: 1px solid var(--border-gray);
+    border-radius: var(--border-radius-lg);
+    padding: var(--spacing-lg);
+    margin-bottom: var(--spacing-xl);
+}
+
+.filter-grid-clinical {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: var(--spacing-md);
+    margin-top: var(--spacing-md);
+}
+
+/* Clinical Pagination */
+.pagination-clinical {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: var(--spacing-lg);
+    background: var(--light-gray);
+    border: 1px solid var(--border-gray);
+    border-radius: var(--border-radius-md);
+    margin-top: var(--spacing-lg);
+}
+
+.pagination-clinical-info {
+    font-size: var(--font-size-base);
+    color: var(--text-muted);
+}
+
+.pagination-clinical-controls {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-md);
+}
+
+.pagination-clinical-page {
+    padding: var(--spacing-sm) var(--spacing-md);
+    background: var(--white);
+    border: 1px solid var(--border-gray);
+    border-radius: var(--border-radius-md);
+    font-size: var(--font-size-base);
+    color: var(--text-dark);
+}
+
+/* Prescription Module */
+.prescription-section {
+    background: var(--white);
+    border: 2px solid var(--primary-blue);
+    border-radius: var(--border-radius-lg);
+    padding: var(--spacing-xl);
+    margin-top: var(--spacing-xl);
+}
+
+.prescription-header {
+    border-bottom: 2px solid var(--primary-blue);
+    padding-bottom: var(--spacing-md);
+    margin-bottom: var(--spacing-lg);
+}
+
+.prescription-header h3 {
+    font-size: var(--font-size-xl);
+    font-weight: var(--font-weight-semibold);
+    color: var(--primary-blue);
+    margin: 0;
+}
+
+.prescription-form {
+    display: grid;
+    gap: var(--spacing-lg);
+}
+
+.prescription-medications {
+    border: 1px solid var(--border-gray);
+    border-radius: var(--border-radius-md);
+    padding: var(--spacing-md);
+}
+
+.medication-item {
+    display: grid;
+    grid-template-columns: 2fr 1fr 1fr 1fr auto;
+    gap: var(--spacing-sm);
+    padding: var(--spacing-sm);
+    border-bottom: 1px dashed var(--border-gray);
+}
+
+.medication-item:last-child {
+    border-bottom: none;
+}
+
+/* Stage Indicators */
+.stage-indicator {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--spacing-sm);
+    padding: var(--spacing-sm) var(--spacing-md);
+    background: var(--secondary-blue);
+    border: 1px solid var(--primary-blue);
+    border-radius: var(--border-radius-md);
+    font-size: var(--font-size-sm);
+    font-weight: var(--font-weight-medium);
+}
+
+.stage-indicator.active {
+    background: var(--primary-blue);
+    color: var(--white);
+}
+
+.stage-indicator .stage-number {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 24px;
+    height: 24px;
+    background: var(--white);
+    color: var(--primary-blue);
+    border-radius: 50%;
+    font-weight: var(--font-weight-bold);
+}
+
+.stage-indicator.active .stage-number {
+    background: var(--white);
+    color: var(--primary-blue);
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .stats-clinical {
+        grid-template-columns: 1fr;
+    }
+    
+    .filter-grid-clinical {
+        grid-template-columns: 1fr;
+    }
+    
+    .pagination-clinical {
+        flex-direction: column;
+        gap: var(--spacing-md);
+    }
+    
+    .medication-item {
+        grid-template-columns: 1fr;
+    }
+}
+
+/* Loading Spinner */
+.spinner-clinical {
+    border: 3px solid var(--border-gray);
+    border-top: 3px solid var(--primary-blue);
+    border-radius: 50%;
+    width: 40px;
+    height: 40px;
+    animation: spin 1s linear infinite;
+    margin: 0 auto;
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+/* Alert Messages */
+.alert-clinical {
+    padding: var(--spacing-md);
+    border-radius: var(--border-radius-md);
+    margin-bottom: var(--spacing-md);
+    border-left: 4px solid;
+}
+
+.alert-clinical-success {
+    background: #E8F8F0;
+    border-left-color: var(--success-green);
+    color: #155724;
+}
+
+.alert-clinical-warning {
+    background: #FFF8E6;
+    border-left-color: var(--warning-orange);
+    color: #856404;
+}
+
+.alert-clinical-danger {
+    background: #FEE;
+    border-left-color: var(--danger-red);
+    color: #721C24;
+}
+
+.alert-clinical-info {
+    background: var(--secondary-blue);
+    border-left-color: var(--primary-blue);
+    color: #004085;
+}
+
