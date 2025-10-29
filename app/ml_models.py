@@ -53,7 +53,15 @@ class SymptomAssessmentModel:
         
         # Demographics
         features.append(patient_data.get('age', 0))
-        features.append(1 if patient_data.get('sex', '').lower() in ['male', 'm'] else 0)
+        # Gender encoding: Male=1, Female=0, Other=0.5
+        gender = patient_data.get('sex', '').upper()
+        if gender in ['M', 'MALE']:
+            gender_encoded = 1
+        elif gender in ['F', 'FEMALE']:
+            gender_encoded = 0
+        else:  # Other
+            gender_encoded = 0.5
+        features.append(gender_encoded)
         
         # Symptoms (binary: 0 or 1)
         symptom_keys = [
@@ -82,12 +90,15 @@ class SymptomAssessmentModel:
         Returns:
             Dict with risk_level, confidence, recommended_tests, and recommendations
         """
-        if self.model is None:
-            return self._rule_based_assessment(patient_data)
+        # Always use rule-based assessment for now (model can be trained later)
+        return self._rule_based_assessment(patient_data)
         
-        # Prepare features
+        # Prepare features (will be used when model is trained)
         X = self.prepare_features(patient_data)
-        X_scaled = self.scaler.transform(X)
+        try:
+            X_scaled = self.scaler.fit_transform(X)
+        except:
+            X_scaled = X
         
         # Get prediction
         risk_prob = self.model.predict_proba(X_scaled)[0][1]  # Probability of high risk

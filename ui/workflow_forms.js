@@ -72,11 +72,12 @@ async function submitSymptomAssessment(event) {
             body: JSON.stringify(formData)
         });
         
-        if (!response.ok) {
-            throw new Error('Assessment failed');
-        }
-        
         const result = await response.json();
+        
+        if (!response.ok) {
+            const errorMsg = result.detail || 'Assessment failed';
+            throw new Error(errorMsg);
+        }
         
         // Store workflow state
         workflowState.patientId = result.patient_id;
@@ -95,7 +96,7 @@ async function submitSymptomAssessment(event) {
         
     } catch (error) {
         console.error('Error:', error);
-        showNotification('Assessment failed. Please try again.', 'error');
+        showNotification(`Assessment failed: ${error.message}`, 'error');
     } finally {
         btnText.textContent = 'Submit Assessment';
         spinner.style.display = 'none';
