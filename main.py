@@ -114,7 +114,7 @@ app.add_middleware(
 # Add security headers middleware
 app.add_middleware(SecurityHeadersMiddleware)
 
-# Include routers
+# Include API routers FIRST (order matters in FastAPI)
 app.include_router(auth_router)
 app.include_router(reco_router)
 app.include_router(sms_router)
@@ -142,23 +142,28 @@ try:
 except ImportError as e:
     print(f"[WARNING] Some enhanced routes not fully available: {e}")
 
-# Mount static files for frontend and uploads
-app.mount("/ui", StaticFiles(directory="ui", html=True), name="ui")
-
-# Mount uploads directory if it exists
+# Mount static files AFTER API routes (prevents route conflicts)
 import os
-if os.path.exists("uploads"):
-    app.mount("/uploads", StaticFiles(directory="uploads"), name="uploads")
+from pathlib import Path
+
+# Ensure directories exist
+os.makedirs("uploads", exist_ok=True)
+
+# Mount uploads directory
+app.mount("/uploads", StaticFiles(directory="uploads"), name="uploads")
 
 # Mount images directory
 if os.path.exists("images"):
     app.mount("/images", StaticFiles(directory="images"), name="images")
 
+# Mount UI files (MUST be last - acts as catch-all)
+app.mount("/ui", StaticFiles(directory="ui", html=True), name="ui")
+
 
 @app.get("/")
 def root():
     """Redirect root to landing page."""
-    return RedirectResponse(url="/ui/index.html")
+    return RedirectResponse(url="/ui/index.html", status_code=307)
 
 
 @app.get("/health")
