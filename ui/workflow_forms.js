@@ -96,7 +96,8 @@ async function submitSymptomAssessment(event) {
         
     } catch (error) {
         console.error('Error:', error);
-        showNotification(`Assessment failed: ${error.message}`, 'error');
+        const errorMessage = error.message || String(error) || 'Unknown error occurred';
+        showNotification(`Assessment failed: ${errorMessage}`, 'error');
     } finally {
         btnText.textContent = 'Submit Assessment';
         spinner.style.display = 'none';
@@ -224,11 +225,17 @@ async function submitLabScreening(event) {
             body: JSON.stringify(formData)
         });
         
-        if (!response.ok) {
-            throw new Error('Lab screening failed');
+        let result;
+        try {
+            result = await response.json();
+        } catch (parseError) {
+            throw new Error('Server returned invalid response. Please try again.');
         }
         
-        const result = await response.json();
+        if (!response.ok) {
+            const errorMsg = result.detail || result.message || 'Lab screening failed';
+            throw new Error(errorMsg);
+        }
         
         // Update workflow state
         workflowState.stage2CaseId = result.case_id;
@@ -240,7 +247,8 @@ async function submitLabScreening(event) {
         
     } catch (error) {
         console.error('Error:', error);
-        showNotification('Lab screening failed. Please try again.', 'error');
+        const errorMessage = error.message || String(error) || 'Unknown error occurred';
+        showNotification(`Lab screening failed: ${errorMessage}`, 'error');
     } finally {
         btnText.textContent = 'Analyze Results';
         spinner.style.display = 'none';
@@ -331,22 +339,16 @@ async function submitRICStaging(event) {
             patient_id: workflowState.patientId || form.patient_id.value,
             case_id: workflowState.stage2CaseId || parseInt(form.case_id?.value),
             
-            // MIC values
-            mic_clarithromycin: parseFloat(form.mic_clarithromycin?.value || 0),
-            mic_metronidazole: parseFloat(form.mic_metronidazole?.value || 0),
-            mic_levofloxacin: parseFloat(form.mic_levofloxacin?.value || 0),
+            // Antibiotic MIC values (Minimum Inhibitory Concentration)
+            mic_clarithromycin: form.mic_clarithromycin?.value ? parseFloat(form.mic_clarithromycin.value) : null,
+            mic_metronidazole: form.mic_metronidazole?.value ? parseFloat(form.mic_metronidazole.value) : null,
+            mic_levofloxacin: form.mic_levofloxacin?.value ? parseFloat(form.mic_levofloxacin.value) : null,
             
-            // Genetic mutations
+            // Genetic mutations (resistance markers)
             mutation_a2143g: form.mutation_a2143g?.checked ? 1 : 0,
-            mutation_a2142g: form.mutation_a2142g?.checked ? 1 : 0,
+            mutation_a2144g: form.mutation_a2144g?.checked ? 1 : 0,  // Fixed: was a2142g
             mutation_rdxa: form.mutation_rdxa?.checked ? 1 : 0,
-            mutation_gyra: form.mutation_gyra?.checked ? 1 : 0,
-            
-            // RIC scores (can be derived or entered)
-            atrophy_score: parseInt(form.atrophy_score?.value || 0),
-            intestinal_metaplasia_score: parseInt(form.metaplasia_score?.value || 0),
-            inflammation_score: parseInt(form.inflammation_score?.value || 0),
-            hp_density: parseInt(form.hp_density?.value || 2)
+            mutation_gyra: form.mutation_gyra?.checked ? 1 : 0
         };
         
         const token = localStorage.getItem('token');
@@ -359,11 +361,17 @@ async function submitRICStaging(event) {
             body: JSON.stringify(formData)
         });
         
-        if (!response.ok) {
-            throw new Error('RIC staging failed');
+        let result;
+        try {
+            result = await response.json();
+        } catch (parseError) {
+            throw new Error('Server returned invalid response. Please try again.');
         }
         
-        const result = await response.json();
+        if (!response.ok) {
+            const errorMsg = result.detail || result.message || 'RIC staging failed';
+            throw new Error(errorMsg);
+        }
         
         // Update workflow state
         workflowState.stage3CaseId = result.case_id;
@@ -375,7 +383,8 @@ async function submitRICStaging(event) {
         
     } catch (error) {
         console.error('Error:', error);
-        showNotification('RIC staging failed. Please try again.', 'error');
+        const errorMessage = error.message || String(error) || 'Unknown error occurred';
+        showNotification(`RIC staging failed: ${errorMessage}`, 'error');
     } finally {
         btnText.textContent = 'Complete Staging';
         spinner.style.display = 'none';

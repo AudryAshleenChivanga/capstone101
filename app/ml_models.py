@@ -15,6 +15,9 @@ from datetime import datetime
 from typing import Dict, Tuple, Optional, List
 import json
 
+# Import the correct feature preparation from ml.py
+from app.ml import prepare_screening_features, prepare_staging_features
+
 
 class SymptomAssessmentModel:
     """
@@ -297,18 +300,21 @@ class EnhancedLabScreeningModel:
         Perform lab-based screening for H. pylori.
         
         Args:
-            lab_data: Dict containing lab test results
+            lab_data: Dict containing lab test results (includes patient data)
             
         Returns:
             Dict with infection probability and recommendations
         """
-        # Prepare features based on available lab tests
-        features = self._prepare_lab_features(lab_data)
-        
-        if self.model is not None and len(features) > 0:
-            # Use ML model
-            features_array = np.array(features).reshape(1, -1)
-            prob = self.model.predict_proba(features_array)[0][1]
+        # Use ML model if available
+        if self.model is not None:
+            try:
+                # Use the proper feature preparation with all 20 features
+                features_df = prepare_screening_features(lab_data)
+                prob = self.model.predict_proba(features_df)[0][1]
+            except Exception as e:
+                # Fallback to rule-based if model fails
+                print(f"Model prediction failed: {e}, using rule-based screening")
+                prob = self._rule_based_screening(lab_data)
         else:
             # Rule-based fallback
             prob = self._rule_based_screening(lab_data)
@@ -415,22 +421,25 @@ class RICStagingModel:
     
     def stage_disease(self, ric_data: Dict) -> Dict:
         """
-        Determine disease stage based on RIC values.
+        Determine antibiotic resistance stage (for treatment selection).
         
         Args:
-            ric_data: Dict containing RIC measurements and clinical data
+            ric_data: Dict containing patient data, MIC values, and mutation data
             
         Returns:
             Dict with stage, severity, and treatment recommendations
         """
-        # Prepare features
-        features = self._prepare_ric_features(ric_data)
-        
-        if self.model is not None and len(features) > 0:
-            # Use ML model
-            features_array = np.array(features).reshape(1, -1)
-            stage_probs = self.model.predict_proba(features_array)[0]
-            stage = self.model.predict(features_array)[0]
+        # Use ML model if available
+        if self.model is not None:
+            try:
+                # Use the proper staging feature preparation (MIC + mutations + demographics)
+                features_df = prepare_staging_features(ric_data)
+                stage_probs = self.model.predict_proba(features_df)[0]
+                stage = self.model.predict(features_df)[0]
+            except Exception as e:
+                # Fallback to rule-based if model fails
+                print(f"Staging model failed: {e}, using rule-based staging")
+                stage, stage_probs = self._rule_based_staging(ric_data)
         else:
             # Rule-based fallback
             stage, stage_probs = self._rule_based_staging(ric_data)

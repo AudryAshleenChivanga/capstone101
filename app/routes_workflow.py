@@ -13,14 +13,12 @@ from app.db import get_db
 from app.models import Case, Patient, User
 from app.routes_auth import get_current_user
 from app.utils.patient_utils import get_or_create_patient
-from app.ml_models import SymptomAssessmentModel, LabScreeningModel, RICStagingModel
+from app.ml_models import symptom_model, lab_screening_model, ric_staging_model
 
-# Initialize models
-symptom_model = SymptomAssessmentModel()
-lab_screening_model = LabScreeningModel()
-ric_staging_model = RICStagingModel()
-
+# Initialize router
 router = APIRouter(prefix="/workflow", tags=["workflow"])
+
+# Note: Using rule-based assessment - ML models can be added later
 
 
 # Pydantic models
@@ -77,20 +75,18 @@ class Stage3RICStaging(BaseModel):
     patient_id: str  # HP-2025-XXXX (required - from Stage 1/2)
     case_id: int  # Stage 2 case ID
     
-    # RIC component scores
-    atrophy_score: Optional[int] = 0
-    intestinal_metaplasia_score: Optional[int] = 0
-    inflammation_score: Optional[int] = 0
-    hp_density: Optional[int] = 0
+    # Antibiotic resistance markers (MIC values)
+    mic_clarithromycin: Optional[float] = None  # MIC for clarithromycin
+    mic_metronidazole: Optional[float] = None  # MIC for metronidazole
+    mic_levofloxacin: Optional[float] = None  # MIC for levofloxacin
     
-    # Clinical presence indicators
-    atrophy_present: Optional[bool] = False
-    intestinal_metaplasia_present: Optional[bool] = False
+    # Genetic mutations (23S rRNA for clarithromycin resistance)
+    mutation_a2143g: Optional[int] = 0  # A2143G mutation
+    mutation_a2144g: Optional[int] = 0  # A2144G mutation (note: was A2142G in some sources)
     
-    # Biomarkers
-    pepsinogen_i: Optional[float] = None
-    pepsinogen_ii: Optional[float] = None
-    gastrin_17: Optional[float] = None
+    # Additional mutations for other antibiotics
+    mutation_rdxa: Optional[int] = 0  # rdxA mutation (metronidazole resistance)
+    mutation_gyra: Optional[int] = 0  # gyrA mutation (fluoroquinolone resistance)
 
 
 @router.post("/stage1/symptom-assessment")
@@ -226,19 +222,52 @@ def stage2_lab_screening(
             detail="Stage 1 assessment not found. Please complete symptom assessment first."
         )
     
-    # Prepare lab data
+    # Prepare comprehensive data for screening model (needs patient demographics + symptoms + lab results)
+    # Get Stage 1 input data for patient demographics and symptoms
+    stage1_input = stage1_case.input_data if isinstance(stage1_case.input_data, dict) else {}
+    
+    # Combine with lab results for complete feature set
     lab_data = {
-        'stool_antigen': data.stool_antigen,
-        'hp_igg': data.hp_igg,
+        # Patient demographics (from Stage 1)
+        'age': patient.age or stage1_input.get('age', 45),
+        'sex': patient.sex or stage1_input.get('sex', 'M'),
+        'residence': patient.residence or stage1_input.get('residence', 'urban'),
+        
+        # Risk factors (from Stage 1 or defaults)
+        'smoking': stage1_input.get('smoking', 0),
+        'nsaid_use': stage1_input.get('nsaid_use', 0),
+        'sanitation': stage1_input.get('sanitation', 1),
+        'water_source': stage1_input.get('water_source', 'clean'),
+        'crowding': stage1_input.get('crowding', 0),
+        'poverty_index': stage1_input.get('poverty_index', 0.3),
+        'prior_antibiotics_3m': stage1_input.get('prior_antibiotics_3m', 0),
+        
+        # Symptoms (from Stage 1)
+        'epigastric_pain': stage1_input.get('abdominal_pain', 0),
+        'nausea': stage1_input.get('nausea', 0),
+        'bloating': stage1_input.get('bloating', 0),
+        'early_satiety': stage1_input.get('loss_of_appetite', 0),
+        'weight_loss': stage1_input.get('weight_loss', 0),
+        
+        # Lab test results (from Stage 2 input)
+        'stool_ag': 1 if data.stool_antigen == 'positive' else 0,
+        'stool_ab': 1 if data.hp_igg == 'positive' else 0,
         'hemoglobin': data.hemoglobin,
         'crp': data.crp,
         'wbc': data.wbc,
+        
+        # Additional lab data for case record
+        'stool_antigen': data.stool_antigen,
+        'hp_igg': data.hp_igg,
         'esr': data.esr,
         'platelet_count': data.platelet_count
     }
     
     # Run lab screening model
-    screening_result = lab_screening_model.screen(lab_data)
+    try:
+        screening_result = lab_screening_model.screen(lab_data)
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Lab screening model error: {str(e)}")
     
     # Create Stage 2 case
     new_case = Case(
@@ -288,15 +317,18 @@ def stage3_ric_staging(
     current_user: User = Depends(get_current_user)
 ):
     """
-    Stage 3: RIC (Risk Index for Chronic gastritis) Staging
+    Stage 3: Antibiotic Resistance Staging & Treatment Selection
     
-    Determines disease severity and generates treatment protocol based on:
-    1. RIC component scores (atrophy, metaplasia, inflammation, HP density)
-    2. Biomarker levels (pepsinogen, gastrin)
-    3. Endoscopic findings
+    Determines antibiotic resistance level and selects appropriate treatment based on:
+    1. MIC (Minimum Inhibitory Concentration) values for key antibiotics
+    2. Genetic mutations (23S rRNA, rdxA, gyrA)
+    3. Patient demographics and clinical context
+    
+    Note: This stage may recommend endoscopy with biopsy for culture-based 
+    susceptibility testing if resistance patterns are unclear or concerning.
     
     Requires patient_id and case_id from Stage 2.
-    Returns detailed treatment protocol and prescription recommendations.
+    Returns detailed treatment protocol tailored to resistance profile.
     """
     
     # Get patient
@@ -317,34 +349,46 @@ def stage3_ric_staging(
             detail="Stage 2 lab screening not found. Please complete lab tests first."
         )
     
-    # Prepare RIC data
-    ric_data = {
-        'atrophy_score': data.atrophy_score,
-        'intestinal_metaplasia_score': data.intestinal_metaplasia_score,
-        'inflammation_score': data.inflammation_score,
-        'hp_density': data.hp_density,
-        'atrophy_present': data.atrophy_present,
-        'intestinal_metaplasia_present': data.intestinal_metaplasia_present,
-        'pepsinogen_i': data.pepsinogen_i,
-        'pepsinogen_ii': data.pepsinogen_ii,
-        'gastrin_17': data.gastrin_17,
+    # Prepare staging data (antibiotic resistance markers)
+    # Primary marker: clarithromycin MIC (most important for treatment selection)
+    mic_clari = data.mic_clarithromycin if data.mic_clarithromycin is not None else 0.5
+    
+    staging_data = {
+        # Patient demographics
         'age': patient.age or 40,
-        'sex': patient.sex or 'male'
+        'sex': patient.sex or 'M',
+        
+        # Antibiotic resistance markers
+        'mic_clari': mic_clari,  # Clarithromycin MIC (most critical)
+        'mut_A2143G': data.mutation_a2143g,  # 23S rRNA mutation
+        'mut_A2144G': data.mutation_a2144g,  # Alternative notation: A2142G
+        
+        # Additional data for case record
+        'mic_metronidazole': data.mic_metronidazole,
+        'mic_levofloxacin': data.mic_levofloxacin,
+        'mutation_rdxa': data.mutation_rdxa,
+        'mutation_gyra': data.mutation_gyra
     }
     
-    # Run RIC staging model
-    staging_result = ric_staging_model.stage_disease(ric_data)
+    # Run antibiotic resistance staging model
+    try:
+        staging_result = ric_staging_model.stage_disease(staging_data)
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Staging model error: {str(e)}")
     
     # Create Stage 3 case
     new_case = Case(
         user_id=current_user.id,
         patient_db_id=patient.id,
         workflow_stage="stage3_ric",
-        case_type="ric_staging",
-        input_data=ric_data,
-        stage3_ric_values=ric_data,
+        case_type="resistance_staging",
+        input_data=staging_data,
+        stage3_ric_values=staging_data,
         stage_pred=staging_result['stage'],
-        recommendations=[f"Disease severity: {staging_result['stage']}", "Treatment protocol available"],
+        recommendations=[
+            f"Antibiotic resistance level: {staging_result['stage']}", 
+            f"Treatment protocol: {staging_result['treatment_protocol']['regimen']}"
+        ],
         patient_pseudo_id=patient.patient_id,
         patient_name=patient.full_name,
         patient_phone=patient.phone,

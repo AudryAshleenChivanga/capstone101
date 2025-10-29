@@ -248,6 +248,7 @@
     margin: 0 0 15px 0;
     color: #ffc107;
     font-size: 1.1rem;
+    font-weight: 600;
 }
 
 .alarm-symptoms ul {
@@ -256,8 +257,9 @@
 }
 
 .alarm-symptoms li {
-    color: rgba(255, 255, 255, 0.9);
+    color: #ffffff !important;
     margin-bottom: 8px;
+    font-weight: 500;
 }
 
 /* Recommendations Section */
@@ -273,6 +275,7 @@
     margin: 0 0 15px 0;
     color: #00d4ff;
     font-size: 1.1rem;
+    font-weight: 600;
 }
 
 .recommendations-section ul {
@@ -281,9 +284,10 @@
 }
 
 .recommendations-section li {
-    color: rgba(255, 255, 255, 0.9);
+    color: #ffffff !important;
     margin-bottom: 10px;
     line-height: 1.6;
+    font-weight: 500;
 }
 
 /* Recommended Tests */
@@ -299,6 +303,7 @@
     margin: 0 0 15px 0;
     color: #677eea;
     font-size: 1.1rem;
+    font-weight: 600;
 }
 
 .recommended-tests ul {
@@ -307,8 +312,9 @@
 }
 
 .recommended-tests li {
-    color: rgba(255, 255, 255, 0.9);
+    color: #ffffff !important;
     margin-bottom: 8px;
+    font-weight: 500;
 }
 
 /* Treatment Protocol */
