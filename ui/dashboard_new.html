@@ -394,7 +394,7 @@
                             <!-- Family History -->
                             <div class="form-section">
                                 <h3>Family History of H. pylori</h3>
-                                <div class="form-group">
+                                    <div class="form-group">
                                     <label for="family_history">Does the patient have a family history of H. pylori infection?</label>
                                     <select id="family_history" name="family_history" required>
                                         <option value="">Select family history</option>
@@ -402,7 +402,7 @@
                                         <option value="no">No</option>
                                         <option value="unknown">Unknown</option>
                                     </select>
-                                </div>
+                                    </div>
                                 
                                 <h4 style="margin-top: 20px;">Additional Risk Factors</h4>
                                 <div class="checkbox-grid">
@@ -433,7 +433,7 @@
                     
                     <div class="results-panel" id="stage1Results" style="display: none;">
                         <!-- Results will be dynamically populated -->
-                    </div>
+                        </div>
                 </div>
             </div>
             
@@ -514,7 +514,7 @@
                                         <label for="esr">ESR - Erythrocyte Sedimentation Rate (mm/hr) <span style="opacity: 0.7;">(Optional)</span></label>
                                         <input type="number" id="esr" name="esr" step="1" min="0" placeholder="e.g., 12">
                                         <p class="form-help">Normal: 0-20 mm/hr (Male), 0-30 mm/hr (Female)</p>
-                                    </div>
+                                        </div>
                                 </div>
                                 
                                 <div class="form-row">
@@ -539,9 +539,9 @@
                     <div class="results-panel" id="stage2Results" style="display: none;">
                         <!-- Results will be dynamically populated -->
                     </div>
-                </div>
-            </div>
-            
+                            </div>
+                        </div>
+                        
             <!-- Stage 3: RIC Staging Assessment -->
             <div class="page" id="page-staging" style="display: none;">
                 <div class="page-header-with-image">
@@ -551,8 +551,8 @@
                         <div class="stage-indicator">Stage 3 of 3</div>
                     </div>
                     <img src="/images/capsulepills.avif" alt="Medication" class="page-header-image">
-                </div>
-                
+                        </div>
+                        
                 <div class="content-grid">
                     <div class="form-panel">
                         <form id="ricStagingForm" class="clinical-form">
@@ -564,7 +564,7 @@
                                         <label for="stage3_patient_id">Patient ID</label>
                                         <input type="text" id="stage3_patient_id" name="patient_id" placeholder="HP-2025-XXXX" readonly>
                                         <p class="form-help">Auto-filled from previous stages</p>
-                                    </div>
+                        </div>
                                 </div>
                             </div>
                             
@@ -700,10 +700,10 @@
                             <div class="form-group">
                                 <label for="filterCaseType" style="font-size: 0.9rem; margin-bottom: 5px; display: block;">Case Type</label>
                                 <select id="filterCaseType" style="width: 100%; padding: 10px; background: rgba(0, 0, 0, 0.3); border: 1px solid rgba(255, 255, 255, 0.2); border-radius: 8px; color: white;">
-                                    <option value="">All Types</option>
-                                    <option value="screening">Screening</option>
-                                    <option value="staging">Staging</option>
-                                </select>
+                                <option value="">All Types</option>
+                                <option value="screening">Screening</option>
+                                <option value="staging">Staging</option>
+                            </select>
                             </div>
                             <div class="form-group">
                                 <label for="filterRiskLevel" style="font-size: 0.9rem; margin-bottom: 5px; display: block;">Risk Level</label>
@@ -712,7 +712,7 @@
                                     <option value="high">High Risk</option>
                                     <option value="moderate">Moderate Risk</option>
                                     <option value="low">Low Risk</option>
-                                </select>
+                            </select>
                             </div>
                             <div class="form-group">
                                 <label for="filterStartDate" style="font-size: 0.9rem; margin-bottom: 5px; display: block;">From Date</label>
