@@ -332,13 +332,13 @@ def get_case_prescription(
     }
 
 
-@router.post("/{prescription_id}/print")
+@router.get("/{prescription_id}/print")
 def generate_prescription_pdf(
     prescription_id: int,
     db: Session = Depends(get_db),
     current_user: User = Depends(get_current_user)
 ):
-    """Generate a printable PDF version of the prescription."""
+    """Generate a printable PDF version of the prescription (opens in new window)."""
     prescription = db.query(Prescription).filter(Prescription.id == prescription_id).first()
     
     if not prescription:

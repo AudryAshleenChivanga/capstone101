@@ -121,26 +121,30 @@ app.include_router(sms_router)
 app.include_router(telemed_router)
 app.include_router(document_router)
 
-# Include new enhanced routers
+# Include workflow router (critical for multi-stage workflow)
+from app.routes_workflow import router as workflow_router
+app.include_router(workflow_router)
+
+# Include prescription router (critical for prescription generation)
+from app.routes_prescription import router as prescription_router
+app.include_router(prescription_router)
+
+# Include other enhanced routers
 try:
     from app.routes_profile import router as profile_router
     from app.routes_admin import router as admin_router
     from app.routes_video import router as video_router
     from app.routes_scheduling import router as scheduling_router
     from app.routes_patient import router as patient_router
-    from app.routes_prescription import router as prescription_router
-    from app.routes_workflow import router as workflow_router
     
     app.include_router(profile_router)
     app.include_router(admin_router)
     app.include_router(video_router)
     app.include_router(scheduling_router)
     app.include_router(patient_router)
-    app.include_router(prescription_router)
-    app.include_router(workflow_router)
     print("[OK] All enhanced routes loaded successfully")
 except ImportError as e:
-    print(f"[WARNING] Some enhanced routes not fully available: {e}")
+    print(f"[WARNING] Some optional routes not available: {e}")
 
 # Mount static files AFTER API routes (prevents route conflicts)
 import os
