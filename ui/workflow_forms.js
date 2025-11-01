@@ -397,6 +397,13 @@ function displayStage3Results(result) {
     const staging = result.staging_result;
     const treatment = staging.treatment_protocol;
     
+    // Store Stage 3 results in workflowState for prescription generation
+    workflowState.stage3Results = {
+        stage: staging.stage,
+        confidence: staging.stage_confidence,
+        treatment_protocol: treatment
+    };
+    
     let html = `
         <div class="result-card">
             <div class="result-header">
@@ -472,16 +479,107 @@ function displayStage3Results(result) {
 
 async function createPrescription(caseId) {
     try {
-        // Get prescription data from Stage 3 results
+        // Get treatment protocol from Stage 3 results
+        const stagingResult = workflowState.stage3Results || {};
+        const resistanceStage = stagingResult.stage || 'moderate';
+        const protocol = stagingResult.treatment_protocol || {};
+        
+        // Generate medications based on resistance stage
+        let medications = [];
+        let protocolType = 'eradication';
+        
+        if (resistanceStage === 'low') {
+            // Standard triple therapy
+            medications = [
+                {
+                    name: "Omeprazole (PPI)",
+                    dosage: "20mg",
+                    frequency: "Twice daily",
+                    duration: "14 days"
+                },
+                {
+                    name: "Amoxicillin",
+                    dosage: "1000mg",
+                    frequency: "Twice daily",
+                    duration: "14 days"
+                },
+                {
+                    name: "Clarithromycin",
+                    dosage: "500mg",
+                    frequency: "Twice daily",
+                    duration: "14 days"
+                }
+            ];
+        } else if (resistanceStage === 'moderate') {
+            // Bismuth quadruple therapy
+            medications = [
+                {
+                    name: "Esomeprazole (PPI)",
+                    dosage: "40mg",
+                    frequency: "Twice daily",
+                    duration: "14 days"
+                },
+                {
+                    name: "Bismuth Subsalicylate",
+                    dosage: "300mg",
+                    frequency: "Four times daily",
+                    duration: "14 days"
+                },
+                {
+                    name: "Tetracycline",
+                    dosage: "500mg",
+                    frequency: "Four times daily",
+                    duration: "14 days"
+                },
+                {
+                    name: "Metronidazole",
+                    dosage: "500mg",
+                    frequency: "Three times daily",
+                    duration: "14 days"
+                }
+            ];
+        } else {
+            // High resistance - salvage therapy
+            medications = [
+                {
+                    name: "Esomeprazole (PPI)",
+                    dosage: "40mg",
+                    frequency: "Twice daily",
+                    duration: "14 days"
+                },
+                {
+                    name: "Amoxicillin",
+                    dosage: "1000mg",
+                    frequency: "Twice daily",
+                    duration: "14 days"
+                },
+                {
+                    name: "Levofloxacin",
+                    dosage: "500mg",
+                    frequency: "Once daily",
+                    duration: "14 days"
+                },
+                {
+                    name: "Rifabutin",
+                    dosage: "150mg",
+                    frequency: "Twice daily",
+                    duration: "14 days"
+                }
+            ];
+            protocolType = 'salvage';
+        }
+        
         const prescriptionData = {
             patient_id: workflowState.patientId,
             case_id: caseId,
-            diagnosis: `H. pylori infection - ${workflowState.severity || 'moderate'} severity`,
-            medications: [], // This should come from treatment protocol
-            recommendations: "Complete full course of antibiotics as prescribed.",
-            lifestyle_advice: "Avoid alcohol, quit smoking, avoid NSAIDs",
+            diagnosis: `H. pylori infection - ${resistanceStage} antibiotic resistance`,
+            medications: medications,
+            recommendations: protocol.recommendations || "Complete full course of antibiotics as prescribed. Take medications with meals to minimize side effects. Do not skip doses.",
+            lifestyle_advice: "Avoid alcohol during treatment. Quit smoking. Avoid NSAIDs. Reduce stress. Eat smaller, frequent meals.",
             follow_up_days: 28,
-            stage: "stage3_ric"
+            stage: "stage3_ric",
+            protocol_type: protocolType,
+            lab_tests_ordered: ["Urea Breath Test (4-6 weeks post-treatment)", "Stool Antigen Test"]
         };
         
         const token = localStorage.getItem('token');
@@ -494,22 +592,29 @@ async function createPrescription(caseId) {
             body: JSON.stringify(prescriptionData)
         });
         
-        if (!response.ok) {
-            throw new Error('Prescription creation failed');
+        let result;
+        try {
+            result = await response.json();
+        } catch (parseError) {
+            throw new Error('Server returned invalid response');
         }
         
-        const result = await response.json();
+        if (!response.ok) {
+            const errorMsg = result.detail || result.message || 'Prescription creation failed';
+            throw new Error(errorMsg);
+        }
         
-        showNotification('Prescription created successfully!', 'success');
+        showNotification('✅ Prescription created successfully!', 'success');
         
         // Option to print or send to patient
-        if (confirm('Prescription created. Would you like to print it?')) {
+        if (confirm('Prescription created successfully! Would you like to view/print it?')) {
             window.open(`/prescriptions/${result.prescription_id}/print`, '_blank');
         }
         
     } catch (error) {
-        console.error('Error:', error);
-        showNotification('Failed to create prescription.', 'error');
+        console.error('Error creating prescription:', error);
+        const errorMessage = error.message || String(error) || 'Unknown error occurred';
+        showNotification(`Failed to create prescription: ${errorMessage}`, 'error');
     }
 }
 
