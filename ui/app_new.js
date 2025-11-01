@@ -7,6 +7,7 @@ const API_BASE = window.location.hostname === 'localhost' ? 'http://localhost:80
 let authToken = null;
 let currentUser = null;
 let charts = {};
+let dashboardRefreshInterval = null;
 
 // ========================================
 // INITIALIZATION
@@ -27,6 +28,9 @@ function initializeApp() {
     // Load theme preference
     const savedTheme = localStorage.getItem('theme') || 'light';
     document.documentElement.setAttribute('data-theme', savedTheme);
+    
+    // Start auto-refresh for dashboard (refresh every 5 minutes)
+    startDashboardAutoRefresh();
     
     // Setup event listeners
     setupEventListeners();
@@ -200,6 +204,13 @@ async function loadUserData() {
 
 async function loadDashboardData() {
     try {
+        // Show loading indicator if refresh button exists
+        const refreshBtn = document.getElementById('refreshDashboard');
+        if (refreshBtn) {
+            refreshBtn.disabled = true;
+            refreshBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Loading...';
+        }
+        
         // Load stats
         const statsResponse = await fetch(`${API_BASE}/cases/report`, {
             method: 'POST',
@@ -224,11 +235,52 @@ async function loadDashboardData() {
         renderCharts(statsData);
         
         // Load recent activity
-        loadRecentActivity();
+        await loadRecentActivity();
+        
+        // Reset refresh button
+        if (refreshBtn) {
+            refreshBtn.disabled = false;
+            refreshBtn.innerHTML = '<i class="fas fa-sync-alt"></i> Refresh';
+        }
+        
+        showToast('Dashboard updated successfully', 'success');
         
     } catch (error) {
         console.error('Error loading dashboard data:', error);
         showToast('Failed to load dashboard data', 'error');
+        
+        // Reset refresh button on error
+        const refreshBtn = document.getElementById('refreshDashboard');
+        if (refreshBtn) {
+            refreshBtn.disabled = false;
+            refreshBtn.innerHTML = '<i class="fas fa-sync-alt"></i> Refresh';
+        }
+    }
+}
+
+// Function to manually refresh dashboard
+function refreshDashboard() {
+    loadDashboardData();
+}
+
+// Auto-refresh dashboard every 5 minutes
+function startDashboardAutoRefresh() {
+    // Clear any existing interval
+    if (dashboardRefreshInterval) {
+        clearInterval(dashboardRefreshInterval);
+    }
+    
+    // Refresh every 5 minutes (300000 ms)
+    dashboardRefreshInterval = setInterval(() => {
+        console.log('Auto-refreshing dashboard...');
+        loadRecentActivity(); // Only refresh activity, not full dashboard
+    }, 300000); // 5 minutes
+}
+
+function stopDashboardAutoRefresh() {
+    if (dashboardRefreshInterval) {
+        clearInterval(dashboardRefreshInterval);
+        dashboardRefreshInterval = null;
     }
 }
 
@@ -530,7 +582,7 @@ function updateChartsTheme() {
 
 async function loadRecentActivity() {
     try {
-        const response = await fetch(`${API_BASE}/cases?limit=5`, {
+        const response = await fetch(`${API_BASE}/cases?page=1&page_size=5`, {
             headers: {
                 'Authorization': `Bearer ${authToken}`
             }
@@ -538,7 +590,8 @@ async function loadRecentActivity() {
         
         if (!response.ok) throw new Error('Failed to load recent activity');
         
-        const cases = await response.json();
+        const data = await response.json();
+        const cases = data.cases || [];
         
         const activityList = document.getElementById('recentActivity');
         
@@ -550,11 +603,16 @@ async function loadRecentActivity() {
         activityList.innerHTML = cases.map(caseItem => `
             <div class="activity-item">
                 <div>
-                    <strong>Case #${caseItem.id}</strong> - ${caseItem.case_type}
+                    <strong>Case #${caseItem.id}</strong> - ${caseItem.case_type || 'Unknown'}
+                    ${caseItem.patient_name ? `<br><span class="text-muted">${caseItem.patient_name}</span>` : ''}
+                    ${caseItem.patient_id ? `<br><small>ID: ${caseItem.patient_id}</small>` : ''}
                     <br>
                     <small style="color: var(--text-secondary);">
-                        ${new Date(caseItem.created_at).toLocaleDateString()}
+                        ${new Date(caseItem.created_at).toLocaleString()}
                     </small>
+                </div>
+                <div class="activity-status">
+                    ${caseItem.risk_level ? `<span class="badge badge-${caseItem.risk_level}">${caseItem.risk_level}</span>` : ''}
                 </div>
             </div>
         `).join('');
