@@ -1,0 +1,69 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+*.egg-info/
+dist/
+build/
+
+# Virtual environments
+venv/
+.venv_new/
+env/
+ENV/
+
+# IDEs
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Git
+.git/
+.gitignore
+.gitattributes
+
+# Documentation (keep only README.md)
+*.md
+!README.md
+
+# Database files (will be created in container)
+*.db
+*.db-journal
+
+# Logs
+*.log
+
+# Environment files (use env vars instead)
+.env
+.env.*
+
+# Test files
+tests/
+.pytest_cache/
+.coverage
+htmlcov/
+
+# Temporary files
+tmp/
+temp/
+*.tmp
+
+# Large files that shouldn't be in image
+*.mp4
+*.avi
+*.mov
+
+# Deployment files
+docker-compose*.yml
+Dockerfile*
+.dockerignore
+render.yaml
+

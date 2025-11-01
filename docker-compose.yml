@@ -1,36 +1,66 @@
 version: '3.8'
 
 services:
-  app:
-    build: .
-    container_name: hpylori-cdss
+  web:
+    build:
+      context: .
+      dockerfile: Dockerfile
     ports:
       - "8000:8000"
     environment:
-      - DATABASE_URL=${DATABASE_URL:-sqlite:///./cdss.db}
-      - SECRET_KEY=${SECRET_KEY}
-      - TWILIO_ACCOUNT_SID=${TWILIO_ACCOUNT_SID}
-      - TWILIO_AUTH_TOKEN=${TWILIO_AUTH_TOKEN}
-      - TWILIO_PHONE_NUMBER=${TWILIO_PHONE_NUMBER}
-      - SMTP_HOST=${SMTP_HOST}
-      - SMTP_PORT=${SMTP_PORT}
-      - SMTP_USER=${SMTP_USER}
-      - SMTP_PASSWORD=${SMTP_PASSWORD}
-      - FROM_EMAIL=${FROM_EMAIL}
-      - FROM_NAME=${FROM_NAME}
+      # Database
+      - DATABASE_URL=sqlite:///./cdss.db
+      
+      # Security
+      - JWT_SECRET=your-secret-key-change-in-production
+      - JWT_EXPIRE_HOURS=24
+      
+      # ML Models
+      - SCREEN_MODEL_PATH=models/screening_hp_pos_calibrated.joblib
+      - STAGE_MODEL_PATH=models/staging_3class.joblib
+      - SCREEN_THRESH=0.60
+      
+      # CORS (add your domain)
+      - ALLOWED_ORIGINS=http://localhost:8000,http://127.0.0.1:8000
+      
+      # Optional: SMS (uncomment and add your credentials)
+      # - TWILIO_ACCOUNT_SID=your_account_sid
+      # - TWILIO_AUTH_TOKEN=your_auth_token
+      # - TWILIO_PHONE_NUMBER=+1234567890
+      
+      # Optional: Email (uncomment and add your credentials)
+      # - SMTP_SERVER=smtp.gmail.com
+      # - SMTP_PORT=587
+      # - SMTP_USERNAME=your_email@gmail.com
+      # - SMTP_PASSWORD=your_app_password
+    
     volumes:
+      # Mount volumes for persistence (optional for development)
+      - ./uploads:/app/uploads
       - ./cdss.db:/app/cdss.db
-      - ./models:/app/models
-      - ./data:/app/data
+    
     restart: unless-stopped
+    
     healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:8000/health"]
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://localhost:8000/health').read()"]
       interval: 30s
       timeout: 10s
       retries: 3
       start_period: 40s
 
-networks:
-  default:
-    driver: bridge
+  # Optional: PostgreSQL for production-like testing
+  # Uncomment this section if you want to use PostgreSQL locally
+  # db:
+  #   image: postgres:15-alpine
+  #   environment:
+  #     - POSTGRES_USER=cdss_user
+  #     - POSTGRES_PASSWORD=cdss_password
+  #     - POSTGRES_DB=cdss_db
+  #   ports:
+  #     - "5432:5432"
+  #   volumes:
+  #     - postgres_data:/var/lib/postgresql/data
+  #   restart: unless-stopped
 
+# volumes:
+#   postgres_data:
