@@ -61,7 +61,21 @@ def register_user(
     db.commit()
     db.refresh(new_user)
     
-    return new_user
+    # Convert to UserResponse to ensure proper serialization
+    return UserResponse(
+        id=new_user.id,
+        username=new_user.username,
+        email=new_user.email,
+        role=new_user.role,
+        full_name=new_user.full_name,
+        specialty=new_user.specialty,
+        institution=new_user.institution,
+        license_number=new_user.license_number,
+        bio=new_user.bio,
+        profile_photo=new_user.profile_photo,
+        is_active=new_user.is_active,
+        created_at=new_user.created_at
+    )
 
 
 @router.post("/register/first", response_model=UserResponse, status_code=status.HTTP_201_CREATED)
@@ -107,7 +121,21 @@ def register_first_user(user_data: UserCreate, db: Session = Depends(get_db)):
     db.commit()
     db.refresh(new_user)
     
-    return new_user
+    # Convert to UserResponse to ensure proper serialization
+    return UserResponse(
+        id=new_user.id,
+        username=new_user.username,
+        email=new_user.email,
+        role=new_user.role,
+        full_name=new_user.full_name,
+        specialty=new_user.specialty,
+        institution=new_user.institution,
+        license_number=new_user.license_number,
+        bio=new_user.bio,
+        profile_photo=new_user.profile_photo,
+        is_active=new_user.is_active,
+        created_at=new_user.created_at
+    )
 
 
 @router.post("/login", response_model=Token)
