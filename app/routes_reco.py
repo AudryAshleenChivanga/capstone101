@@ -121,7 +121,7 @@ def recommend_single(
         )
 
 
-@router.post("/recommend/batch", response_model=List[RecommendationResponse])
+@router.post("/recommend/batch")
 async def recommend_batch(
     file: UploadFile = File(...),
     db: Session = Depends(get_db),
@@ -130,6 +130,7 @@ async def recommend_batch(
     """
     Process batch recommendations from CSV upload.
     Persists all cases to database.
+    Returns dict with total, processed count, and results list.
     """
     if not file.filename.endswith('.csv'):
         raise HTTPException(
@@ -144,6 +145,8 @@ async def recommend_batch(
         
         results = []
         processed = 0
+        failed = 0
+        total_rows = len(df)
         
         # Process each row
         for idx, row in df.iterrows():
@@ -181,9 +184,15 @@ async def recommend_batch(
                 
             except Exception as e:
                 print(f"Error processing row {idx}: {e}")
+                failed += 1
                 continue
         
-        return results
+        return {
+            "total": total_rows,
+            "processed": processed,
+            "failed": failed,
+            "results": results
+        }
     
     except Exception as e:
         raise HTTPException(
