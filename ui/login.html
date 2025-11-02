@@ -4,211 +4,375 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes">
     <meta name="description" content="Login to H. pylori CDSS Clinical Decision Support System">
-    <meta name="theme-color" content="#2563eb">
+    <meta name="theme-color" content="#7C3AED">
     <title>H. pylori CDSS - Sign In</title>
+    
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    
     <link rel="stylesheet" href="login_styles.css">
     <link rel="stylesheet" href="mobile-responsive.css">
 </head>
 <body>
-    <!-- 3D Background Model (Full Screen) -->
-    <div class="background-3d">
-        <iframe title="3D Stomach Model" frameborder="0" allowfullscreen mozallowfullscreen="true" webkitallowfullscreen="true" allow="autoplay; fullscreen; xr-spatial-tracking" xr-spatial-tracking execution-while-out-of-viewport execution-while-not-rendered web-share src="https://sketchfab.com/models/c98532301b3f42f8b5ecf2e0063e9d73/embed?autostart=1&autospin=0.3&camera=0&ui_theme=dark&ui_hint=0&ui_controls=0&ui_infos=0&ui_inspector=0&ui_stop=0&ui_watermark=0&ui_watermark_link=0&ui_help=0&ui_settings=0&ui_vr=0&ui_ar=0&ui_fullscreen=0&ui_annotations=0&ui_fadeout=0&ui_loading=0&transparent=1&preload=1&dnt=1"></iframe>
+    <!-- Split Screen Container -->
+    <div class="split-container">
+        <!-- Left Side - Login Form -->
+        <div class="form-side">
+            <!-- Logo -->
+            <div class="logo-container">
+                <img src="gastrocdss-high-resolution-logo-transparent.png" alt="GastroCDSS Logo" class="logo-image">
             </div>
 
-    <!-- Gradient Overlay -->
-    <div class="gradient-overlay"></div>
-
-    <!-- Back Button -->
-    <a href="index.html" class="back-btn">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <line x1="19" y1="12" x2="5" y2="12"/>
-            <polyline points="12 19 5 12 12 5"/>
-                            </svg>
-        <span>Back to Home</span>
-    </a>
-
-    <!-- Main Container -->
-    <div class="auth-container">
-        <!-- Login Card -->
-        <div class="auth-card" id="loginCard">
-            <div class="card-header">
-                <div class="logo-icon">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                    <circle cx="12" cy="12" r="10"/>
-                    <circle cx="12" cy="12" r="6"/>
-                    <circle cx="12" cy="12" r="2"/>
-                </svg>
-            </div>
-                <h1 class="card-title">Welcome Back</h1>
-                <p class="card-subtitle">Sign in to access your clinical dashboard</p>
+            <!-- Login Card -->
+            <div class="auth-card" id="loginCard">
+                <div class="card-header">
+                    <h1 class="card-title">Welcome back</h1>
+                    <p class="card-subtitle">Please enter your details</p>
                 </div>
 
                 <div id="messageArea" class="message-area"></div>
 
-            <form id="loginForm" class="auth-form">
+                <form id="loginForm" class="auth-form">
                     <div class="form-group">
-                    <label for="username">
-                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                            <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
-                            <circle cx="12" cy="7" r="4"/>
-                        </svg>
-                        <span>Username</span>
-                    </label>
+                        <label for="username">Email address</label>
                         <input 
                             type="text" 
                             id="username" 
                             name="username" 
-                            required 
-                            placeholder="Enter your username"
-                            autocomplete="username"
+                            required
+                            placeholder="Enter your email"
                         >
                     </div>
 
                     <div class="form-group">
-                    <label for="password">
-                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                            <rect x="3" y="11" width="18" height="11" rx="2" ry="2"/>
-                            <path d="M7 11V7a5 5 0 0 1 10 0v4"/>
-                        </svg>
-                        <span>Password</span>
-                    </label>
+                        <label for="password">Password</label>
                         <input 
                             type="password" 
                             id="password" 
                             name="password" 
-                            required 
+                            required
                             placeholder="Enter your password"
-                            autocomplete="current-password"
                         >
                     </div>
 
-                    <button type="submit" id="loginBtn" class="btn-primary">
-                        <span class="btn-text">Sign In to Dashboard</span>
-                        <div class="spinner"></div>
-                    <svg class="btn-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                        <line x1="5" y1="12" x2="19" y2="12"/>
-                        <polyline points="12 5 19 12 12 19"/>
-                    </svg>
+                    <div class="form-row">
+                        <div class="checkbox-wrapper">
+                            <input type="checkbox" id="rememberMe" name="rememberMe">
+                            <label for="rememberMe">Remember for 30 days</label>
+                        </div>
+                        <a href="#" class="forgot-link">Forgot password</a>
+                    </div>
+
+                    <button type="submit" class="btn-primary">
+                        <span>Sign in</span>
+                    </button>
+
+                    <button type="button" class="btn-google">
+                        <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+                            <path d="M19.9895 10.1871C19.9895 9.36767 19.9214 8.76973 19.7742 8.14966H10.1992V11.848H15.8195C15.7062 12.7671 15.0943 14.1512 13.7346 15.0813L13.7155 15.2051L16.7429 17.4969L16.9527 17.5174C18.879 15.7789 19.9895 13.221 19.9895 10.1871Z" fill="#4285F4"/>
+                            <path d="M10.1993 19.9313C12.9527 19.9313 15.2643 19.0454 16.9527 17.5174L13.7346 15.0813C12.8734 15.6682 11.7176 16.0779 10.1993 16.0779C7.50243 16.0779 5.21352 14.3395 4.39759 11.9366L4.27799 11.9466L1.13003 14.3273L1.08887 14.4391C2.76588 17.6945 6.21061 19.9313 10.1993 19.9313Z" fill="#34A853"/>
+                            <path d="M4.39748 11.9366C4.18219 11.3166 4.05759 10.6521 4.05759 9.96565C4.05759 9.27909 4.18219 8.61473 4.38615 7.99466L4.38045 7.8626L1.19304 5.44366L1.08875 5.49214C0.397576 6.84305 0 8.36008 0 9.96565C0 11.5712 0.397576 13.0882 1.08875 14.4391L4.39748 11.9366Z" fill="#FBBC05"/>
+                            <path d="M10.1993 3.85336C12.1142 3.85336 13.406 4.66168 14.1425 5.33718L17.0207 2.59107C15.253 0.985496 12.9527 0 10.1993 0C6.2106 0 2.76588 2.23672 1.08887 5.49214L4.38626 7.99466C5.21352 5.59183 7.50242 3.85336 10.1993 3.85336Z" fill="#EB4335"/>
+                        </svg>
+                        <span>Sign in with Google</span>
                     </button>
                 </form>
 
-                <div class="divider">
-                <span>New to the platform?</span>
-                </div>
-
-                <button type="button" id="showRegisterBtn" class="btn-secondary">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                    <path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/>
-                    <circle cx="8.5" cy="7" r="4"/>
-                    <line x1="20" y1="8" x2="20" y2="14"/>
-                    <line x1="23" y1="11" x2="17" y2="11"/>
-                </svg>
-                <span>Create Administrator Account</span>
-                </button>
-
-            <div class="help-note">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                    <circle cx="12" cy="12" r="10"/>
-                    <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/>
-                    <line x1="12" y1="17" x2="12.01" y2="17"/>
-                    </svg>
-                    <span>First time? Register as the initial system administrator</span>
+                <div class="card-footer">
+                    <p>Don't have an account? <a href="#" id="showSignup">Sign up</a></p>
                 </div>
             </div>
 
-        <!-- Registration Card (Hidden Initially) -->
-        <div class="auth-card" id="registerCard" style="display: none;">
-            <div class="card-header">
-                <div class="logo-icon">
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                        <path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/>
-                        <circle cx="8.5" cy="7" r="4"/>
-                        <line x1="20" y1="8" x2="20" y2="14"/>
-                        <line x1="23" y1="11" x2="17" y2="11"/>
-                    </svg>
+            <!-- Signup Card (Hidden by default) -->
+            <div class="auth-card" id="signupCard" style="display: none;">
+                <div class="card-header">
+                    <h1 class="card-title">Create an account</h1>
+                    <p class="card-subtitle">Get started with GastroCDSS</p>
+                </div>
+
+                <div id="signupMessageArea" class="message-area"></div>
+
+                <form id="signupForm" class="auth-form">
+                    <div class="form-row-split">
+                        <div class="form-group">
+                            <label for="signupFullName">Full Name</label>
+                            <input 
+                                type="text" 
+                                id="signupFullName" 
+                                name="fullname" 
+                                required
+                                placeholder="Enter your name"
+                            >
+                        </div>
+                        <div class="form-group">
+                            <label for="signupRole">Role</label>
+                            <select id="signupRole" name="role" required>
+                                <option value="">Select role</option>
+                                <option value="doctor">Doctor</option>
+                                <option value="nurse">Nurse</option>
+                                <option value="admin">Administrator</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="signupUsername">Email address</label>
+                        <input 
+                            type="email" 
+                            id="signupUsername" 
+                            name="username" 
+                            required
+                            placeholder="Enter your email"
+                        >
+                    </div>
+
+                    <div class="form-group">
+                        <label for="signupPassword">Password</label>
+                        <input 
+                            type="password" 
+                            id="signupPassword" 
+                            name="password" 
+                            required
+                            placeholder="Create a password"
+                        >
+                    </div>
+
+                    <div class="form-group">
+                        <label for="signupConfirmPassword">Confirm Password</label>
+                        <input 
+                            type="password" 
+                            id="signupConfirmPassword" 
+                            name="confirmPassword" 
+                            required
+                            placeholder="Confirm your password"
+                        >
+                    </div>
+
+                    <button type="submit" class="btn-primary">
+                        <span>Create Account</span>
+                    </button>
+
+                    <button type="button" class="btn-google">
+                        <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+                            <path d="M19.9895 10.1871C19.9895 9.36767 19.9214 8.76973 19.7742 8.14966H10.1992V11.848H15.8195C15.7062 12.7671 15.0943 14.1512 13.7346 15.0813L13.7155 15.2051L16.7429 17.4969L16.9527 17.5174C18.879 15.7789 19.9895 13.221 19.9895 10.1871Z" fill="#4285F4"/>
+                            <path d="M10.1993 19.9313C12.9527 19.9313 15.2643 19.0454 16.9527 17.5174L13.7346 15.0813C12.8734 15.6682 11.7176 16.0779 10.1993 16.0779C7.50243 16.0779 5.21352 14.3395 4.39759 11.9366L4.27799 11.9466L1.13003 14.3273L1.08887 14.4391C2.76588 17.6945 6.21061 19.9313 10.1993 19.9313Z" fill="#34A853"/>
+                            <path d="M4.39748 11.9366C4.18219 11.3166 4.05759 10.6521 4.05759 9.96565C4.05759 9.27909 4.18219 8.61473 4.38615 7.99466L4.38045 7.8626L1.19304 5.44366L1.08875 5.49214C0.397576 6.84305 0 8.36008 0 9.96565C0 11.5712 0.397576 13.0882 1.08875 14.4391L4.39748 11.9366Z" fill="#FBBC05"/>
+                            <path d="M10.1993 3.85336C12.1142 3.85336 13.406 4.66168 14.1425 5.33718L17.0207 2.59107C15.253 0.985496 12.9527 0 10.1993 0C6.2106 0 2.76588 2.23672 1.08887 5.49214L4.38626 7.99466C5.21352 5.59183 7.50242 3.85336 10.1993 3.85336Z" fill="#EB4335"/>
+                        </svg>
+                        <span>Sign up with Google</span>
+                    </button>
+                </form>
+
+                <div class="card-footer">
+                    <p>Already have an account? <a href="#" id="showLogin">Sign in</a></p>
+                </div>
+            </div>
         </div>
-                <h1 class="card-title">Create Account</h1>
-                <p class="card-subtitle">Register as the system administrator</p>
+
+        <!-- Right Side - 3D Model with Purple Overlay -->
+        <div class="visual-side">
+            <!-- 3D Model Background -->
+            <div class="model-container">
+                <iframe 
+                    title="3D H. pylori Visualization" 
+                    frameborder="0" 
+                    allowfullscreen 
+                    mozallowfullscreen="true" 
+                    webkitallowfullscreen="true" 
+                    allow="autoplay; fullscreen" 
+                    src="https://sketchfab.com/models/c98532301b3f42f8b5ecf2e0063e9d73/embed?autostart=1&autospin=0.2&camera=0&ui_theme=light&ui_hint=0&ui_controls=0&ui_infos=0&ui_inspector=0&ui_stop=0&ui_watermark=0&ui_watermark_link=0&ui_help=0&ui_settings=0&ui_vr=0&ui_ar=0&ui_fullscreen=0&ui_annotations=0&ui_fadeout=0&ui_loading=0&transparent=1&preload=1&dnt=1">
+                </iframe>
             </div>
-
-            <div id="registerMessageArea" class="message-area"></div>
-
-            <form id="registerForm" class="auth-form">
-                <div class="form-group">
-                    <label for="regUsername">
-                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                            <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
-                            <circle cx="12" cy="7" r="4"/>
-                        </svg>
-                        <span>Username</span>
-                    </label>
-                    <input 
-                        type="text" 
-                        id="regUsername" 
-                        name="username" 
-                        required 
-                        placeholder="Choose a username"
-                        autocomplete="username"
-                    >
-                </div>
-
-                <div class="form-group">
-                    <label for="regEmail">
-                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                            <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/>
-                            <polyline points="22,6 12,13 2,6"/>
-                        </svg>
-                        <span>Email</span>
-                    </label>
-                    <input 
-                        type="email" 
-                        id="regEmail" 
-                        name="email" 
-                        required 
-                        placeholder="your@email.com"
-                        autocomplete="email"
-                    >
-                </div>
-
-                <div class="form-group">
-                    <label for="regPassword">
-                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                            <rect x="3" y="11" width="18" height="11" rx="2" ry="2"/>
-                            <path d="M7 11V7a5 5 0 0 1 10 0v4"/>
-                        </svg>
-                        <span>Password</span>
-                    </label>
-                    <input 
-                        type="password" 
-                        id="regPassword" 
-                        name="password" 
-                        required 
-                        placeholder="Create a strong password"
-                        autocomplete="new-password"
-                    >
-                </div>
-
-                <button type="submit" id="registerBtn" class="btn-primary">
-                    <span class="btn-text">Create Account</span>
-                    <div class="spinner"></div>
-                    <svg class="btn-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                        <line x1="5" y1="12" x2="19" y2="12"/>
-                        <polyline points="12 5 19 12 12 19"/>
+            <!-- Purple Overlay -->
+            <div class="purple-overlay"></div>
+            
+            <!-- Decorative Elements (Like in the inspiration image) -->
+            <div class="decorative-elements">
+                <!-- Medical Icons -->
+                <div class="icon-element icon-1">
+                    <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                        <path d="M9 11l3 3L22 4"/>
+                        <path d="M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11"/>
                     </svg>
-                </button>
-
-                <button type="button" id="showLoginBtn" class="btn-secondary">
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                        <line x1="19" y1="12" x2="5" y2="12"/>
-                        <polyline points="12 19 5 12 12 5"/>
+                </div>
+                <div class="icon-element icon-2">
+                    <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                        <circle cx="12" cy="12" r="10"/>
+                        <path d="M12 6v6l4 2"/>
                     </svg>
-                    <span>Back to Sign In</span>
-                </button>
-            </form>
+                </div>
+                <div class="icon-element icon-3">
+                    <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                        <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/>
+                        <circle cx="12" cy="10" r="3"/>
+                    </svg>
+                </div>
+                <div class="icon-element icon-4">
+                    <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                        <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/>
+                        <polyline points="22,6 12,13 2,6"/>
+                    </svg>
+                </div>
+                <div class="icon-element icon-5">
+                    <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                        <circle cx="12" cy="12" r="3"/>
+                        <path d="M12 1v6m0 6v6m9.66-11.66l-4.24 4.24M8.34 8.34L4.1 4.1m15.56 15.56l-4.24-4.24M8.34 15.66l-4.24 4.24"/>
+                    </svg>
+                </div>
+                <div class="icon-element icon-6">
+                    <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                        <rect x="3" y="3" width="7" height="7"/>
+                        <rect x="14" y="3" width="7" height="7"/>
+                        <rect x="14" y="14" width="7" height="7"/>
+                        <rect x="3" y="14" width="7" height="7"/>
+                    </svg>
+                </div>
+            </div>
         </div>
     </div>
 
+    <!-- JavaScript -->
     <script src="login_auth.js"></script>
-    <script src="mobile-navigation.js"></script>
+    <script>
+        // Toggle between login and signup
+        const showSignupBtn = document.getElementById('showSignup');
+        const showLoginBtn = document.getElementById('showLogin');
+        const loginCard = document.getElementById('loginCard');
+        const signupCard = document.getElementById('signupCard');
+
+        if (showSignupBtn) {
+            showSignupBtn.addEventListener('click', (e) => {
+                e.preventDefault();
+                loginCard.style.display = 'none';
+                signupCard.style.display = 'block';
+            });
+        }
+
+        if (showLoginBtn) {
+            showLoginBtn.addEventListener('click', (e) => {
+                e.preventDefault();
+                signupCard.style.display = 'none';
+                loginCard.style.display = 'block';
+            });
+        }
+
+        // Handle Login Form
+        document.getElementById('loginForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const API_BASE = window.location.hostname === 'localhost' ? 'http://localhost:8000' : window.location.origin;
+            
+            const username = document.getElementById('username').value.trim();
+            const password = document.getElementById('password').value;
+            const submitBtn = e.target.querySelector('button[type="submit"]');
+            const messageArea = document.getElementById('messageArea');
+
+            if (!username || !password) {
+                messageArea.textContent = 'Please enter both email and password.';
+                messageArea.className = 'message-area error';
+                return;
+            }
+
+            submitBtn.disabled = true;
+            submitBtn.textContent = 'Signing in...';
+
+            try {
+                const response = await fetch(`${API_BASE}/auth/login`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ username, password })
+                });
+
+                if (response.ok) {
+                    const data = await response.json();
+                    localStorage.setItem('token', data.access_token);
+                    localStorage.setItem('user', JSON.stringify(data.user));
+                    
+                    messageArea.textContent = 'Login successful! Redirecting...';
+                    messageArea.className = 'message-area success';
+                    
+                    setTimeout(() => {
+                        window.location.href = '/ui/dashboard_new.html?v=' + Date.now();
+                    }, 800);
+                } else {
+                    const error = await response.json();
+                    messageArea.textContent = error.detail || 'Invalid credentials.';
+                    messageArea.className = 'message-area error';
+                }
+            } catch (error) {
+                messageArea.textContent = 'Network error. Please try again.';
+                messageArea.className = 'message-area error';
+                console.error('Login error:', error);
+            } finally {
+                submitBtn.disabled = false;
+                submitBtn.textContent = 'Sign in';
+            }
+        });
+
+        // Handle Signup Form
+        document.getElementById('signupForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const API_BASE = window.location.hostname === 'localhost' ? 'http://localhost:8000' : window.location.origin;
+            
+            const fullname = document.getElementById('signupFullName').value.trim();
+            const username = document.getElementById('signupUsername').value.trim();
+            const password = document.getElementById('signupPassword').value;
+            const confirmPassword = document.getElementById('signupConfirmPassword').value;
+            const role = document.getElementById('signupRole').value;
+            const submitBtn = e.target.querySelector('button[type="submit"]');
+            const messageArea = document.getElementById('signupMessageArea');
+
+            if (!fullname || !username || !password || !confirmPassword || !role) {
+                messageArea.textContent = 'Please fill in all fields.';
+                messageArea.className = 'message-area error';
+                return;
+            }
+
+            if (password !== confirmPassword) {
+                messageArea.textContent = 'Passwords do not match.';
+                messageArea.className = 'message-area error';
+                return;
+            }
+
+            submitBtn.disabled = true;
+            submitBtn.textContent = 'Creating account...';
+
+            try {
+                const response = await fetch(`${API_BASE}/auth/register`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ 
+                        username,
+                        password,
+                        full_name: fullname,
+                        role,
+                        email: username
+                    })
+                });
+
+                if (response.ok) {
+                    messageArea.textContent = 'Account created! Please sign in.';
+                    messageArea.className = 'message-area success';
+                    
+                    setTimeout(() => {
+                        signupCard.style.display = 'none';
+                        loginCard.style.display = 'block';
+                    }, 1500);
+                } else {
+                    const error = await response.json();
+                    messageArea.textContent = error.detail || 'Registration failed.';
+                    messageArea.className = 'message-area error';
+                }
+            } catch (error) {
+                messageArea.textContent = 'Network error. Please try again.';
+                messageArea.className = 'message-area error';
+                console.error('Signup error:', error);
+            } finally {
+                submitBtn.disabled = false;
+                submitBtn.textContent = 'Create Account';
+            }
+        });
+    </script>
 </body>
 </html>
