@@ -7,7 +7,7 @@
 .stage-indicator {
     display: inline-block;
     padding: 8px 16px;
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    background: linear-gradient(135deg, #7C3AED 0%, #A78BFA 100%);
     color: white;
     border-radius: 20px;
     font-size: 0.85rem;
@@ -106,7 +106,7 @@
 
 .patient-id-badge {
     padding: 8px 16px;
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    background: linear-gradient(135deg, #7C3AED 0%, #A78BFA 100%);
     color: white;
     border-radius: 20px;
     font-size: 0.9rem;

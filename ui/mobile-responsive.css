@@ -42,7 +42,7 @@ body {
         top: 1rem;
         right: 1rem;
         z-index: 1000;
-        background: var(--primary-color, #2563eb);
+        background: var(--primary-color, #7C3AED);
         color: white;
         border: none;
         padding: 0.75rem;
@@ -52,7 +52,7 @@ body {
     }
 
     .nav-toggle:hover {
-        background: var(--primary-dark, #1d4ed8);
+        background: var(--primary-dark, #6D28D9);
     }
 
     /* Mobile navigation */
@@ -259,7 +259,7 @@ body {
     }
 
     .background-3d {
-        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        background: linear-gradient(135deg, #7C3AED 0%, #A78BFA 100%);
     }
 
     /* Workflow stages */
