@@ -21,6 +21,7 @@ function initializeApp() {
     // Check authentication
     authToken = localStorage.getItem('token');
     if (!authToken) {
+        // Silently redirect to landing page if not authenticated
         window.location.href = 'index.html';
         return;
     }
@@ -36,10 +37,16 @@ function initializeApp() {
     setupEventListeners();
     
     // Load user data
-    loadUserData();
+    loadUserData().catch(err => {
+        console.error('Failed to load user data:', err);
+        // Will redirect to login via apiRequest error handling
+    });
     
     // Load dashboard data
-    loadDashboardData();
+    loadDashboardData().catch(err => {
+        console.error('Failed to load dashboard data:', err);
+        // Will redirect to login via apiRequest error handling
+    });
 }
 
 function setupEventListeners() {
@@ -723,7 +730,10 @@ async function apiRequest(endpoint, options = {}) {
     // Ensure we have the latest token
     const token = localStorage.getItem('token');
     if (!token) {
-        window.location.href = 'login.html';
+        showToast('Please log in to continue', 'error');
+        setTimeout(() => {
+            window.location.href = 'login.html';
+        }, 1000);
         throw new Error('No authentication token');
     }
     
@@ -734,29 +744,45 @@ async function apiRequest(endpoint, options = {}) {
         }
     };
     
-    const response = await fetch(`${API_BASE}${endpoint}`, {
-        ...defaultOptions,
-        ...options,
-        headers: {
-            ...defaultOptions.headers,
-            ...options.headers
+    try {
+        const response = await fetch(`${API_BASE}${endpoint}`, {
+            ...defaultOptions,
+            ...options,
+            headers: {
+                ...defaultOptions.headers,
+                ...options.headers
+            }
+        });
+        
+        if (response.status === 401) {
+            // Token expired or invalid
+            localStorage.removeItem('token');
+            localStorage.removeItem('user');
+            showToast('Session expired. Please log in again.', 'error');
+            setTimeout(() => {
+                window.location.href = 'login.html';
+            }, 1500);
+            throw new Error('Authentication failed');
         }
-    });
-    
-    if (response.status === 401) {
-        // Token expired or invalid
-        localStorage.removeItem('token');
-        localStorage.removeItem('user');
-        window.location.href = 'login.html';
-        throw new Error('Authentication failed');
+        
+        if (!response.ok) {
+            const errorData = await response.json().catch(() => ({}));
+            const errorMessage = errorData.detail || errorData.message || `Request failed: ${response.statusText}`;
+            showToast(errorMessage, 'error');
+            throw new Error(errorMessage);
+        }
+        
+        return response.json();
+    } catch (error) {
+        // Network errors or other fetch failures
+        if (error.message === 'Authentication failed') {
+            throw error; // Already handled above
+        }
+        if (error.name === 'TypeError' && error.message.includes('fetch')) {
+            showToast('Unable to connect to server. Please check your connection.', 'error');
+        }
+        throw error;
     }
-    
-    if (!response.ok) {
-        const errorData = await response.json().catch(() => ({}));
-        throw new Error(errorData.detail || `API request failed: ${response.statusText}`);
-    }
-    
-    return response.json();
 }
 
 // ========================================

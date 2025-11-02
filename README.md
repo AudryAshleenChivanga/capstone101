@@ -145,26 +145,35 @@ chmod +x run_api.sh
 
 ## Testing Results
 
-### Backend Health Check - API Endpoints Verification
+### Comprehensive Test Suite - All Tests Passing
+
+![Test Summary](images/testssummary.png)
+*Complete test suite showing all tests passing with 100% success rate*
+
+### 1. Backend Authentication Tests
+
+![Backend Authentication Tests](images/backendauthenticationtests.png)
+*Comprehensive authentication testing including user registration, login, JWT token validation, and role-based access control*
+
+### 2. Case Management Tests
+
+![Case Management Tests](images/casemanagementtests.png)
+*End-to-end case management testing including case creation, retrieval, updates, and deletion workflows*
+
+### 3. Clinical Workflow Tests (Screening & Staging)
+
+![Clinical Workflow Tests](images/clinical_workflowscreeningstaging_tests.png)
+*Complete testing of AI-powered screening and staging workflows with validation of ML model integration*
+
+### 4. Prescription Generation Tests
+
+![Prescription Tests](images/Prescriptions_tests.png)
+*Automated prescription generation testing including treatment recommendations and PDF document generation*
+
+### 5. Backend Health Check
 
 ![Backend Health Check](images/backendhealth_200OK.png)
-*Backend API health check showing 200 OK status - all endpoints operational*
-
-### Application Flow Screenshots
-
-#### 1. Landing Page
-![Landing Page](images/landingpage.png)
-*Professional landing page with clear call-to-action and system overview*
-
-#### 2. Main Dashboard
-![Dashboard](images/Dashboard.png)
-*Clinician dashboard showing patient cases, recent activity, and quick actions*
-
-![Dashboard Metrics](images/dashboardmetrics.png)
-*Dashboard with comprehensive metrics and statistics*
-
-![Dark Mode Dashboard](images/dashboard_darkmode.png)
-*Dashboard with dark mode theme for reduced eye strain*
+*Backend API health check showing 200 OK status - all endpoints operational and responding correctly*
 
 ### 1. Functional Testing
 
