@@ -27,10 +27,21 @@ let rewardChart = null;
 function init() {
     console.log('Initializing Advanced Capsule Endoscopy...');
     
-    // Setup scenario buttons
-    document.querySelectorAll('.scenario-btn').forEach(btn => {
-        btn.addEventListener('click', function() {
-            document.querySelectorAll('.scenario-btn').forEach(b => b.classList.remove('active'));
+    // Setup scenario buttons (using more specific query within capsule page)
+    const capsulePage = document.getElementById('page-capsule');
+    if (!capsulePage) {
+        console.log('Capsule page not found, will initialize later');
+        return;
+    }
+    
+    const scenarioBtns = capsulePage.querySelectorAll('.scenario-btn');
+    scenarioBtns.forEach(btn => {
+        // Remove old listeners by cloning
+        const newBtn = btn.cloneNode(true);
+        btn.parentNode.replaceChild(newBtn, btn);
+        
+        newBtn.addEventListener('click', function() {
+            scenarioBtns.forEach(b => b.classList.remove('active'));
             this.classList.add('active');
             simulationState.selectedScenario = this.dataset.scenario;
             console.log('Selected scenario:', simulationState.selectedScenario);
@@ -38,13 +49,30 @@ function init() {
     });
     
     // Setup start button
-    document.getElementById('startBtn').addEventListener('click', startSimulation);
+    const startBtn = document.getElementById('startBtn');
+    if (startBtn) {
+        // Remove old listener by cloning
+        const newStartBtn = startBtn.cloneNode(true);
+        startBtn.parentNode.replaceChild(newStartBtn, startBtn);
+        newStartBtn.addEventListener('click', startSimulation);
+    }
     
     // Initialize chart
     initializeChart();
     
+    // Reset metrics
+    updateMetrics(0, 0, 0, 0);
+    
     console.log('Capsule endoscopy ready');
 }
+
+/**
+ * Public function to initialize when page becomes visible
+ */
+window.initializeCapsuleEndoscopy = function() {
+    console.log('Capsule endoscopy page shown, initializing...');
+    init();
+};
 
 /**
  * Initialize reward chart
@@ -395,6 +423,13 @@ function showNotification(message, type = 'info') {
     // Could add toast notifications here
 }
 
-// Initialize on load
-document.addEventListener('DOMContentLoaded', init);
+// Initialize on load (for standalone page) or when called from dashboard
+document.addEventListener('DOMContentLoaded', function() {
+    // Try to initialize immediately if page is visible
+    const capsulePage = document.getElementById('page-capsule');
+    if (capsulePage && capsulePage.style.display !== 'none') {
+        init();
+    }
+    // Otherwise, wait for the dashboard to call initializeCapsuleEndoscopy()
+});
 

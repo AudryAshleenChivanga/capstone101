@@ -120,6 +120,12 @@ function loadPageData(pageId) {
         case 'cases':
             loadCaseHistory();
             break;
+        case 'capsule':
+            // Initialize capsule endoscopy
+            if (window.initializeCapsuleEndoscopy) {
+                window.initializeCapsuleEndoscopy();
+            }
+            break;
         case 'profile':
             loadProfilePage();
             break;
@@ -1512,6 +1518,12 @@ function initializeCurrentPage(pageId) {
             break;
         case 'cases':
             loadCaseHistory();
+            break;
+        case 'capsule':
+            // Initialize capsule endoscopy system
+            if (window.initializeCapsuleEndoscopy) {
+                window.initializeCapsuleEndoscopy();
+            }
             break;
         case 'video':
             // Initialize video consultation system if function exists
