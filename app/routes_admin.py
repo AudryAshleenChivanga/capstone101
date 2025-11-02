@@ -108,6 +108,54 @@ def list_all_users(
     return users
 
 
+@router.post("/users", response_model=UserOut, status_code=status.HTTP_201_CREATED)
+def create_user(
+    user_data: AdminUserCreate,
+    db: Session = Depends(get_db),
+    current_user: User = Depends(require_role("admin"))
+):
+    """
+    Create a new user (admin only).
+    
+    Can create clinicians, specialists, or other admins.
+    """
+    from app.auth import get_password_hash
+    
+    # Check if username already exists
+    existing_user = db.query(User).filter(User.username == user_data.username).first()
+    if existing_user:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Username already exists"
+        )
+    
+    # Check if email already exists
+    existing_email = db.query(User).filter(User.email == user_data.email).first()
+    if existing_email:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Email already exists"
+        )
+    
+    # Create new user
+    new_user = User(
+        username=user_data.username,
+        email=user_data.email,
+        hashed_password=get_password_hash(user_data.password),
+        role=user_data.role,
+        full_name=user_data.full_name,
+        specialty=user_data.specialty or "Gastroenterology",
+        institution=user_data.institution if hasattr(user_data, 'institution') else "Medical Center",
+        is_active=True
+    )
+    
+    db.add(new_user)
+    db.commit()
+    db.refresh(new_user)
+    
+    return new_user
+
+
 @router.get("/users/{user_id}", response_model=UserOut)
 def get_user_details(
     user_id: int,

@@ -125,13 +125,13 @@
                 <svg class="nav-icon" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/></svg>
                 <span>Capsule Endoscopy</span>
             </a>
-            <a href="#video" class="nav-item" data-page="video">
-                <svg class="nav-icon" viewBox="0 0 24 24"><polygon points="23 7 16 12 23 17 23 7"/><rect x="1" y="5" width="15" height="14" rx="2" ry="2"/></svg>
-                <span>Video Consult</span>
-            </a>
             <a href="#scheduling" class="nav-item" data-page="scheduling">
                 <svg class="nav-icon" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
                 <span>Scheduling</span>
+            </a>
+            <a href="#video" class="nav-item" data-page="video">
+                <svg class="nav-icon" viewBox="0 0 24 24"><polygon points="23 7 16 12 23 17 23 7"/><rect x="1" y="5" width="15" height="14" rx="2" ry="2"/></svg>
+                <span>Video Consult</span>
             </a>
             <a href="#profile" class="nav-item" data-page="profile">
                 <svg class="nav-icon" viewBox="0 0 24 24"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
@@ -1338,8 +1338,8 @@
             <!-- Video Consultation Page -->
             <div class="page" id="page-video" style="display: none;">
                 <div class="page-header">
-                    <h2>📹 Video Consultation</h2>
-                    <p>Schedule appointments with gastroenterology specialists</p>
+                    <h2>Video Consultation</h2>
+                    <p>Join confirmed video consultation sessions with specialists</p>
                 </div>
                 
                 <div class="video-consult-tabs">
@@ -1681,23 +1681,23 @@
             <div class="page" id="page-scheduling" style="display: none;">
                 <div class="scheduling-page">
                     <div class="page-header">
-                        <h2>📅 Specialist Scheduling</h2>
-                        <p>Schedule appointments with gastroenterologists and specialists</p>
+                        <h2>Specialist Scheduling</h2>
+                        <p>Request appointments with gastroenterologists and specialists</p>
                     </div>
 
                     <!-- Tabs for different views -->
                     <div class="scheduling-tabs">
                         <button class="tab-btn active" onclick="switchSchedulingTab('request')">
-                            📝 Request Appointment
+                            Request Appointment
                         </button>
                         <button class="tab-btn" onclick="switchSchedulingTab('pending')">
-                            ⏳ Pending (<span id="pendingCount">0</span>)
+                            Pending (<span id="pendingCount">0</span>)
                         </button>
                         <button class="tab-btn" onclick="switchSchedulingTab('confirmed')">
-                            ✅ Confirmed (<span id="confirmedCount">0</span>)
+                            Confirmed (<span id="confirmedCount">0</span>)
                         </button>
                         <button class="tab-btn" onclick="switchSchedulingTab('specialists')">
-                            👨‍⚕️ Specialists
+                            Specialists
                         </button>
                     </div>
 
@@ -2360,6 +2360,71 @@
     .empty-icon {
         font-size: 3rem;
         margin-bottom: 16px;
+        color: #64748b;
+    }
+    
+    /* Light Mode Text Visibility Fixes */
+    body:not([data-theme="dark"]) {
+        color: #1e293b;
+    }
+    
+    body:not([data-theme="dark"]) .empty-icon {
+        color: #64748b;
+    }
+    
+    body:not([data-theme="dark"]) .empty-text {
+        color: #64748b;
+    }
+    
+    body:not([data-theme="dark"]) .detail-icon {
+        color: #64748b;
+    }
+    
+    body:not([data-theme="dark"]) .appointment-card {
+        background: #ffffff;
+        color: #1e293b;
+    }
+    
+    body:not([data-theme="dark"]) .specialist-card {
+        background: #ffffff;
+        color: #1e293b;
+    }
+    
+    body:not([data-theme="dark"]) label {
+        color: #374151;
+    }
+    
+    body:not([data-theme="dark"]) input,
+    body:not([data-theme="dark"]) select,
+    body:not([data-theme="dark"]) textarea {
+        background: #ffffff;
+        color: #1e293b;
+        border-color: #e5e7eb;
+    }
+    
+    body:not([data-theme="dark"]) .appointment-header,
+    body:not([data-theme="dark"]) .appointment-title,
+    body:not([data-theme="dark"]) .specialist-name {
+        color: #1e293b;
+    }
+    
+    body:not([data-theme="dark"]) .appointment-details,
+    body:not([data-theme="dark"]) .detail-text {
+        color: #475569;
+    }
+    
+    body:not([data-theme="dark"]) .appointment-reason,
+    body:not([data-theme="dark"]) .apt-reason {
+        color: #475569;
+        background: #f8fafc;
+    }
+    
+    body:not([data-theme="dark"]) .page-header h2 {
+        color: #1e293b;
+    }
+    
+    body:not([data-theme="dark"]) .page-header p {
+        color: #64748b;
     }
     
     </style>

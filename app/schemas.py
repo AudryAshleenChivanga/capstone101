@@ -187,6 +187,7 @@ class AdminUserCreate(BaseModel):
     role: str = Field(..., regex="^(clinician|specialist|admin)$")
     full_name: Optional[str] = None
     specialty: Optional[str] = None
+    institution: Optional[str] = None
 
 
 class AdminUserUpdate(BaseModel):

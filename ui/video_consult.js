@@ -5,7 +5,7 @@
 
 // Initialize Video Consultation Page
 async function initVideoConsultation() {
-    console.log('📹 Initializing Video Consultation...');
+    console.log('Initializing Video Consultation...');
     await loadSpecialistsForBooking();
     await loadMyAppointmentRequests();
     await loadUpcomingAppointments();
@@ -33,7 +33,7 @@ async function loadSpecialistsForBooking() {
         if (specialists.length === 0) {
             grid.innerHTML = `
                 <div class="empty-state">
-                    <div class="empty-icon">👨‍⚕️</div>
+                    <div class="empty-icon">[Doctor]</div>
                     <p>No specialists available at the moment</p>
                 </div>
             `;
@@ -213,7 +213,7 @@ async function loadMyAppointmentRequests() {
         if (requests.length === 0) {
             container.innerHTML = `
                 <div class="empty-state">
-                    <div class="empty-icon">📋</div>
+                    <div class="empty-icon">[List]</div>
                     <p>No appointment requests yet</p>
                 </div>
             `;
@@ -274,7 +274,7 @@ async function loadUpcomingAppointments() {
         if (upcoming.length === 0) {
             container.innerHTML = `
                 <div class="empty-state">
-                    <div class="empty-icon">📅</div>
+                    <div class="empty-icon">[Calendar]</div>
                     <p>No upcoming appointments</p>
                 </div>
             `;
@@ -304,7 +304,7 @@ async function loadUpcomingAppointments() {
                 ${apt.video_link ? `
                     <div class="apt-actions">
                         <a href="${apt.video_link}" target="_blank" class="btn btn-primary">
-                            📹 Join Video Session
+                            Join Video Session
                         </a>
                     </div>
                 ` : '<p class="apt-note">Video link will be available closer to the appointment time</p>'}

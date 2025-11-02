@@ -10,7 +10,7 @@ let appointments = [];
 // Initialize Scheduling System
 // ========================================
 async function initScheduling() {
-    console.log('📅 Initializing Scheduling System...');
+    console.log('Initializing Scheduling System...');
     
     // Load specialists
     await loadSpecialists();
@@ -78,7 +78,7 @@ function displaySpecialists() {
     if (specialists.length === 0) {
         container.innerHTML = `
             <div class="empty-state">
-                <div class="empty-icon">👨‍⚕️</div>
+                <div class="empty-icon">[Doctor]</div>
                 <p class="empty-text">No specialists available at the moment</p>
             </div>
         `;
@@ -145,7 +145,7 @@ function displayPendingAppointments(pending) {
     if (pending.length === 0) {
         container.innerHTML = `
             <div class="empty-state">
-                <div class="empty-icon">📭</div>
+                <div class="empty-icon">[Inbox]</div>
                 <p class="empty-text">No pending appointments</p>
             </div>
         `;
@@ -166,11 +166,11 @@ function displayPendingAppointments(pending) {
             
             <div class="appointment-details">
                 <div class="detail-item">
-                    <span class="detail-icon">📅</span>
+                    <span class="detail-icon">[Date]</span>
                     <span class="detail-text">${formatDateTime(apt.preferred_date)}</span>
                 </div>
                 <div class="detail-item">
-                    <span class="detail-icon">🕒</span>
+                    <span class="detail-icon">[Time]</span>
                     <span class="detail-text">Requested ${formatRelativeTime(apt.created_at)}</span>
                 </div>
             </div>
@@ -183,10 +183,10 @@ function displayPendingAppointments(pending) {
             
             <div class="appointment-actions">
                 <button class="btn btn-secondary btn-sm" onclick="cancelAppointment(${apt.id})">
-                    ❌ Cancel
+                    Cancel
                 </button>
                 <button class="btn btn-secondary btn-sm" onclick="viewAppointmentDetails(${apt.id})">
-                    👁️ Details
+                    Details
                 </button>
             </div>
         </div>
@@ -203,7 +203,7 @@ function displayConfirmedAppointments(confirmed) {
     if (confirmed.length === 0) {
         container.innerHTML = `
             <div class="empty-state">
-                <div class="empty-icon">✅</div>
+                <div class="empty-icon">[Check]</div>
                 <p class="empty-text">No confirmed appointments yet</p>
             </div>
         `;
@@ -224,11 +224,11 @@ function displayConfirmedAppointments(confirmed) {
             
             <div class="appointment-details">
                 <div class="detail-item">
-                    <span class="detail-icon">📅</span>
+                    <span class="detail-icon">[Date]</span>
                     <span class="detail-text">${formatDateTime(apt.confirmed_date)}</span>
                 </div>
                 <div class="detail-item">
-                    <span class="detail-icon">⏰</span>
+                    <span class="detail-icon">[Clock]</span>
                     <span class="detail-text">${getTimeUntil(apt.confirmed_date)}</span>
                 </div>
             </div>
@@ -244,11 +244,15 @@ function displayConfirmedAppointments(confirmed) {
             <div class="appointment-actions">
                 ${!apt.video_session_url ? `
                     <button class="btn btn-primary btn-sm" onclick="createVideoSession(${apt.id})">
-                        📹 Generate Video Link
+                        Generate Video Link
                     </button>
-                ` : ''}
+                ` : `
+                    <button class="btn btn-primary btn-sm" onclick="goToVideoConsultation()">
+                        Go to Video Consultation
+                    </button>
+                `}
                 <button class="btn btn-secondary btn-sm" onclick="cancelAppointment(${apt.id})">
-                    ❌ Cancel
+                    Cancel
                 </button>
             </div>
         </div>
@@ -261,18 +265,18 @@ function displayConfirmedAppointments(confirmed) {
 function generateVideoLinkCard(apt) {
     return `
         <div class="video-link-card">
-            <h4>📹 Video Consultation Link</h4>
+            <h4>Video Consultation Link</h4>
             <div class="video-link-input">
                 <input type="text" 
                        value="${apt.video_session_url}" 
                        id="videoLink${apt.id}" 
                        readonly>
                 <button class="btn btn-copy" onclick="copyVideoLink(${apt.id})">
-                    📋 Copy
+                    Copy
                 </button>
             </div>
             <button class="btn btn-primary" onclick="joinVideoSession('${apt.video_session_id}')">
-                🎥 Join Video Call
+                Join Video Call
             </button>
         </div>
     `;
@@ -535,5 +539,16 @@ function getTimeUntil(dateString) {
     return `In ${diffDays} days`;
 }
 
-console.log('📅 Scheduling System JavaScript Loaded!');
+// ========================================
+// Go to Video Consultation Page
+// ========================================
+function goToVideoConsultation() {
+    // Switch to video consultation page
+    const videoNavItem = document.querySelector('[data-page="video"]');
+    if (videoNavItem) {
+        videoNavItem.click();
+    }
+}
+
+console.log('Scheduling System JavaScript Loaded!');
 
