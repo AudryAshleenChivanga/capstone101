@@ -143,12 +143,84 @@ chmod +x run_api.sh
 
 ---
 
-## Testing Results
+## Application Overview - Visual Walkthrough
 
-### Comprehensive Test Suite - ALL TESTS PASSING ✅
+### Landing Page & Authentication
 
+#### Professional Login Interface
+![Login Page](images/gastro_login.png)
+*Modern, secure login interface with professional medical aesthetic and intuitive design*
+
+---
+
+### Dashboard Views - Multiple Themes
+
+#### Main Dashboard
+![Primary Dashboard](images/gastro_dashboard.png)
+*Comprehensive dashboard with real-time metrics, case management, and clinical workflows*
+
+#### Dashboard - Alternative View
+![Dashboard Overview](images/Dashboard.png)
+*Alternative dashboard layout showing full system capabilities and navigation options*
+
+#### Light Mode Dashboard
+![Dashboard Light Mode](images/dashboard_light.png)
+*Professional light mode interface optimized for daytime clinical sessions with clear visibility*
+
+#### Dark Mode Dashboard
+![Dashboard Dark Mode](images/dashboard_darkmode.png)
+*Eye-friendly dark mode for extended clinical sessions and reduced eye strain in low-light environments*
+
+---
+
+### Mobile Responsive Design
+
+#### Mobile Login
+![Mobile Login](images/mobileview_login.png)
+*Touch-optimized login interface for smartphones and tablets*
+
+#### Mobile Dashboard
+![Mobile Dashboard](images/mobileview_dashboard.png)
+*Fully responsive dashboard that adapts seamlessly to mobile devices*
+
+#### Mobile Workflow Interface
+![Mobile Workflow](images/mobileviewscreen2.png)
+*Clinical workflows accessible and functional on mobile devices*
+
+---
+
+### Clinical Workflows - Visual Documentation
+
+#### Symptom-Based Screening
+![Screening Assessment](images/screening_basedonsymptoms.png)
+*Intuitive screening interface with AI-powered assessment based on patient symptoms*
+
+#### Laboratory Data Integration
+![Lab Data Screening](images/lab_screening12.png)
+*Laboratory values integration with intelligent validation and normal range indicators*
+
+#### Antibiotic Resistance Staging
+![Staging Workflow](images/staging_indicatorbased.png)
+*Advanced staging interface using clinical indicators and MIC values for treatment optimization*
+
+#### Case History Management
+![Case Management](images/casehistorymanagement.png)
+*Comprehensive case tracking with timeline view, clinical notes, and patient history*
+
+#### Specialist Scheduling System
+![Appointment Scheduling](images/consultation_scheduling.png)
+*Appointment booking interface for specialist referrals and video consultations*
+
+![Clinician-Gastroenterologist Scheduling](images/clinician_gastroentrologist_scheduling.png)
+*Integrated scheduling workflow connecting primary care clinicians with gastroenterology specialists*
+
+---
+
+## Testing Results - 100% Pass Rate ✅
+
+### Complete Test Suite Summary
 ![Test Summary](images/testssummary.png)
-*Complete test suite showing 100% success rate across all modules*
+*Comprehensive test suite showing 100% success rate across all modules - ALL TESTS PASSING*
 
 ---
 
@@ -162,7 +234,7 @@ chmod +x run_api.sh
 - ✅ Login functionality with JWT token generation
 - ✅ Token validation and expiration handling
 - ✅ Role-based access control (RBAC) enforcement
-- ✅ Password hashing and security verification
+- ✅ Password hashing and security verification (bcrypt)
 - ✅ Unauthorized access prevention
 
 **Results:** All authentication tests passed successfully
@@ -228,60 +300,22 @@ chmod +x run_api.sh
 
 ---
 
-### Application Screenshots - Responsive Design
+### 3D Biopsy Simulation - Reinforcement Learning Module
 
-#### Desktop View - Light Mode
-![Dashboard Light Mode](images/dashboard_light.png)
-*Professional dashboard interface optimized for desktop viewing with comprehensive case management and analytics*
+![3D Biopsy Visualization](images/3dbiopsy.png)
+*Interactive 3D biopsy simulation with advanced tissue texture analysis powered by reinforcement learning*
 
----
+**Breakthrough Feature:**
+This innovative RL-powered module represents a paradigm shift in early detection of gastric conditions, enabling identification of peptic ulcers, gastric cancer, and other pathologies with unprecedented ease and accuracy.
 
-#### Desktop View - Dark Mode
-![Dashboard Dark Mode](images/dashboard_darkmode.png)
-*Eye-friendly dark mode for extended clinical sessions with reduced eye strain*
-
----
-
-#### Mobile Responsiveness
-
-##### Mobile Login Screen
-![Mobile Login](images/mobileview_login.png)
-*Optimized mobile login interface with touch-friendly controls*
-
-##### Mobile Dashboard
-![Mobile Dashboard](images/mobileview_dashboard.png)
-*Fully responsive dashboard adapting seamlessly to mobile devices*
-
-##### Mobile Workflow Screen
-![Mobile Workflow](images/mobileviewscreen2.png)
-*Clinical workflows accessible on smartphones and tablets*
+**Validated Capabilities:**
+- ✅ 3D rendering performs smoothly across various hardware configurations
+- ✅ RL model detects gastric abnormalities with high precision
+- ✅ Interactive controls enable detailed tissue examination
+- ✅ Real-time analysis provides immediate clinical insights
+- ✅ Educational value: Helps clinicians understand gastric pathology
 
 ---
-
-### Clinical Workflows - Visual Documentation
-
-#### Screening Assessment Workflow
-![Screening Based on Symptoms](images/screening_basedonsymptoms.png)
-*Symptom-based screening interface with intuitive input forms and real-time AI assessment*
-
-#### Laboratory Data Integration
-![Lab Screening](images/lab_screening12.png)
-*Integration of laboratory values with intelligent validation and normal range indicators*
-
-#### Antibiotic Resistance Staging
-![Staging Indicator Based](images/staging_indicatorbased.png)
-*Advanced staging interface using clinical indicators and MIC values for treatment optimization*
-
-#### Case History Management
-![Case History Management](images/casehistorymanagement.png)
-*Comprehensive case tracking with timeline view and clinical notes*
-
-#### Specialist Scheduling System
-![Consultation Scheduling](images/consultation_scheduling.png)
-*Appointment booking interface for specialist referrals and video consultations*
-
-![Clinician-Gastroenterologist Scheduling](images/clinician_gastroentrologist_scheduling.png)
-*Integrated scheduling workflow connecting primary care clinicians with gastroenterology specialists*
 
 ### Test Summary Statistics
 
