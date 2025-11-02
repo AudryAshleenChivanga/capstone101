@@ -54,8 +54,8 @@ class PrescriptionResponse(BaseModel):
     patient_id: str
     patient_name: str
     case_id: int
-    prescribed_by: str
-    prescriber_id: int
+    prescribed_by: Optional[str] = "Unknown"
+    prescriber_id: Optional[int] = 0
     diagnosis: str
     medications: List[Dict]
     recommendations: Optional[str]
