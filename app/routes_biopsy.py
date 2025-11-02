@@ -10,6 +10,7 @@ from datetime import datetime
 import logging
 
 from app.rl_biopsy_model import simulate_biopsy_procedure, BiopsyEnvironment, global_agent
+from app.advanced_rl_endoscopy import simulate_capsule_endoscopy, GastricEnvironment, CapsuleRLAgent
 
 router = APIRouter(prefix="/biopsy", tags=["Biopsy Simulation"])
 logger = logging.getLogger(__name__)
@@ -154,4 +155,50 @@ async def analyze_biopsy_results(
     except Exception as e:
         logger.error(f"Biopsy analysis error: {str(e)}")
         raise HTTPException(status_code=500, detail=str(e))
+
+
+@router.post("/capsule-endoscopy")
+async def run_capsule_endoscopy(
+    scenario: str = "mixed",
+    num_steps: int = 80
+):
+    """
+    Run advanced capsule endoscopy simulation with real-time RL learning
+    
+    Scenarios:
+    - healthy: Normal gastric tissue
+    - h_pylori: H. pylori infection
+    - peptic_ulcer: Peptic ulcer disease
+    - gastric_cancer: Gastric cancer
+    - tumor: Gastric tumor
+    - mixed: Multiple pathologies (default)
+    
+    Returns:
+    - Training progress
+    - Capsule path through 3D space
+    - Images captured with pathology detection
+    - Real-time learning metrics
+    """
+    try:
+        logger.info(f"Starting capsule endoscopy simulation: scenario={scenario}")
+        
+        result = simulate_capsule_endoscopy(scenario=scenario, num_steps=num_steps)
+        
+        return {
+            'success': True,
+            'scenario': result['scenario'],
+            'training_log': result['training_log'],
+            'procedure_log': result['procedure_log'],
+            'capsule_path': result['capsule_path'],
+            'images_captured': result['images_captured'],
+            'detections': result['detections'],
+            'detections_by_type': result['detections_by_type'],
+            'total_steps': result['total_steps'],
+            'agent_metrics': result['agent_metrics'],
+            'timestamp': datetime.now().isoformat()
+        }
+        
+    except Exception as e:
+        logger.error(f"Capsule endoscopy error: {str(e)}")
+        raise HTTPException(status_code=500, detail=f"Simulation failed: {str(e)}")
 

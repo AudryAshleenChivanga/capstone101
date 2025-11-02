@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test Biopsy</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 20px;
+            font-family: Arial, sans-serif;
+            background: #0F0A1A;
+            color: white;
+        }
+        
+        .test-box {
+            background: #1A1625;
+            padding: 40px;
+            border-radius: 12px;
+            margin: 20px;
+            border: 2px solid #7C3AED;
+        }
+        
+        button {
+            background: #7C3AED;
+            color: white;
+            padding: 15px 30px;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            cursor: pointer;
+            margin: 10px 0;
+        }
+        
+        button:hover {
+            background: #6D28D9;
+        }
+        
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(10, 50px);
+            gap: 5px;
+            margin-top: 20px;
+        }
+        
+        .cell {
+            width: 50px;
+            height: 50px;
+            background: rgba(124, 58, 237, 0.2);
+            border: 1px solid #2D2440;
+            border-radius: 4px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 10px;
+        }
+        
+        .cell.current {
+            background: #7C3AED;
+        }
+    </style>
+</head>
+<body>
+    <div class="test-box">
+        <h1>✅ Biopsy Simulation Test Page</h1>
+        <p>If you see this, the HTML is loading correctly!</p>
+        
+        <button onclick="testFunction()">Click to Test JavaScript</button>
+        
+        <div id="output"></div>
+        
+        <h3>10x10 Tissue Grid:</h3>
+        <div class="grid" id="testGrid"></div>
+    </div>
+
+    <script>
+        console.log('JavaScript is loading...');
+        
+        function testFunction() {
+            document.getElementById('output').innerHTML = '<p style="color: #10B981; margin-top: 10px;">✅ JavaScript is working!</p>';
+            alert('JavaScript is working!');
+        }
+        
+        // Generate test grid
+        const grid = document.getElementById('testGrid');
+        for (let i = 0; i < 100; i++) {
+            const cell = document.createElement('div');
+            cell.className = 'cell';
+            cell.textContent = i;
+            if (i === 50) cell.classList.add('current');
+            grid.appendChild(cell);
+        }
+        
+        console.log('✅ Page loaded successfully!');
+    </script>
+</body>
+</html>
+
