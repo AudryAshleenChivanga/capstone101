@@ -52,7 +52,7 @@ body {
     width: 100%;
     height: 100%;
     z-index: 0;
-    opacity: 0.15;
+    opacity: 0.4;
     pointer-events: none;
 }
 
@@ -69,9 +69,9 @@ body {
     width: 100%;
     height: 100%;
     background: linear-gradient(135deg, 
-        rgba(76, 59, 143, 0.95) 0%, 
-        rgba(107, 91, 174, 0.90) 50%,
-        rgba(91, 141, 238, 0.85) 100%);
+        rgba(76, 59, 143, 0.88) 0%, 
+        rgba(107, 91, 174, 0.85) 50%,
+        rgba(91, 141, 238, 0.82) 100%);
     z-index: 1;
     pointer-events: none;
 }
@@ -228,10 +228,10 @@ body > .gradient-overlay {
 }
 
 .hero h1 .highlight {
-    color: #FCD34D;
-    text-decoration: underline;
-    text-decoration-color: rgba(252, 211, 77, 0.4);
-    text-underline-offset: 8px;
+    color: rgba(255, 255, 255, 1);
+    background: linear-gradient(to right, rgba(255, 255, 255, 0.2), rgba(255, 255, 255, 0));
+    padding: 0 0.5rem;
+    border-radius: 4px;
 }
 
 .hero .subtitle {
@@ -299,28 +299,9 @@ body > .gradient-overlay {
     object-fit: cover;
 }
 
-/* Trust indicators below hero */
-.trust-indicators {
-    position: relative;
-    z-index: 2;
-    display: flex;
-    gap: 2rem;
-    margin-top: 2rem;
-    padding-top: 2rem;
-    border-top: 1px solid rgba(255, 255, 255, 0.2);
-}
-
-.trust-item {
-    display: flex;
-    align-items: center;
-    gap: 0.5rem;
-    color: rgba(255, 255, 255, 0.9);
-    font-size: 0.875rem;
-    font-weight: 500;
-}
-
-.trust-item .icon {
-    font-size: 1.25rem;
+/* 3D Model container styling */
+.hero-image iframe {
+    background: rgba(0, 0, 0, 0.3);
 }
 
 /* ========================================
@@ -388,11 +369,6 @@ body > .gradient-overlay {
     box-shadow: var(--shadow-lg);
 }
 
-.feature-icon {
-    font-size: 2.5rem;
-    margin-bottom: 1rem;
-}
-
 .feature-card h3 {
     font-size: 1.25rem;
     font-weight: 600;
@@ -444,10 +420,11 @@ body > .gradient-overlay {
 }
 
 .stat-number {
-    font-size: 3rem;
+    font-size: 2.5rem;
     font-weight: 700;
     color: var(--white);
     margin-bottom: 0.5rem;
+    line-height: 1.2;
 }
 
 .stat-label {
@@ -601,23 +578,17 @@ body > .gradient-overlay {
 
 .footer-social {
     display: flex;
-    gap: 1rem;
+    gap: 1.5rem;
 }
 
 .footer-social a {
-    width: 36px;
-    height: 36px;
-    background: rgba(255, 255, 255, 0.1);
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
     color: rgba(255, 255, 255, 0.7);
-    transition: all 0.2s;
+    text-decoration: none;
+    font-size: 0.875rem;
+    transition: color 0.2s;
 }
 
 .footer-social a:hover {
-    background: rgba(255, 255, 255, 0.2);
     color: var(--white);
 }
 
