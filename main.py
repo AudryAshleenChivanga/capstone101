@@ -129,6 +129,10 @@ app.include_router(workflow_router)
 from app.routes_prescription import router as prescription_router
 app.include_router(prescription_router)
 
+# Include biopsy simulation router (RL-based endoscopy)
+from app.routes_biopsy import router as biopsy_router
+app.include_router(biopsy_router)
+
 # Include other enhanced routers
 try:
     from app.routes_profile import router as profile_router
