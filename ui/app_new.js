@@ -1293,31 +1293,31 @@ async function sendSMSToPatient() {
         const statusDiv = document.getElementById('deliveryStatus');
         
         // Build status message
-        let statusHTML = `<strong>✅ Notification Sent!</strong><br>`;
+        let statusHTML = `<strong>Notification Sent!</strong><br>`;
         statusHTML += `Patient: ${result.patient_name}<br>`;
         statusHTML += `Time: ${new Date(result.sent_at).toLocaleString()}<br><br>`;
         
         // Email status
         if (result.delivery.email.attempted) {
             if (result.delivery.email.success) {
-                statusHTML += `📧 Email: ✅ Delivered to ${result.delivery.email.to}<br>`;
+                statusHTML += `<span style="color: #10B981;">Email: Delivered to ${result.delivery.email.to}</span><br>`;
             } else {
-                statusHTML += `📧 Email: ❌ Failed (${result.delivery.email.error})<br>`;
+                statusHTML += `<span style="color: #EF4444;">Email: Failed (${result.delivery.email.error})</span><br>`;
             }
         } else {
-            statusHTML += `📧 Email: Not sent (no email provided)<br>`;
+            statusHTML += `Email: Not sent (no email provided)<br>`;
         }
         
         // SMS status
         if (result.delivery.sms.attempted) {
             if (result.delivery.sms.success) {
                 const mode = result.delivery.sms.simulated ? ' (Simulated)' : '';
-                statusHTML += `📱 SMS: ✅ Sent to ${result.delivery.sms.to}${mode}<br>`;
+                statusHTML += `<span style="color: #10B981;">SMS: Sent to ${result.delivery.sms.to}${mode}</span><br>`;
             } else {
-                statusHTML += `📱 SMS: ❌ Failed (${result.delivery.sms.error})<br>`;
+                statusHTML += `<span style="color: #EF4444;">SMS: Failed (${result.delivery.sms.error})</span><br>`;
             }
         } else {
-            statusHTML += `📱 SMS: Not sent (no phone provided)<br>`;
+            statusHTML += `SMS: Not sent (no phone provided)<br>`;
         }
         
         statusDiv.innerHTML = statusHTML;

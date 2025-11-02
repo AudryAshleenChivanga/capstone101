@@ -18,16 +18,16 @@
     
     --sidebar-bg: #ffffff;
     --sidebar-hover: #f7fafc;
-    --sidebar-active: #667eea;
+    --sidebar-active: #7C3AED;
     
     --border-color: #e2e8f0;
     
-    --primary: #667eea;
-    --primary-hover: #5568d3;
-    --success: #38ef7d;
-    --warning: #ffd93d;
-    --danger: #ff6b6b;
-    --info: #4ecdc4;
+    --primary: #7C3AED;
+    --primary-hover: #6D28D9;
+    --success: #10B981;
+    --warning: #F59E0B;
+    --danger: #EF4444;
+    --info: #3B82F6;
     
     --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.05);
     --shadow: 0 4px 6px rgba(0, 0, 0, 0.07);
@@ -47,7 +47,7 @@
     
     --sidebar-bg: #2d3748;
     --sidebar-hover: #4a5568;
-    --sidebar-active: #667eea;
+    --sidebar-active: #7C3AED;
     
     --border-color: #4a5568;
     
@@ -109,10 +109,9 @@ body {
 }
 
 .logo-image {
-    width: 40px;
+    width: auto;
     height: 40px;
-    border-radius: 8px;
-    object-fit: cover;
+    object-fit: contain;
 }
 
 .logo-section h2 {
@@ -459,19 +458,19 @@ body {
 }
 
 .stat-icon.blue {
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    background: linear-gradient(135deg, #7C3AED 0%, #A78BFA 100%);
 }
 
 .stat-icon.green {
-    background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);
+    background: linear-gradient(135deg, #10B981 0%, #34D399 100%);
 }
 
 .stat-icon.yellow {
-    background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+    background: linear-gradient(135deg, #F59E0B 0%, #FCD34D 100%);
 }
 
 .stat-icon.red {
-    background: linear-gradient(135deg, #fa709a 0%, #fee140 100%);
+    background: linear-gradient(135deg, #EF4444 0%, #FCA5A5 100%);
 }
 
 .stat-content h3 {
