@@ -121,7 +121,7 @@
                 <svg class="nav-icon" viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
                 <span>Case History</span>
             </a>
-            <a href="/ui/capsule_endoscopy.html" class="nav-item external-link" onclick="window.location.href='/ui/capsule_endoscopy.html'; return false;">
+            <a href="#capsule" class="nav-item" data-page="capsule">
                 <svg class="nav-icon" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/></svg>
                 <span>Capsule Endoscopy</span>
             </a>
@@ -840,6 +840,495 @@
                                         </div>
                                     </div>
                                 </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Capsule Endoscopy Page -->
+            <div class="page" id="page-capsule" style="display: none;">
+                <style>
+                    .capsule-main-container {
+                        display: grid;
+                        grid-template-columns: 320px 1fr 350px;
+                        height: calc(100vh - 100px);
+                        gap: 20px;
+                        padding: 0;
+                    }
+                    
+                    .capsule-control-panel {
+                        background: linear-gradient(180deg, rgba(124, 58, 237, 0.1) 0%, rgba(15, 10, 26, 0.5) 100%);
+                        border: 1px solid rgba(124, 58, 237, 0.2);
+                        border-radius: 12px;
+                        overflow-y: auto;
+                        padding: 24px;
+                    }
+                    
+                    .capsule-section {
+                        margin-bottom: 24px;
+                        padding-bottom: 24px;
+                        border-bottom: 1px solid rgba(124, 58, 237, 0.2);
+                    }
+                    
+                    .capsule-section:last-child {
+                        border-bottom: none;
+                    }
+                    
+                    .capsule-section h3 {
+                        font-size: 12px;
+                        font-weight: 600;
+                        color: #A78BFA;
+                        text-transform: uppercase;
+                        letter-spacing: 1px;
+                        margin-bottom: 16px;
+                    }
+                    
+                    .scenario-grid {
+                        display: grid;
+                        grid-template-columns: 1fr 1fr;
+                        gap: 8px;
+                    }
+                    
+                    .scenario-btn {
+                        padding: 12px;
+                        background: rgba(124, 58, 237, 0.1);
+                        border: 1.5px solid rgba(124, 58, 237, 0.3);
+                        border-radius: 8px;
+                        color: #C7BFE6;
+                        font-size: 12px;
+                        cursor: pointer;
+                        transition: all 0.2s;
+                        text-align: center;
+                    }
+                    
+                    .scenario-btn:hover {
+                        background: rgba(124, 58, 237, 0.2);
+                        border-color: #7C3AED;
+                    }
+                    
+                    .scenario-btn.active {
+                        background: #7C3AED;
+                        border-color: #7C3AED;
+                        color: white;
+                    }
+                    
+                    .capsule-btn-primary {
+                        width: 100%;
+                        padding: 14px;
+                        background: linear-gradient(135deg, #7C3AED 0%, #A78BFA 100%);
+                        border: none;
+                        border-radius: 8px;
+                        color: white;
+                        font-size: 14px;
+                        font-weight: 600;
+                        cursor: pointer;
+                        transition: all 0.2s;
+                        display: flex;
+                        align-items: center;
+                        justify-content: center;
+                        gap: 8px;
+                    }
+                    
+                    .capsule-btn-primary:hover {
+                        transform: translateY(-2px);
+                        box-shadow: 0 8px 16px rgba(124, 58, 237, 0.3);
+                    }
+                    
+                    .capsule-btn-primary:disabled {
+                        opacity: 0.5;
+                        cursor: not-allowed;
+                        transform: none;
+                    }
+                    
+                    .capsule-metrics-grid {
+                        display: grid;
+                        grid-template-columns: 1fr 1fr;
+                        gap: 10px;
+                    }
+                    
+                    .capsule-metric {
+                        background: rgba(124, 58, 237, 0.05);
+                        border: 1px solid rgba(124, 58, 237, 0.2);
+                        border-radius: 8px;
+                        padding: 12px;
+                        text-align: center;
+                    }
+                    
+                    .capsule-metric-value {
+                        font-size: 20px;
+                        font-weight: 700;
+                        color: #7C3AED;
+                        margin-bottom: 4px;
+                    }
+                    
+                    .capsule-metric-label {
+                        font-size: 10px;
+                        color: #A78BFA;
+                        text-transform: uppercase;
+                    }
+                    
+                    .capsule-visualization-panel {
+                        background: linear-gradient(180deg, rgba(26, 22, 37, 0.8) 0%, rgba(15, 10, 26, 0.9) 100%);
+                        border: 1px solid rgba(124, 58, 237, 0.2);
+                        border-radius: 12px;
+                        display: flex;
+                        flex-direction: column;
+                        overflow: hidden;
+                    }
+                    
+                    .capsule-viz-header {
+                        padding: 20px 24px;
+                        background: rgba(124, 58, 237, 0.1);
+                        backdrop-filter: blur(10px);
+                        border-bottom: 1px solid rgba(124, 58, 237, 0.2);
+                    }
+                    
+                    .capsule-viz-header h2 {
+                        font-size: 18px;
+                        font-weight: 600;
+                        margin-bottom: 8px;
+                        color: #F3F0FF;
+                    }
+                    
+                    .capsule-status-bar {
+                        display: flex;
+                        gap: 16px;
+                        font-size: 12px;
+                        color: #A78BFA;
+                        flex-wrap: wrap;
+                    }
+                    
+                    .capsule-status-item {
+                        display: flex;
+                        align-items: center;
+                        gap: 6px;
+                    }
+                    
+                    .capsule-status-dot {
+                        width: 8px;
+                        height: 8px;
+                        border-radius: 50%;
+                        background: #10B981;
+                        animation: capsulePulse 2s infinite;
+                    }
+                    
+                    @keyframes capsulePulse {
+                        0%, 100% { opacity: 1; }
+                        50% { opacity: 0.5; }
+                    }
+                    
+                    .capsule-viz-content {
+                        flex: 1;
+                        position: relative;
+                        display: flex;
+                        align-items: center;
+                        justify-content: center;
+                        min-height: 400px;
+                    }
+                    
+                    #threeDCanvas {
+                        width: 100%;
+                        height: 100%;
+                        background: radial-gradient(circle at center, rgba(124, 58, 237, 0.1) 0%, rgba(15, 10, 26, 0.9) 100%);
+                        border-radius: 8px;
+                    }
+                    
+                    .capsule-indicator {
+                        position: absolute;
+                        top: 20px;
+                        left: 50%;
+                        transform: translateX(-50%);
+                        background: rgba(26, 22, 37, 0.95);
+                        backdrop-filter: blur(10px);
+                        padding: 12px 20px;
+                        border-radius: 20px;
+                        border: 1px solid #7C3AED;
+                        display: flex;
+                        align-items: center;
+                        gap: 10px;
+                        font-size: 13px;
+                    }
+                    
+                    .capsule-icon {
+                        width: 24px;
+                        height: 24px;
+                        background: #7C3AED;
+                        border-radius: 50%;
+                        display: flex;
+                        align-items: center;
+                        justify-content: center;
+                        animation: capsuleRotate 2s linear infinite;
+                    }
+                    
+                    @keyframes capsuleRotate {
+                        to { transform: rotate(360deg); }
+                    }
+                    
+                    .capsule-results-panel {
+                        background: linear-gradient(180deg, rgba(124, 58, 237, 0.1) 0%, rgba(15, 10, 26, 0.5) 100%);
+                        border: 1px solid rgba(124, 58, 237, 0.2);
+                        border-radius: 12px;
+                        overflow-y: auto;
+                        padding: 24px;
+                    }
+                    
+                    .capsule-training-section {
+                        margin-bottom: 24px;
+                    }
+                    
+                    .capsule-training-section h3 {
+                        font-size: 14px;
+                        font-weight: 600;
+                        color: #F3F0FF;
+                        margin-bottom: 16px;
+                    }
+                    
+                    .capsule-chart-container {
+                        background: rgba(15, 10, 26, 0.5);
+                        border: 1px solid rgba(124, 58, 237, 0.2);
+                        border-radius: 8px;
+                        padding: 16px;
+                        height: 200px;
+                    }
+                    
+                    .capsule-detections {
+                        margin-bottom: 24px;
+                    }
+                    
+                    .capsule-detection-card {
+                        background: rgba(124, 58, 237, 0.05);
+                        border: 1px solid rgba(124, 58, 237, 0.2);
+                        border-radius: 8px;
+                        padding: 12px;
+                        margin-bottom: 10px;
+                        transition: all 0.2s;
+                    }
+                    
+                    .capsule-detection-card:hover {
+                        background: rgba(124, 58, 237, 0.1);
+                        border-color: #7C3AED;
+                    }
+                    
+                    .capsule-detection-header {
+                        display: flex;
+                        align-items: center;
+                        justify-content: space-between;
+                        margin-bottom: 8px;
+                    }
+                    
+                    .capsule-detection-type {
+                        font-size: 13px;
+                        font-weight: 600;
+                        color: #F3F0FF;
+                    }
+                    
+                    .capsule-detection-confidence {
+                        font-size: 12px;
+                        color: #10B981;
+                        font-weight: 600;
+                    }
+                    
+                    .capsule-detection-details {
+                        font-size: 11px;
+                        color: #A78BFA;
+                        line-height: 1.5;
+                    }
+                    
+                    .capsule-image-section {
+                        margin-top: 24px;
+                    }
+                    
+                    .capsule-image-section h3 {
+                        font-size: 14px;
+                        font-weight: 600;
+                        color: #F3F0FF;
+                        margin-bottom: 16px;
+                    }
+                    
+                    .capsule-image-grid {
+                        display: grid;
+                        grid-template-columns: repeat(4, 1fr);
+                        gap: 8px;
+                    }
+                    
+                    .capsule-image-item {
+                        aspect-ratio: 1;
+                        background: rgba(15, 10, 26, 0.5);
+                        border: 1px solid rgba(124, 58, 237, 0.2);
+                        border-radius: 6px;
+                        overflow: hidden;
+                        cursor: pointer;
+                        transition: all 0.2s;
+                    }
+                    
+                    .capsule-image-item:hover {
+                        transform: scale(1.05);
+                        border-color: #7C3AED;
+                        box-shadow: 0 4px 12px rgba(124, 58, 237, 0.3);
+                    }
+                    
+                    .capsule-image-item img {
+                        width: 100%;
+                        height: 100%;
+                        object-fit: cover;
+                    }
+                    
+                    .capsule-progress-bar {
+                        width: 100%;
+                        height: 6px;
+                        background: rgba(124, 58, 237, 0.2);
+                        border-radius: 3px;
+                        overflow: hidden;
+                        margin-top: 8px;
+                    }
+                    
+                    .capsule-progress-fill {
+                        height: 100%;
+                        background: linear-gradient(90deg, #7C3AED 0%, #A78BFA 100%);
+                        transition: width 0.3s;
+                    }
+                    
+                    @media (max-width: 1200px) {
+                        .capsule-main-container {
+                            grid-template-columns: 1fr;
+                            grid-template-rows: auto 1fr auto;
+                            height: auto;
+                            min-height: calc(100vh - 100px);
+                        }
+                        
+                        .capsule-control-panel,
+                        .capsule-results-panel {
+                            max-height: none;
+                        }
+                        
+                        .capsule-visualization-panel {
+                            min-height: 400px;
+                        }
+                    }
+                </style>
+                
+                <div class="capsule-main-container">
+                    <!-- Left Panel - Controls -->
+                    <div class="capsule-control-panel">
+                        <div class="capsule-section">
+                            <h3>Pathology Scenario</h3>
+                            <div class="scenario-grid">
+                                <button class="scenario-btn" data-scenario="healthy">Healthy</button>
+                                <button class="scenario-btn" data-scenario="h_pylori">H. pylori</button>
+                                <button class="scenario-btn" data-scenario="peptic_ulcer">Peptic Ulcer</button>
+                                <button class="scenario-btn" data-scenario="gastric_cancer">Cancer</button>
+                                <button class="scenario-btn" data-scenario="tumor">Tumor</button>
+                                <button class="scenario-btn active" data-scenario="mixed">Mixed</button>
+                            </div>
+                        </div>
+                        
+                        <div class="capsule-section">
+                            <h3>Simulation Control</h3>
+                            <button class="capsule-btn-primary" id="startBtn">
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <polygon points="5 3 19 12 5 21 5 3"/>
+                                </svg>
+                                Start RL Training & Endoscopy
+                            </button>
+                        </div>
+                        
+                        <div class="capsule-section">
+                            <h3>Real-time Metrics</h3>
+                            <div class="capsule-metrics-grid">
+                                <div class="capsule-metric">
+                                    <div class="capsule-metric-value" id="imagesCount">0</div>
+                                    <div class="capsule-metric-label">Images</div>
+                                </div>
+                                <div class="capsule-metric">
+                                    <div class="capsule-metric-value" id="detectionsCount">0</div>
+                                    <div class="capsule-metric-label">Detections</div>
+                                </div>
+                                <div class="capsule-metric">
+                                    <div class="capsule-metric-value" id="stepsCount">0</div>
+                                    <div class="capsule-metric-label">Steps</div>
+                                </div>
+                                <div class="capsule-metric">
+                                    <div class="capsule-metric-value" id="accuracyValue">0%</div>
+                                    <div class="capsule-metric-label">Accuracy</div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="capsule-section">
+                            <h3>Agent Learning</h3>
+                            <div class="capsule-metric" style="width: 100%; margin-bottom: 8px;">
+                                <div class="capsule-metric-value" id="epsilonValue">30%</div>
+                                <div class="capsule-metric-label">Exploration Rate</div>
+                            </div>
+                            <div class="capsule-progress-bar">
+                                <div class="capsule-progress-fill" id="learningProgress" style="width: 0%"></div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Center Panel - 3D Visualization -->
+                    <div class="capsule-visualization-panel">
+                        <div class="capsule-viz-header">
+                            <h2>3D Capsule Endoscopy Visualization</h2>
+                            <div class="capsule-status-bar">
+                                <div class="capsule-status-item">
+                                    <div class="capsule-status-dot"></div>
+                                    <span>RL Agent Active</span>
+                                </div>
+                                <div class="capsule-status-item">
+                                    <span id="positionDisplay">Position: (7, 7, 0)</span>
+                                </div>
+                                <div class="capsule-status-item">
+                                    <span id="rewardDisplay">Reward: 0.00</span>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="capsule-viz-content">
+                            <div id="threeDCanvas">
+                                <iframe 
+                                    id="sketchfabEmbed"
+                                    title="3D Stomach Model" 
+                                    frameborder="0" 
+                                    allowfullscreen 
+                                    style="width: 100%; height: 100%;"
+                                    src="https://sketchfab.com/models/c98532301b3f42f8b5ecf2e0063e9d73/embed?autostart=1&autospin=0.5&camera=0&ui_theme=dark&ui_hint=0&ui_controls=1&ui_infos=0&ui_inspector=0&ui_stop=0&ui_watermark=0&ui_watermark_link=0&ui_help=0&ui_settings=0&ui_vr=0&ui_ar=0&ui_fullscreen=1&ui_annotations=0&transparent=1&preload=1&dnt=1">
+                                </iframe>
+                            </div>
+                            <div class="capsule-indicator">
+                                <div class="capsule-icon">
+                                    <svg width="12" height="12" viewBox="0 0 24 24" fill="white">
+                                        <circle cx="12" cy="12" r="8"/>
+                                    </svg>
+                                </div>
+                                <span id="capsuleStatus">Capsule Ready</span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Right Panel - Results & Analysis -->
+                    <div class="capsule-results-panel">
+                        <div class="capsule-training-section">
+                            <h3>Training Progress</h3>
+                            <div class="capsule-chart-container">
+                                <canvas id="trainingChart"></canvas>
+                            </div>
+                        </div>
+                        
+                        <div class="capsule-detections">
+                            <h3>Detections</h3>
+                            <div id="detectionsContainer">
+                                <p style="color: #A78BFA; font-size: 13px; text-align: center; padding: 20px;">
+                                    No detections yet. Start the simulation to begin.
+                                </p>
+                            </div>
+                        </div>
+                        
+                        <div class="capsule-image-section">
+                            <h3>Captured Images</h3>
+                            <div class="capsule-image-grid" id="imageGallery">
+                                <!-- Images will be added dynamically -->
                             </div>
                         </div>
                     </div>
@@ -1882,5 +2371,6 @@
 <script src="workflow_forms.js?v=20241028-v1"></script>
 <script src="scheduling.js?v=20241022-v8"></script>
 <script src="video_consult.js?v=20241022-v8"></script>
+<script src="capsule_endoscopy.js?v=20250102-v1"></script>
 </body>
 </html>
