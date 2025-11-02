@@ -18,7 +18,7 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="landing_healthcare.css">
+    <link rel="stylesheet" href="landing_clean.css">
     <link rel="stylesheet" href="mobile-responsive.css">
 </head>
 <body>
@@ -37,7 +37,9 @@
     <nav class="navbar" role="navigation" aria-label="Main navigation">
         <div class="container">
             <div class="nav-brand">
-                <div class="brand-icon" aria-hidden="true">🔬</div>
+                <div class="brand-icon" aria-hidden="true">
+                    <img src="images/gastrocdss-high-resolution-logo-transparent.png" alt="GastroCDSS Logo" onerror="this.onerror=null; this.innerHTML='🔬';">
+                </div>
                 <div class="brand-text">
                     <h1>H. pylori CDSS</h1>
                     <p>Clinical Decision Support</p>
@@ -58,6 +60,12 @@
          ======================================== -->
     <main id="main-content">
         <section class="hero">
+            <!-- 3D Background with Purple Overlay -->
+            <div class="hero-background-3d">
+                <iframe title="3D Medical Visualization" frameborder="0" allowfullscreen mozallowfullscreen="true" webkitallowfullscreen="true" allow="autoplay; fullscreen" src="https://sketchfab.com/models/c98532301b3f42f8b5ecf2e0063e9d73/embed?autostart=1&autospin=0.2&camera=0&ui_theme=dark&ui_hint=0&ui_controls=0&ui_infos=0&ui_inspector=0&ui_stop=0&ui_watermark=0&ui_watermark_link=0&ui_help=0&ui_settings=0&ui_vr=0&ui_ar=0&ui_fullscreen=0&ui_annotations=0&ui_fadeout=0&ui_loading=0&transparent=1&preload=1&dnt=1"></iframe>
+            </div>
+            <div class="hero-overlay"></div>
+            
             <div class="container">
                 <div class="hero-content">
                     <!-- Trust Badge -->
@@ -90,25 +98,31 @@
                         </a>
                     </div>
 
-                    <!-- Trust Indicators -->
-                    <div class="trust-indicators">
-                        <div class="trust-item">
-                            <span class="icon" aria-hidden="true">🔒</span>
-                            <span>HIPAA Secure</span>
-                        </div>
-                        <div class="trust-item">
-                            <span class="icon" aria-hidden="true">✓</span>
-                            <span>FDA Compliant</span>
-                        </div>
-                        <div class="trust-item">
-                            <span class="icon" aria-hidden="true">📊</span>
-                            <span>Evidence-Based</span>
-                        </div>
-                        <div class="trust-item">
-                            <span class="icon" aria-hidden="true">🏥</span>
-                            <span>Clinical Grade</span>
-                        </div>
-                    </div>
+                </div>
+                
+                <!-- Hero Image -->
+                <div class="hero-image">
+                    <img src="images/Dr_Angie.webp" alt="Healthcare professional using H. pylori CDSS platform" onerror="this.onerror=null; this.src='data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 800 600%22%3E%3Crect fill=%22%23f5f7fa%22 width=%22800%22 height=%22600%22/%3E%3Ctext x=%2250%25%22 y=%2250%25%22 text-anchor=%22middle%22 fill=%22%236b7280%22 font-family=%22sans-serif%22 font-size=%2224%22%3EHealthcare Professional%3C/text%3E%3C/svg%3E';">
+                </div>
+            </div>
+            
+            <!-- Trust Indicators -->
+            <div class="trust-indicators" style="max-width: 1280px; margin: 0 auto; padding: 0 2rem;">
+                <div class="trust-item">
+                    <span class="icon" aria-hidden="true">🔒</span>
+                    <span>HIPAA Secure</span>
+                </div>
+                <div class="trust-item">
+                    <span class="icon" aria-hidden="true">✓</span>
+                    <span>FDA Compliant</span>
+                </div>
+                <div class="trust-item">
+                    <span class="icon" aria-hidden="true">📊</span>
+                    <span>Evidence-Based</span>
+                </div>
+                <div class="trust-item">
+                    <span class="icon" aria-hidden="true">🏥</span>
+                    <span>Clinical Grade</span>
                 </div>
             </div>
         </section>
@@ -352,6 +366,11 @@
                         © 2025 H. pylori CDSS. All rights reserved. 
                         | This is a clinical decision support tool. Not a substitute for professional medical judgment.
                     </p>
+                    <div class="footer-social">
+                        <a href="#" aria-label="Twitter"><span>𝕏</span></a>
+                        <a href="#" aria-label="LinkedIn"><span>in</span></a>
+                        <a href="#" aria-label="GitHub"><span>⚡</span></a>
+                    </div>
                 </div>
             </div>
         </footer>
