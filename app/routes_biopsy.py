@@ -3,14 +3,13 @@ Biopsy Simulation API Routes
 Provides endpoints for RL-based 3D endoscopy/biopsy simulation
 """
 
-from fastapi import APIRouter, HTTPException, Depends
+from fastapi import APIRouter, HTTPException
 from pydantic import BaseModel, Field
 from typing import List, Dict, Optional
 from datetime import datetime
 import logging
 
 from app.rl_biopsy_model import simulate_biopsy_procedure, BiopsyEnvironment, global_agent
-from app.auth import get_current_user
 
 router = APIRouter(prefix="/biopsy", tags=["Biopsy Simulation"])
 logger = logging.getLogger(__name__)
@@ -43,8 +42,7 @@ class BiopsyActionRequest(BaseModel):
 
 @router.post("/simulate", response_model=BiopsySimulationResponse)
 async def run_biopsy_simulation(
-    request: BiopsySimulationRequest,
-    current_user: dict = Depends(get_current_user)
+    request: BiopsySimulationRequest
 ):
     """
     Run complete RL-based biopsy simulation
@@ -53,7 +51,7 @@ async def run_biopsy_simulation(
     based on learned patterns of H. pylori infection distribution.
     """
     try:
-        logger.info(f"Starting biopsy simulation for user {current_user.get('username')}")
+        logger.info("Starting biopsy simulation")
         
         # Run simulation with trained RL agent
         result = simulate_biopsy_procedure(num_steps=request.simulation_steps)
@@ -82,8 +80,7 @@ async def run_biopsy_simulation(
 
 @router.post("/step")
 async def execute_biopsy_action(
-    request: BiopsyActionRequest,
-    current_user: dict = Depends(get_current_user)
+    request: BiopsyActionRequest
 ):
     """
     Execute a single action in interactive biopsy mode
@@ -110,7 +107,7 @@ async def execute_biopsy_action(
 
 
 @router.get("/agent-stats")
-async def get_agent_statistics(current_user: dict = Depends(get_current_user)):
+async def get_agent_statistics():
     """
     Get statistics about the trained RL agent
     """
@@ -139,8 +136,7 @@ async def get_agent_statistics(current_user: dict = Depends(get_current_user)):
 
 @router.post("/analyze-results")
 async def analyze_biopsy_results(
-    biopsies: List[Dict],
-    current_user: dict = Depends(get_current_user)
+    biopsies: List[Dict]
 ):
     """
     Analyze collected biopsy samples and provide clinical recommendations

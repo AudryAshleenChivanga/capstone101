@@ -27,11 +27,9 @@ let simulationState = {
 function init() {
     console.log('Initializing RL Biopsy Simulation...');
     
-    // Check authentication
+    // Check authentication (optional - will work without login for demo)
     if (!authToken) {
-        alert('Please login to access the simulation');
-        window.location.href = 'login.html';
-        return;
+        console.warn('No auth token found - some features may be limited');
     }
     
     // Generate initial tissue grid
@@ -40,8 +38,10 @@ function init() {
     // Setup event listeners
     setupEventListeners();
     
-    // Load agent statistics
-    loadAgentStats();
+    // Load agent statistics (if authenticated)
+    if (authToken) {
+        loadAgentStats();
+    }
     
     console.log('Simulation ready');
 }
@@ -103,10 +103,13 @@ function generateTissueGrid() {
  */
 async function loadAgentStats() {
     try {
+        const headers = {};
+        if (authToken) {
+            headers['Authorization'] = `Bearer ${authToken}`;
+        }
+        
         const response = await fetch(`${API_BASE}/biopsy/agent-stats`, {
-            headers: {
-                'Authorization': `Bearer ${authToken}`
-            }
+            headers: headers
         });
         
         if (response.ok) {
@@ -116,6 +119,8 @@ async function loadAgentStats() {
             // Update UI with agent info
             const agentInfo = data.agent_info;
             console.log(`Q-Learning Agent: ${agentInfo.q_table_size} states learned`);
+        } else {
+            console.warn('Could not load agent stats (authentication may be required)');
         }
     } catch (error) {
         console.error('Failed to load agent stats:', error);
@@ -138,12 +143,16 @@ async function startSimulation() {
     simulationState.isRunning = true;
     
     try {
+        const headers = {
+            'Content-Type': 'application/json'
+        };
+        if (authToken) {
+            headers['Authorization'] = `Bearer ${authToken}`;
+        }
+        
         const response = await fetch(`${API_BASE}/biopsy/simulate`, {
             method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                'Authorization': `Bearer ${authToken}`
-            },
+            headers: headers,
             body: JSON.stringify({
                 simulation_steps: 30,
                 difficulty: 'medium'
@@ -151,7 +160,8 @@ async function startSimulation() {
         });
         
         if (!response.ok) {
-            throw new Error('Simulation request failed');
+            const errorData = await response.json().catch(() => ({}));
+            throw new Error(errorData.detail || 'Simulation request failed');
         }
         
         const result = await response.json();
