@@ -849,6 +849,7 @@
             <!-- Capsule Endoscopy Page -->
             <div class="page" id="page-capsule" style="display: none;">
                 <style>
+                    /* Capsule Endoscopy - Theme-Adaptive Styles */
                     .capsule-main-container {
                         display: grid;
                         grid-template-columns: 320px 1fr 350px;
@@ -858,8 +859,8 @@
                     }
                     
                     .capsule-control-panel {
-                        background: linear-gradient(180deg, rgba(124, 58, 237, 0.1) 0%, rgba(15, 10, 26, 0.5) 100%);
-                        border: 1px solid rgba(124, 58, 237, 0.2);
+                        background: var(--bg-secondary);
+                        border: 1px solid var(--border-color);
                         border-radius: 12px;
                         overflow-y: auto;
                         padding: 24px;
@@ -868,7 +869,7 @@
                     .capsule-section {
                         margin-bottom: 24px;
                         padding-bottom: 24px;
-                        border-bottom: 1px solid rgba(124, 58, 237, 0.2);
+                        border-bottom: 1px solid var(--border-color);
                     }
                     
                     .capsule-section:last-child {
@@ -878,7 +879,7 @@
                     .capsule-section h3 {
                         font-size: 12px;
                         font-weight: 600;
-                        color: #A78BFA;
+                        color: var(--text-tertiary);
                         text-transform: uppercase;
                         letter-spacing: 1px;
                         margin-bottom: 16px;
@@ -893,9 +894,9 @@
                     .scenario-btn {
                         padding: 12px;
                         background: rgba(124, 58, 237, 0.1);
-                        border: 1.5px solid rgba(124, 58, 237, 0.3);
+                        border: 1.5px solid var(--border-color);
                         border-radius: 8px;
-                        color: #C7BFE6;
+                        color: var(--text-secondary);
                         font-size: 12px;
                         cursor: pointer;
                         transition: all 0.2s;
@@ -904,19 +905,19 @@
                     
                     .scenario-btn:hover {
                         background: rgba(124, 58, 237, 0.2);
-                        border-color: #7C3AED;
+                        border-color: var(--primary);
                     }
                     
                     .scenario-btn.active {
-                        background: #7C3AED;
-                        border-color: #7C3AED;
+                        background: var(--primary);
+                        border-color: var(--primary);
                         color: white;
                     }
                     
                     .capsule-btn-primary {
                         width: 100%;
                         padding: 14px;
-                        background: linear-gradient(135deg, #7C3AED 0%, #A78BFA 100%);
+                        background: linear-gradient(135deg, var(--primary) 0%, #A78BFA 100%);
                         border: none;
                         border-radius: 8px;
                         color: white;
@@ -948,8 +949,8 @@
                     }
                     
                     .capsule-metric {
-                        background: rgba(124, 58, 237, 0.05);
-                        border: 1px solid rgba(124, 58, 237, 0.2);
+                        background: var(--bg-tertiary);
+                        border: 1px solid var(--border-color);
                         border-radius: 8px;
                         padding: 12px;
                         text-align: center;
@@ -958,19 +959,19 @@
                     .capsule-metric-value {
                         font-size: 20px;
                         font-weight: 700;
-                        color: #7C3AED;
+                        color: var(--primary);
                         margin-bottom: 4px;
                     }
                     
                     .capsule-metric-label {
                         font-size: 10px;
-                        color: #A78BFA;
+                        color: var(--text-tertiary);
                         text-transform: uppercase;
                     }
                     
                     .capsule-visualization-panel {
-                        background: linear-gradient(180deg, rgba(26, 22, 37, 0.8) 0%, rgba(15, 10, 26, 0.9) 100%);
-                        border: 1px solid rgba(124, 58, 237, 0.2);
+                        background: var(--bg-secondary);
+                        border: 1px solid var(--border-color);
                         border-radius: 12px;
                         display: flex;
                         flex-direction: column;
@@ -979,23 +980,23 @@
                     
                     .capsule-viz-header {
                         padding: 20px 24px;
-                        background: rgba(124, 58, 237, 0.1);
+                        background: var(--bg-tertiary);
                         backdrop-filter: blur(10px);
-                        border-bottom: 1px solid rgba(124, 58, 237, 0.2);
+                        border-bottom: 1px solid var(--border-color);
                     }
                     
                     .capsule-viz-header h2 {
                         font-size: 18px;
                         font-weight: 600;
                         margin-bottom: 8px;
-                        color: #F3F0FF;
+                        color: var(--text-primary);
                     }
                     
                     .capsule-status-bar {
                         display: flex;
                         gap: 16px;
                         font-size: 12px;
-                        color: #A78BFA;
+                        color: var(--text-tertiary);
                         flex-wrap: wrap;
                     }
                     
@@ -1009,7 +1010,7 @@
                         width: 8px;
                         height: 8px;
                         border-radius: 50%;
-                        background: #10B981;
+                        background: var(--success);
                         animation: capsulePulse 2s infinite;
                     }
                     
@@ -1025,12 +1026,13 @@
                         align-items: center;
                         justify-content: center;
                         min-height: 400px;
+                        background: var(--bg-primary);
                     }
                     
                     #threeDCanvas {
                         width: 100%;
                         height: 100%;
-                        background: radial-gradient(circle at center, rgba(124, 58, 237, 0.1) 0%, rgba(15, 10, 26, 0.9) 100%);
+                        background: radial-gradient(circle at center, var(--bg-secondary) 0%, var(--bg-primary) 100%);
                         border-radius: 8px;
                     }
                     
@@ -1039,21 +1041,22 @@
                         top: 20px;
                         left: 50%;
                         transform: translateX(-50%);
-                        background: rgba(26, 22, 37, 0.95);
+                        background: var(--bg-secondary);
                         backdrop-filter: blur(10px);
                         padding: 12px 20px;
                         border-radius: 20px;
-                        border: 1px solid #7C3AED;
+                        border: 1px solid var(--primary);
                         display: flex;
                         align-items: center;
                         gap: 10px;
                         font-size: 13px;
+                        color: var(--text-primary);
                     }
                     
                     .capsule-icon {
                         width: 24px;
                         height: 24px;
-                        background: #7C3AED;
+                        background: var(--primary);
                         border-radius: 50%;
                         display: flex;
                         align-items: center;
@@ -1066,8 +1069,8 @@
                     }
                     
                     .capsule-results-panel {
-                        background: linear-gradient(180deg, rgba(124, 58, 237, 0.1) 0%, rgba(15, 10, 26, 0.5) 100%);
-                        border: 1px solid rgba(124, 58, 237, 0.2);
+                        background: var(--bg-secondary);
+                        border: 1px solid var(--border-color);
                         border-radius: 12px;
                         overflow-y: auto;
                         padding: 24px;
@@ -1080,13 +1083,13 @@
                     .capsule-training-section h3 {
                         font-size: 14px;
                         font-weight: 600;
-                        color: #F3F0FF;
+                        color: var(--text-primary);
                         margin-bottom: 16px;
                     }
                     
                     .capsule-chart-container {
-                        background: rgba(15, 10, 26, 0.5);
-                        border: 1px solid rgba(124, 58, 237, 0.2);
+                        background: var(--bg-tertiary);
+                        border: 1px solid var(--border-color);
                         border-radius: 8px;
                         padding: 16px;
                         height: 200px;
@@ -1096,9 +1099,16 @@
                         margin-bottom: 24px;
                     }
                     
+                    .capsule-detections h3 {
+                        font-size: 14px;
+                        font-weight: 600;
+                        color: var(--text-primary);
+                        margin-bottom: 16px;
+                    }
+                    
                     .capsule-detection-card {
-                        background: rgba(124, 58, 237, 0.05);
-                        border: 1px solid rgba(124, 58, 237, 0.2);
+                        background: var(--bg-tertiary);
+                        border: 1px solid var(--border-color);
                         border-radius: 8px;
                         padding: 12px;
                         margin-bottom: 10px;
@@ -1106,8 +1116,8 @@
                     }
                     
                     .capsule-detection-card:hover {
-                        background: rgba(124, 58, 237, 0.1);
-                        border-color: #7C3AED;
+                        background: var(--bg-secondary);
+                        border-color: var(--primary);
                     }
                     
                     .capsule-detection-header {
@@ -1120,18 +1130,18 @@
                     .capsule-detection-type {
                         font-size: 13px;
                         font-weight: 600;
-                        color: #F3F0FF;
+                        color: var(--text-primary);
                     }
                     
                     .capsule-detection-confidence {
                         font-size: 12px;
-                        color: #10B981;
+                        color: var(--success);
                         font-weight: 600;
                     }
                     
                     .capsule-detection-details {
                         font-size: 11px;
-                        color: #A78BFA;
+                        color: var(--text-secondary);
                         line-height: 1.5;
                     }
                     
@@ -1142,7 +1152,7 @@
                     .capsule-image-section h3 {
                         font-size: 14px;
                         font-weight: 600;
-                        color: #F3F0FF;
+                        color: var(--text-primary);
                         margin-bottom: 16px;
                     }
                     
@@ -1154,8 +1164,8 @@
                     
                     .capsule-image-item {
                         aspect-ratio: 1;
-                        background: rgba(15, 10, 26, 0.5);
-                        border: 1px solid rgba(124, 58, 237, 0.2);
+                        background: var(--bg-tertiary);
+                        border: 1px solid var(--border-color);
                         border-radius: 6px;
                         overflow: hidden;
                         cursor: pointer;
@@ -1164,7 +1174,7 @@
                     
                     .capsule-image-item:hover {
                         transform: scale(1.05);
-                        border-color: #7C3AED;
+                        border-color: var(--primary);
                         box-shadow: 0 4px 12px rgba(124, 58, 237, 0.3);
                     }
                     
@@ -1177,7 +1187,7 @@
                     .capsule-progress-bar {
                         width: 100%;
                         height: 6px;
-                        background: rgba(124, 58, 237, 0.2);
+                        background: var(--bg-tertiary);
                         border-radius: 3px;
                         overflow: hidden;
                         margin-top: 8px;
@@ -1185,7 +1195,7 @@
                     
                     .capsule-progress-fill {
                         height: 100%;
-                        background: linear-gradient(90deg, #7C3AED 0%, #A78BFA 100%);
+                        background: linear-gradient(90deg, var(--primary) 0%, #A78BFA 100%);
                         transition: width 0.3s;
                     }
                     
@@ -1319,7 +1329,7 @@
                         <div class="capsule-detections">
                             <h3>Detections</h3>
                             <div id="detectionsContainer">
-                                <p style="color: #A78BFA; font-size: 13px; text-align: center; padding: 20px;">
+                                <p style="color: var(--text-tertiary); font-size: 13px; text-align: center; padding: 20px;">
                                     No detections yet. Start the simulation to begin.
                                 </p>
                             </div>

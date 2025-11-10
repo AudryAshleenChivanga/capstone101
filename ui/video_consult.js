@@ -205,8 +205,8 @@ async function submitBooking(event, specialistId) {
 // Load my appointment requests
 async function loadMyAppointmentRequests() {
     try {
-        const response = await apiRequest('/scheduling/appointments/my-requests');
-        const requests = response.appointments || [];
+        const response = await apiRequest('/appointments/my-requests');
+        const requests = response || [];
         
         const container = document.getElementById('my-requests-list');
         
@@ -266,8 +266,8 @@ async function loadMyAppointmentRequests() {
 // Load upcoming appointments
 async function loadUpcomingAppointments() {
     try {
-        const response = await apiRequest('/scheduling/appointments/upcoming');
-        const upcoming = response.appointments || [];
+        const response = await apiRequest('/appointments/my-appointments');
+        const upcoming = response || [];
         
         const container = document.getElementById('upcoming-appointments-list');
         

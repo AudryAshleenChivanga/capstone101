@@ -1,8 +1,11 @@
 """Document management and signature workflow endpoints."""
 from fastapi import APIRouter, Depends, HTTPException, status, Body, Query
+from fastapi.responses import FileResponse
 from sqlalchemy.orm import Session
 from typing import Dict, Any, Optional, List
 import json
+import os
+import tempfile
 from datetime import datetime
 
 from app.db import get_db
@@ -11,6 +14,7 @@ from app.models import User, Case
 from app.schemas import DocumentSign, DocumentEdit
 from app.utils.sms_sender import SMSSender
 from app.utils.email_sender import EmailSender
+from app.utils.pdf_generator import generate_recommendation_pdf
 
 router = APIRouter(prefix="/documents", tags=["documents"])
 
@@ -160,6 +164,96 @@ async def sign_case_document(
         "signed_at": case.signed_at,
         "signed_by": current_user.full_name or current_user.username
     }
+
+
+@router.get("/{case_id}/generate-pdf")
+async def generate_case_pdf(
+    case_id: int,
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user)
+):
+    """
+    Generate and download a signed PDF document for the case.
+    REQUIRES: Case must be signed before PDF generation.
+    """
+    case = db.query(Case).filter(Case.id == case_id).first()
+    if not case:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="Case not found"
+        )
+    
+    # Check authorization
+    if current_user.role != "admin" and case.user_id != current_user.id:
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="Not authorized to generate PDF for this case"
+        )
+    
+    # CRITICAL: Must be signed before PDF generation
+    if not case.signed_at or not case.signature_data:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Case must be signed before generating PDF. Please sign the document first (Step 2)."
+        )
+    
+    # Prepare case data for PDF
+    case_data = {
+        'id': case.id,
+        'patient_name': case.patient_name,
+        'patient_pseudo_id': case.patient_pseudo_id,
+        'patient_email': case.patient_email,
+        'patient_phone': case.patient_phone,
+        'created_at': case.created_at.strftime('%Y-%m-%d %H:%M'),
+        'screen_prob': case.screen_prob,
+        'stage_pred': case.stage_pred,
+        'recommendations': case.recommendations or [],
+        'edited_recommendations': case.edited_recommendations or case.recommendations,
+        'signature_data': case.signature_data,
+        'signed_at': case.signed_at.strftime('%Y-%m-%d %H:%M'),
+        'notes': f"Case #{case.id} - Generated on {datetime.now().strftime('%Y-%m-%d %H:%M')}"
+    }
+    
+    # Prepare user data for PDF
+    user_data = {
+        'username': current_user.username,
+        'full_name': current_user.full_name,
+        'email': current_user.email,
+        'institution': current_user.institution or 'Medical Institution',
+        'specialty': current_user.specialty or 'Gastroenterology',
+        'license_number': current_user.license_number or 'N/A',
+        'digital_signature': case.signature_data  # Include signature in user data
+    }
+    
+    # Generate PDF in temporary directory
+    temp_dir = tempfile.gettempdir()
+    pdf_filename = f"case_{case.id}_signed_{datetime.now().strftime('%Y%m%d_%H%M%S')}.pdf"
+    pdf_path = os.path.join(temp_dir, pdf_filename)
+    
+    try:
+        # Generate the PDF
+        generate_recommendation_pdf(case_data, user_data, pdf_path)
+        
+        # Return PDF file for download
+        return FileResponse(
+            path=pdf_path,
+            filename=pdf_filename,
+            media_type='application/pdf',
+            headers={
+                "Content-Disposition": f"attachment; filename={pdf_filename}",
+                "X-Case-ID": str(case.id),
+                "X-Signed-At": case.signed_at.isoformat()
+            }
+        )
+        
+    except Exception as e:
+        # Clean up temp file if exists
+        if os.path.exists(pdf_path):
+            os.remove(pdf_path)
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=f"Failed to generate PDF: {str(e)}"
+        )
 
 
 @router.post("/{case_id}/send-notification")

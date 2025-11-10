@@ -35,18 +35,22 @@ function init() {
     }
     
     const scenarioBtns = capsulePage.querySelectorAll('.scenario-btn');
+    const newBtns = [];
     scenarioBtns.forEach(btn => {
         // Remove old listeners by cloning
         const newBtn = btn.cloneNode(true);
         btn.parentNode.replaceChild(newBtn, btn);
+        newBtns.push(newBtn);
         
         newBtn.addEventListener('click', function() {
-            scenarioBtns.forEach(b => b.classList.remove('active'));
+            // Remove active class from all new buttons
+            newBtns.forEach(b => b.classList.remove('active'));
             this.classList.add('active');
             simulationState.selectedScenario = this.dataset.scenario;
             console.log('Selected scenario:', simulationState.selectedScenario);
         });
     });
+    console.log(`Initialized ${newBtns.length} scenario buttons`);
     
     // Setup start button
     const startBtn = document.getElementById('startBtn');
@@ -54,7 +58,13 @@ function init() {
         // Remove old listener by cloning
         const newStartBtn = startBtn.cloneNode(true);
         startBtn.parentNode.replaceChild(newStartBtn, startBtn);
-        newStartBtn.addEventListener('click', startSimulation);
+        newStartBtn.addEventListener('click', function() {
+            console.log('Start button clicked!');
+            startSimulation();
+        });
+        console.log('Start button event listener attached');
+    } else {
+        console.error('Start button not found!');
     }
     
     // Initialize chart
@@ -152,7 +162,7 @@ async function startSimulation() {
     
     // Reset metrics
     updateMetrics(0, 0, 0, 0);
-    document.getElementById('detectionsList').innerHTML = '<p style="color: #9B8FC9; font-size: 13px;">Training agent and running simulation...</p>';
+    document.getElementById('detectionsContainer').innerHTML = '<p style="color: var(--text-tertiary); font-size: 13px; text-align: center; padding: 20px;">Training agent and running simulation...</p>';
     document.getElementById('imageGallery').innerHTML = '';
     
     try {
@@ -187,7 +197,7 @@ async function startSimulation() {
     } catch (error) {
         console.error('Simulation error:', error);
         showNotification('Simulation failed: ' + error.message, 'error');
-        document.getElementById('detectionsList').innerHTML = `<p style="color: #EF4444; font-size: 13px;">Error: ${error.message}</p>`;
+        document.getElementById('detectionsContainer').innerHTML = `<p style="color: var(--danger); font-size: 13px; text-align: center; padding: 20px;">Error: ${error.message}</p>`;
     } finally {
         simulationState.isRunning = false;
         startBtn.disabled = false;
@@ -298,10 +308,10 @@ function displayResults(result) {
  * Display pathology detections
  */
 function displayDetections(detections, detectionsByType) {
-    const container = document.getElementById('detectionsList');
+    const container = document.getElementById('detectionsContainer');
     
     if (!detections || detections.length === 0) {
-        container.innerHTML = '<p style="color: #9B8FC9; font-size: 13px;">No significant pathologies detected</p>';
+        container.innerHTML = '<p style="color: var(--text-tertiary); font-size: 13px; text-align: center; padding: 20px;">No significant pathologies detected</p>';
         return;
     }
     
@@ -332,7 +342,7 @@ function displayDetections(detections, detectionsByType) {
  */
 function createDetectionCard(condition, items, avgSeverity) {
     const card = document.createElement('div');
-    card.className = 'detection-card';
+    card.className = 'capsule-detection-card';
     
     let severityClass = 'severity-low';
     let severityText = 'Low';
@@ -348,11 +358,11 @@ function createDetectionCard(condition, items, avgSeverity) {
     const conditionName = condition.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase());
     
     card.innerHTML = `
-        <div class="detection-header">
-            <span class="condition-name">${conditionName}</span>
+        <div class="capsule-detection-header">
+            <span class="capsule-detection-type">${conditionName}</span>
             <span class="severity-badge ${severityClass}">${severityText} Severity</span>
         </div>
-        <div class="detection-details">
+        <div class="capsule-detection-details">
             <strong>Locations found:</strong> ${items.length}<br>
             <strong>Average severity:</strong> ${(avgSeverity * 100).toFixed(1)}%<br>
             <strong>First detected:</strong> Step ${items[0].timestamp}
@@ -369,7 +379,7 @@ function displayImages(images) {
     const gallery = document.getElementById('imageGallery');
     
     if (!images || images.length === 0) {
-        gallery.innerHTML = '<p style="color: #9B8FC9; font-size: 13px; grid-column: 1/-1;">No images captured</p>';
+        gallery.innerHTML = '<p style="color: var(--text-tertiary); font-size: 13px; grid-column: 1/-1; text-align: center; padding: 20px;">No images captured</p>';
         return;
     }
     
@@ -380,7 +390,7 @@ function displayImages(images) {
     
     displayImages.forEach((img, index) => {
         const imgCard = document.createElement('div');
-        imgCard.className = 'captured-image';
+        imgCard.className = 'capsule-image-item';
         imgCard.title = `${img.condition} - Severity: ${(img.severity * 100).toFixed(0)}%`;
         
         // Color code by severity
@@ -390,10 +400,10 @@ function displayImages(images) {
         
         imgCard.style.background = bgColor;
         imgCard.innerHTML = `
-            <div style="text-align: center;">
-                <div style="font-size: 18px; margin-bottom: 4px;">📸</div>
-                <div style="font-size: 10px;">Image ${index + 1}</div>
-                <div style="font-size: 9px; color: #7C3AED;">${(img.severity * 100).toFixed(0)}%</div>
+            <div style="text-align: center; padding: 20px;">
+                <div style="font-size: 24px; margin-bottom: 8px;">📸</div>
+                <div style="font-size: 11px; color: var(--text-primary); font-weight: 600;">Image ${index + 1}</div>
+                <div style="font-size: 10px; color: var(--primary);">${(img.severity * 100).toFixed(0)}%</div>
             </div>
         `;
         
