@@ -114,6 +114,9 @@ function renderCaseTable(cases) {
                         <button onclick="viewCaseDetail(${caseItem.id})" class="btn-icon" title="View Details" style="padding: 8px; background: rgba(0, 150, 255, 0.2); border: 1px solid rgba(0, 150, 255, 0.5); border-radius: 6px; cursor: pointer; transition: all 0.3s;">
                             👁️
                         </button>
+                        <button onclick="generateCasePDF(${caseItem.id})" class="btn-icon" title="Download PDF Report" style="padding: 8px; background: rgba(76, 175, 80, 0.2); border: 1px solid rgba(76, 175, 80, 0.5); border-radius: 6px; cursor: pointer; transition: all 0.3s;">
+                            📄
+                        </button>
                         ${currentUserRole === 'admin' ? `
                             <button onclick="editCase(${caseItem.id})" class="btn-icon" title="Edit" style="padding: 8px; background: rgba(255, 193, 7, 0.2); border: 1px solid rgba(255, 193, 7, 0.5); border-radius: 6px; cursor: pointer; transition: all 0.3s;">
                                 ✏️
@@ -407,6 +410,320 @@ function showToast(message, type = 'info') {
         setTimeout(() => toast.remove(), 300);
     }, 3000);
 }
+
+/**
+ * Generate and download PDF for a specific case
+ */
+async function generateCasePDF(caseId) {
+    try {
+        const token = localStorage.getItem('token');
+        
+        // Show loading toast
+        showToast('Generating PDF report...', 'info');
+        
+        // Call the PDF generation endpoint
+        const response = await fetch(`/documents/${caseId}/generate-pdf`, {
+            method: 'GET',
+            headers: {
+                'Authorization': `Bearer ${token}`
+            }
+        });
+        
+        if (!response.ok) {
+            const errorData = await response.json().catch(() => ({}));
+            
+            // Check if the error is about missing signature
+            if (response.status === 400 && errorData.detail?.includes('signed')) {
+                showToast('⚠️ Document must be signed before generating PDF. Please complete the signature workflow first.', 'error');
+                return;
+            }
+            
+            throw new Error(errorData.detail || 'Failed to generate PDF');
+        }
+        
+        // Get the PDF blob
+        const blob = await response.blob();
+        
+        // Extract filename from headers or use default
+        const contentDisposition = response.headers.get('Content-Disposition');
+        let filename = `case_${caseId}_report.pdf`;
+        
+        if (contentDisposition) {
+            const filenameMatch = contentDisposition.match(/filename="?([^"]+)"?/);
+            if (filenameMatch) {
+                filename = filenameMatch[1];
+            }
+        }
+        
+        // Create download link
+        const url = window.URL.createObjectURL(blob);
+        const link = document.createElement('a');
+        link.href = url;
+        link.download = filename;
+        document.body.appendChild(link);
+        link.click();
+        
+        // Cleanup
+        document.body.removeChild(link);
+        window.URL.revokeObjectURL(url);
+        
+        showToast('✅ PDF report downloaded successfully!', 'success');
+        
+    } catch (error) {
+        console.error('Error generating PDF:', error);
+        showToast('Error generating PDF: ' + error.message, 'error');
+    }
+}
+
+/**
+ * Generate report from the main button (bulk export or summary)
+ */
+async function generateCaseReport() {
+    // Show a modal to let user choose report type
+    const reportType = await showReportTypeModal();
+    
+    if (!reportType) return; // User cancelled
+    
+    if (reportType === 'summary') {
+        // Generate summary report for all filtered cases
+        generateSummaryReport();
+    } else if (reportType === 'select') {
+        // Show case selection modal
+        showCaseSelectionModal();
+    }
+}
+
+/**
+ * Show modal to select report type
+ */
+function showReportTypeModal() {
+    return new Promise((resolve) => {
+        const modal = document.createElement('div');
+        modal.style.cssText = `
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.8);
+            backdrop-filter: blur(5px);
+            z-index: 10000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        `;
+        
+        modal.innerHTML = `
+            <div style="background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%); border-radius: 16px; max-width: 500px; width: 100%; padding: 30px; box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);">
+                <h2 style="margin: 0 0 20px 0; color: #00d4ff;">📊 Generate Report</h2>
+                <p style="color: rgba(255, 255, 255, 0.8); margin-bottom: 25px;">Choose the type of report you want to generate:</p>
+                
+                <div style="display: flex; flex-direction: column; gap: 15px;">
+                    <button onclick="this.closest('div[style*=fixed]').dataset.result='summary'; this.closest('div[style*=fixed]').remove();" 
+                        style="padding: 15px 20px; background: linear-gradient(135deg, #667eea, #764ba2); border: none; border-radius: 8px; color: white; font-weight: 600; cursor: pointer; transition: all 0.3s; font-size: 1rem;">
+                        📋 Summary Report (All Cases)
+                    </button>
+                    
+                    <button onclick="this.closest('div[style*=fixed]').dataset.result='select'; this.closest('div[style*=fixed]').remove();" 
+                        style="padding: 15px 20px; background: linear-gradient(135deg, #f093fb, #f5576c); border: none; border-radius: 8px; color: white; font-weight: 600; cursor: pointer; transition: all 0.3s; font-size: 1rem;">
+                        ✅ Select Specific Cases
+                    </button>
+                    
+                    <button onclick="this.closest('div[style*=fixed]').dataset.result='cancel'; this.closest('div[style*=fixed]').remove();" 
+                        style="padding: 15px 20px; background: rgba(255, 255, 255, 0.1); border: 1px solid rgba(255, 255, 255, 0.3); border-radius: 8px; color: white; font-weight: 600; cursor: pointer; transition: all 0.3s; font-size: 1rem;">
+                        Cancel
+                    </button>
+                </div>
+            </div>
+        `;
+        
+        document.body.appendChild(modal);
+        
+        // Wait for user selection
+        const checkResult = setInterval(() => {
+            if (modal.dataset.result) {
+                clearInterval(checkResult);
+                const result = modal.dataset.result === 'cancel' ? null : modal.dataset.result;
+                resolve(result);
+            }
+        }, 100);
+    });
+}
+
+/**
+ * Generate summary report for all cases (CSV export)
+ */
+async function generateSummaryReport() {
+    try {
+        showToast('Generating summary report...', 'info');
+        
+        // Get all cases (without pagination limit)
+        const token = localStorage.getItem('token');
+        const response = await fetch('/cases?limit=1000', {
+            headers: {
+                'Authorization': `Bearer ${token}`
+            }
+        });
+        
+        if (!response.ok) {
+            throw new Error('Failed to fetch cases');
+        }
+        
+        const data = await response.json();
+        const cases = data.cases || [];
+        
+        if (cases.length === 0) {
+            showToast('No cases to export', 'error');
+            return;
+        }
+        
+        // Convert to CSV
+        const headers = ['Date', 'Patient ID', 'Patient Name', 'Type', 'Risk Level', 'Result', 'Clinician'];
+        const rows = cases.map(c => [
+            new Date(c.created_at).toLocaleDateString(),
+            c.patient_id || 'N/A',
+            c.patient_name || 'Unknown',
+            c.case_type,
+            c.risk_level,
+            c.case_type === 'screening' ? `${(c.screen_prob * 100).toFixed(1)}%` : c.stage_pred,
+            c.clinician_name || 'Unknown'
+        ]);
+        
+        const csvContent = [
+            headers.join(','),
+            ...rows.map(row => row.map(cell => `"${cell}"`).join(','))
+        ].join('\n');
+        
+        // Download CSV
+        const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+        const url = window.URL.createObjectURL(blob);
+        const link = document.createElement('a');
+        link.href = url;
+        link.download = `case_summary_${new Date().toISOString().split('T')[0]}.csv`;
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+        window.URL.revokeObjectURL(url);
+        
+        showToast(`✅ Summary report exported (${cases.length} cases)`, 'success');
+        
+    } catch (error) {
+        console.error('Error generating summary report:', error);
+        showToast('Error generating report: ' + error.message, 'error');
+    }
+}
+
+/**
+ * Show modal to select specific cases for PDF generation
+ */
+async function showCaseSelectionModal() {
+    try {
+        // Get all cases
+        const token = localStorage.getItem('token');
+        const response = await fetch('/cases?limit=100', {
+            headers: {
+                'Authorization': `Bearer ${token}`
+            }
+        });
+        
+        if (!response.ok) {
+            throw new Error('Failed to fetch cases');
+        }
+        
+        const data = await response.json();
+        const cases = data.cases || [];
+        
+        if (cases.length === 0) {
+            showToast('No cases available', 'error');
+            return;
+        }
+        
+        // Create modal
+        const modal = document.createElement('div');
+        modal.style.cssText = `
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.8);
+            backdrop-filter: blur(5px);
+            z-index: 10000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        `;
+        
+        const casesList = cases.map(c => `
+            <label style="display: flex; align-items: center; padding: 12px; background: rgba(255, 255, 255, 0.05); border-radius: 8px; cursor: pointer; transition: all 0.3s; margin-bottom: 10px;" onmouseover="this.style.background='rgba(0, 212, 255, 0.1)'" onmouseout="this.style.background='rgba(255, 255, 255, 0.05)'">
+                <input type="checkbox" value="${c.id}" style="margin-right: 12px; width: 18px; height: 18px; cursor: pointer;">
+                <div style="flex: 1;">
+                    <div style="color: white; font-weight: 600;">${c.patient_name || c.patient_id || 'Case #' + c.id}</div>
+                    <div style="color: rgba(255, 255, 255, 0.6); font-size: 0.9rem;">${new Date(c.created_at).toLocaleDateString()} - ${c.case_type}</div>
+                </div>
+            </label>
+        `).join('');
+        
+        modal.innerHTML = `
+            <div style="background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%); border-radius: 16px; max-width: 600px; width: 100%; max-height: 80vh; overflow: hidden; display: flex; flex-direction: column; box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);">
+                <div style="padding: 30px 30px 20px 30px; border-bottom: 1px solid rgba(255, 255, 255, 0.1);">
+                    <h2 style="margin: 0; color: #00d4ff;">📄 Select Cases for PDF Export</h2>
+                    <p style="color: rgba(255, 255, 255, 0.7); margin: 10px 0 0 0;">Select one or more cases to download as PDF reports:</p>
+                </div>
+                
+                <div style="flex: 1; overflow-y: auto; padding: 20px 30px;">
+                    ${casesList}
+                </div>
+                
+                <div style="padding: 20px 30px; border-top: 1px solid rgba(255, 255, 255, 0.1); display: flex; gap: 15px; justify-content: flex-end;">
+                    <button onclick="this.closest('div[style*=fixed]').remove()" style="padding: 12px 24px; background: rgba(255, 255, 255, 0.1); border: 1px solid rgba(255, 255, 255, 0.3); border-radius: 8px; color: white; font-weight: 600; cursor: pointer;">
+                        Cancel
+                    </button>
+                    <button onclick="downloadSelectedCases(this)" style="padding: 12px 24px; background: linear-gradient(135deg, #43e97b, #38f9d7); border: none; border-radius: 8px; color: #1e293b; font-weight: 600; cursor: pointer;">
+                        Download Selected PDFs
+                    </button>
+                </div>
+            </div>
+        `;
+        
+        document.body.appendChild(modal);
+        
+    } catch (error) {
+        console.error('Error loading cases:', error);
+        showToast('Error loading cases: ' + error.message, 'error');
+    }
+}
+
+/**
+ * Download PDFs for selected cases
+ */
+window.downloadSelectedCases = async function(button) {
+    const modal = button.closest('div[style*=fixed]');
+    const checkboxes = modal.querySelectorAll('input[type=checkbox]:checked');
+    
+    if (checkboxes.length === 0) {
+        showToast('Please select at least one case', 'error');
+        return;
+    }
+    
+    const caseIds = Array.from(checkboxes).map(cb => cb.value);
+    
+    // Close modal
+    modal.remove();
+    
+    // Download each case PDF
+    showToast(`Downloading ${caseIds.length} PDF report(s)...`, 'info');
+    
+    for (let i = 0; i < caseIds.length; i++) {
+        await generateCasePDF(caseIds[i]);
+        // Small delay between downloads to avoid overwhelming the browser
+        if (i < caseIds.length - 1) {
+            await new Promise(resolve => setTimeout(resolve, 500));
+        }
+    }
+};
 
 // Initialize when page loads
 document.addEventListener('DOMContentLoaded', () => {

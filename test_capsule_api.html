@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Test Capsule Endoscopy API</title>
+</head>
+<body>
+    <h1>Test Capsule Endoscopy API</h1>
+    <button onclick="testAPI()">Test API Call</button>
+    <div id="result"></div>
+
+    <script>
+        async function testAPI() {
+            const resultDiv = document.getElementById('result');
+            resultDiv.innerHTML = '<p>Testing API...</p>';
+            
+            try {
+                console.log('Making API request...');
+                const response = await fetch('http://localhost:8000/biopsy/capsule-endoscopy?scenario=mixed&num_steps=80', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    }
+                });
+                
+                console.log('Response status:', response.status);
+                
+                if (!response.ok) {
+                    const errorData = await response.json().catch(() => ({}));
+                    throw new Error(errorData.detail || 'API request failed');
+                }
+                
+                const result = await response.json();
+                console.log('API Result:', result);
+                
+                resultDiv.innerHTML = `
+                    <h2>Success!</h2>
+                    <pre>${JSON.stringify(result, null, 2)}</pre>
+                `;
+                
+            } catch (error) {
+                console.error('API Error:', error);
+                resultDiv.innerHTML = `
+                    <h2>Error</h2>
+                    <p style="color: red;">${error.message}</p>
+                    <p>${error.stack}</p>
+                `;
+            }
+        }
+    </script>
+</body>
+</html>
+
