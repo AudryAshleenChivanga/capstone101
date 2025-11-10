@@ -25,55 +25,62 @@ let rewardChart = null;
  * Initialize application
  */
 function init() {
-    console.log('Initializing Advanced Capsule Endoscopy...');
+    console.log('🔬 Initializing Advanced Capsule Endoscopy...');
     
-    // Setup scenario buttons (using more specific query within capsule page)
-    const capsulePage = document.getElementById('page-capsule');
-    if (!capsulePage) {
-        console.log('Capsule page not found, will initialize later');
-        return;
-    }
-    
-    const scenarioBtns = capsulePage.querySelectorAll('.scenario-btn');
-    const newBtns = [];
-    scenarioBtns.forEach(btn => {
-        // Remove old listeners by cloning
-        const newBtn = btn.cloneNode(true);
-        btn.parentNode.replaceChild(newBtn, btn);
-        newBtns.push(newBtn);
+    // Add small delay to ensure DOM is ready
+    setTimeout(() => {
+        // Setup scenario buttons (using more specific query within capsule page)
+        const capsulePage = document.getElementById('page-capsule');
+        if (!capsulePage) {
+            console.error('❌ Capsule page not found!');
+            return;
+        }
         
-        newBtn.addEventListener('click', function() {
-            // Remove active class from all new buttons
-            newBtns.forEach(b => b.classList.remove('active'));
-            this.classList.add('active');
-            simulationState.selectedScenario = this.dataset.scenario;
-            console.log('Selected scenario:', simulationState.selectedScenario);
+        console.log('✅ Capsule page found');
+        
+        const scenarioBtns = capsulePage.querySelectorAll('.scenario-btn');
+        console.log(`Found ${scenarioBtns.length} scenario buttons`);
+        
+        if (scenarioBtns.length === 0) {
+            console.error('❌ No scenario buttons found! Check HTML structure.');
+            return;
+        }
+        
+        scenarioBtns.forEach((btn, index) => {
+            btn.addEventListener('click', function() {
+                console.log(`Scenario button ${index} clicked:`, this.dataset.scenario);
+                // Remove active class from all buttons
+                scenarioBtns.forEach(b => b.classList.remove('active'));
+                this.classList.add('active');
+                simulationState.selectedScenario = this.dataset.scenario;
+                console.log('✅ Selected scenario:', simulationState.selectedScenario);
+            });
         });
-    });
-    console.log(`Initialized ${newBtns.length} scenario buttons`);
-    
-    // Setup start button
-    const startBtn = document.getElementById('startBtn');
-    if (startBtn) {
-        // Remove old listener by cloning
-        const newStartBtn = startBtn.cloneNode(true);
-        startBtn.parentNode.replaceChild(newStartBtn, startBtn);
-        newStartBtn.addEventListener('click', function() {
-            console.log('Start button clicked!');
-            startSimulation();
-        });
-        console.log('Start button event listener attached');
-    } else {
-        console.error('Start button not found!');
-    }
-    
-    // Initialize chart
-    initializeChart();
-    
-    // Reset metrics
-    updateMetrics(0, 0, 0, 0);
-    
-    console.log('Capsule endoscopy ready');
+        console.log(`✅ Initialized ${scenarioBtns.length} scenario buttons with click handlers`);
+        
+        // Setup start button
+        const startBtn = document.getElementById('startBtn');
+        if (startBtn) {
+            console.log('✅ Start button found');
+            startBtn.addEventListener('click', function(e) {
+                console.log('🚀 Start button clicked!');
+                e.preventDefault();
+                e.stopPropagation();
+                startSimulation();
+            });
+            console.log('✅ Start button event listener attached');
+        } else {
+            console.error('❌ Start button not found! ID should be "startBtn"');
+        }
+        
+        // Initialize chart
+        initializeChart();
+        
+        // Reset metrics
+        updateMetrics(0, 0, 0, 0);
+        
+        console.log('✅ Capsule endoscopy initialization complete!');
+    }, 100); // Small delay to ensure DOM is fully ready
 }
 
 /**
