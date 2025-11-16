@@ -42,9 +42,9 @@
     --bg-secondary: #1A1625;
     --bg-tertiary: #261F35;
     
-    --text-primary: #F3F0FF;
-    --text-secondary: #C7BFE6;
-    --text-tertiary: #9B8FC9;
+    --text-primary: #FFFFFF;
+    --text-secondary: #E8E0FF;
+    --text-tertiary: #C7BFE6;
     
     --sidebar-bg: #1A1625;
     --sidebar-hover: #261F35;
@@ -503,9 +503,58 @@ body {
     background: rgba(56, 239, 125, 0.1);
 }
 
+[data-theme="dark"] .stat-change.positive {
+    color: #4fffb0;
+    background: rgba(56, 239, 125, 0.2);
+}
+
 .stat-change.negative {
     color: #ff6b6b;
     background: rgba(255, 107, 107, 0.1);
+}
+
+[data-theme="dark"] .stat-change.negative {
+    color: #ff8a8a;
+    background: rgba(255, 107, 107, 0.2);
+}
+
+/* Badge Styles */
+.badge {
+    padding: 0.25rem 0.75rem;
+    border-radius: 12px;
+    font-size: 0.75rem;
+    font-weight: 600;
+    display: inline-block;
+}
+
+.badge-success {
+    background: rgba(56, 239, 125, 0.2);
+    color: #38ef7d;
+}
+
+[data-theme="dark"] .badge-success {
+    color: #4fffb0;
+    background: rgba(56, 239, 125, 0.25);
+}
+
+.badge-warning {
+    background: rgba(255, 217, 61, 0.2);
+    color: #ffd93d;
+}
+
+[data-theme="dark"] .badge-warning {
+    color: #ffe066;
+    background: rgba(255, 217, 61, 0.25);
+}
+
+.badge-danger {
+    background: rgba(255, 107, 107, 0.2);
+    color: #ff6b6b;
+}
+
+[data-theme="dark"] .badge-danger {
+    color: #ff8a8a;
+    background: rgba(255, 107, 107, 0.25);
 }
 
 /* Charts Section */
@@ -617,6 +666,39 @@ canvas {
 
 .activity-item:hover {
     background: var(--sidebar-hover);
+}
+
+/* Activity item text elements */
+.activity-item strong {
+    color: var(--text-primary);
+}
+
+.activity-item small {
+    color: var(--text-secondary);
+}
+
+[data-theme="dark"] .activity-item strong {
+    color: #f7fafc;
+}
+
+[data-theme="dark"] .activity-item small {
+    color: #cbd5e0;
+}
+
+/* Activity status container */
+.activity-status {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+/* General text-muted class */
+.text-muted {
+    color: var(--text-secondary);
+}
+
+[data-theme="dark"] .text-muted {
+    color: #cbd5e0;
 }
 
 .loading {

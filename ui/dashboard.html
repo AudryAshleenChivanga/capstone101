@@ -192,7 +192,7 @@
                         <button class="btn-sm" onclick="switchPage('cases')">View All</button>
                     </div>
                     <div class="activity-list" id="recentActivity">
-                        <p class="loading">Loading recent activity...</p>
+                        <!-- Activity items will be loaded dynamically -->
                     </div>
                 </div>
             </div>
@@ -900,9 +900,14 @@
                             </div>
                         </div>
                         
-                        <a href="biopsy-simulation.html" target="_blank" class="btn btn-primary" style="font-size: 18px; padding: 15px 40px; display: inline-block; text-decoration: none;">
-                            🚀 Launch Simulation
-                        </a>
+                        <div style="display: flex; gap: 15px; justify-content: center;">
+                            <a href="/ui/biopsy-simulation.html" target="_blank" class="btn btn-primary" style="font-size: 18px; padding: 15px 40px; display: inline-block; text-decoration: none;">
+                                🚀 Launch 3D Simulation
+                            </a>
+                            <a href="/ui/biopsy_rl_simulation.html" target="_blank" class="btn btn-secondary" style="font-size: 18px; padding: 15px 40px; display: inline-block; text-decoration: none; background: var(--bg-tertiary); border: 2px solid var(--primary);">
+                                🎮 RL Biopsy Sim
+                            </a>
+                        </div>
                         
                         <p style="margin-top: 20px; font-size: 13px; color: #999;">
                             Opens in a new window for optimal performance

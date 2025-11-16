@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dark Mode Test</title>
+    <link rel="stylesheet" href="styles_new.css?v=20250116b">
+    <style>
+        .test-container {
+            padding: 2rem;
+            max-width: 800px;
+            margin: 0 auto;
+        }
+        .test-section {
+            background: var(--bg-secondary);
+            padding: 1.5rem;
+            margin: 1rem 0;
+            border-radius: 8px;
+            border: 2px solid var(--border-color);
+        }
+        .test-item {
+            margin: 0.5rem 0;
+            padding: 0.5rem;
+            background: var(--bg-tertiary);
+            border-radius: 4px;
+        }
+        .color-sample {
+            display: inline-block;
+            padding: 0.5rem 1rem;
+            margin: 0.25rem;
+            border-radius: 4px;
+            border: 1px solid var(--border-color);
+        }
+        .toggle-btn {
+            padding: 1rem 2rem;
+            font-size: 1.2rem;
+            background: var(--primary);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            margin: 1rem 0;
+        }
+        .toggle-btn:hover {
+            background: var(--primary-hover);
+        }
+    </style>
+</head>
+<body>
+    <div class="test-container">
+        <h1>Dark Mode Diagnostic Test</h1>
+        
+        <button class="toggle-btn" onclick="toggleTest()">Toggle Dark Mode</button>
+        
+        <div class="test-section">
+            <h2>Current Theme: <span id="currentTheme">Light</span></h2>
+            <p><strong>Data-theme attribute:</strong> <span id="dataThemeValue">Not set</span></p>
+        </div>
+        
+        <div class="test-section">
+            <h3>CSS Variables Test</h3>
+            <div class="test-item">
+                <strong style="color: var(--text-primary);">Primary Text (var(--text-primary))</strong>
+            </div>
+            <div class="test-item">
+                <span style="color: var(--text-secondary);">Secondary Text (var(--text-secondary))</span>
+            </div>
+            <div class="test-item">
+                <small style="color: var(--text-tertiary);">Tertiary Text (var(--text-tertiary))</small>
+            </div>
+        </div>
+        
+        <div class="test-section">
+            <h3>Activity Item Simulation</h3>
+            <div class="activity-item">
+                <div>
+                    <strong>Case #123</strong> - Screening Assessment
+                    <br><span class="text-muted">John Doe</span>
+                    <br><small>ID: P-12345</small>
+                    <br>
+                    <small style="color: var(--text-secondary);">
+                        11/16/2025, 10:30:45 AM
+                    </small>
+                </div>
+                <div class="activity-status">
+                    <span class="badge badge-success">LOW</span>
+                </div>
+            </div>
+        </div>
+        
+        <div class="test-section">
+            <h3>Badge Tests</h3>
+            <span class="badge badge-success">Success Badge</span>
+            <span class="badge badge-warning">Warning Badge</span>
+            <span class="badge badge-danger">Danger Badge</span>
+        </div>
+        
+        <div class="test-section">
+            <h3>Stat Change Tests</h3>
+            <span class="stat-change positive">+12.5%</span>
+            <span class="stat-change negative">-8.3%</span>
+        </div>
+        
+        <div class="test-section">
+            <h3>Computed CSS Values</h3>
+            <div id="computedValues"></div>
+        </div>
+    </div>
+    
+    <script>
+        function updateDisplay() {
+            const theme = document.documentElement.getAttribute('data-theme') || 'light';
+            document.getElementById('currentTheme').textContent = theme.charAt(0).toUpperCase() + theme.slice(1);
+            document.getElementById('dataThemeValue').textContent = theme;
+            
+            // Get computed CSS values
+            const root = document.documentElement;
+            const styles = getComputedStyle(root);
+            
+            const computedDiv = document.getElementById('computedValues');
+            computedDiv.innerHTML = `
+                <p><strong>--text-primary:</strong> <span style="background: ${styles.getPropertyValue('--text-primary')}; padding: 0.25rem 0.5rem; color: var(--bg-primary);">${styles.getPropertyValue('--text-primary')}</span></p>
+                <p><strong>--text-secondary:</strong> <span style="background: ${styles.getPropertyValue('--text-secondary')}; padding: 0.25rem 0.5rem; color: var(--bg-primary);">${styles.getPropertyValue('--text-secondary')}</span></p>
+                <p><strong>--text-tertiary:</strong> <span style="background: ${styles.getPropertyValue('--text-tertiary')}; padding: 0.25rem 0.5rem; color: var(--bg-primary);">${styles.getPropertyValue('--text-tertiary')}</span></p>
+                <p><strong>--bg-primary:</strong> <span style="background: ${styles.getPropertyValue('--bg-primary')}; padding: 0.25rem 0.5rem; border: 1px solid white;">${styles.getPropertyValue('--bg-primary')}</span></p>
+                <p><strong>--bg-secondary:</strong> <span style="background: ${styles.getPropertyValue('--bg-secondary')}; padding: 0.25rem 0.5rem; border: 1px solid white;">${styles.getPropertyValue('--bg-secondary')}</span></p>
+            `;
+        }
+        
+        function toggleTest() {
+            const currentTheme = document.documentElement.getAttribute('data-theme');
+            const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+            document.documentElement.setAttribute('data-theme', newTheme);
+            localStorage.setItem('theme', newTheme);
+            updateDisplay();
+        }
+        
+        // Initialize
+        const savedTheme = localStorage.getItem('theme') || 'light';
+        document.documentElement.setAttribute('data-theme', savedTheme);
+        updateDisplay();
+    </script>
+</body>
+</html>
+

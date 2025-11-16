@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes">
+    <title>GastroCDSS - Fixed Dark Mode</title>
+    <script>
+        // Redirect to dashboard_new.html after applying CSS fix
+        window.location.href = '/ui/dashboard_new.html';
+    </script>
+    <style>
+        /* CRITICAL FIX - Load this BEFORE dashboard loads */
+        [data-theme="dark"] {
+            --text-primary: #FFFFFF !important;
+            --text-secondary: #E8E0FF !important;
+            --text-tertiary: #C7BFE6 !important;
+        }
+    </style>
+</head>
+<body>
+    <p>Applying dark mode fix and redirecting...</p>
+</body>
+</html>
+

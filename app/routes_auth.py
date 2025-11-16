@@ -1,6 +1,10 @@
 """Authentication routes."""
-from fastapi import APIRouter, Depends, HTTPException, status
+from fastapi import APIRouter, Depends, HTTPException, status, Request
+from fastapi.responses import RedirectResponse
 from sqlalchemy.orm import Session
+from google.oauth2 import id_token
+from google.auth.transport import requests
+import secrets
 
 from app.db import get_db
 from app.models import User
@@ -12,6 +16,7 @@ from app.auth import (
     get_current_user,
     require_role
 )
+from app.config import settings
 
 router = APIRouter(prefix="/auth", tags=["authentication"])
 
@@ -184,3 +189,102 @@ def get_current_user_info(current_user: User = Depends(get_current_user)):
         "is_active": current_user.is_active,
         "created_at": current_user.created_at.isoformat() if current_user.created_at else None
     }
+
+
+@router.post("/google/login", response_model=Token)
+async def google_login(request: Request, db: Session = Depends(get_db)):
+    """
+    Authenticate user with Google OAuth token.
+    """
+    try:
+        # Get the token from request body
+        body = await request.json()
+        token = body.get("credential")
+        
+        if not token:
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail="No credential provided"
+            )
+        
+        # Verify the Google token
+        if not settings.GOOGLE_CLIENT_ID:
+            raise HTTPException(
+                status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+                detail="Google OAuth not configured. Please set GOOGLE_CLIENT_ID in environment variables."
+            )
+        
+        idinfo = id_token.verify_oauth2_token(
+            token, 
+            requests.Request(), 
+            settings.GOOGLE_CLIENT_ID
+        )
+        
+        # Get user info from Google
+        email = idinfo.get('email')
+        name = idinfo.get('name', email.split('@')[0])
+        google_id = idinfo.get('sub')
+        
+        if not email:
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail="Email not provided by Google"
+            )
+        
+        # Check if user exists by email
+        user = db.query(User).filter(User.email == email).first()
+        
+        if not user:
+            # Create new user with Google authentication
+            # Generate username from email
+            username = email.split('@')[0]
+            base_username = username
+            counter = 1
+            
+            # Ensure username is unique
+            while db.query(User).filter(User.username == username).first():
+                username = f"{base_username}{counter}"
+                counter += 1
+            
+            # Create user with a random password (they'll use Google login)
+            user = User(
+                username=username,
+                email=email,
+                hashed_password=hash_password(secrets.token_urlsafe(32)),
+                role="doctor",  # Default role for new Google users
+                full_name=name,
+                is_active=True
+            )
+            
+            db.add(user)
+            db.commit()
+            db.refresh(user)
+        
+        # Create access token
+        access_token = create_access_token(data={"sub": user.username, "role": user.role})
+        
+        return {
+            "access_token": access_token,
+            "token_type": "bearer",
+            "user": {
+                "id": user.id,
+                "username": user.username,
+                "email": user.email,
+                "role": user.role,
+                "full_name": user.full_name,
+                "is_active": user.is_active,
+                "created_at": user.created_at.isoformat() if user.created_at else None
+            }
+        }
+        
+    except ValueError as e:
+        # Invalid token
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail=f"Invalid Google token: {str(e)}"
+        )
+    except Exception as e:
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=f"Authentication failed: {str(e)}"
+        )

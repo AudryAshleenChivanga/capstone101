@@ -42,8 +42,8 @@
     --bg-tertiary: #1a202c;
     
     --text-primary: #f7fafc;
-    --text-secondary: #cbd5e0;
-    --text-tertiary: #718096;
+    --text-secondary: #e2e8f0;
+    --text-tertiary: #a0aec0;
     
     --sidebar-bg: #2d3748;
     --sidebar-hover: #4a5568;
@@ -503,9 +503,19 @@ body {
     background: rgba(56, 239, 125, 0.1);
 }
 
+[data-theme="dark"] .stat-change.positive {
+    color: #4fffb0;
+    background: rgba(56, 239, 125, 0.2);
+}
+
 .stat-change.negative {
     color: #ff6b6b;
     background: rgba(255, 107, 107, 0.1);
+}
+
+[data-theme="dark"] .stat-change.negative {
+    color: #ff8a8a;
+    background: rgba(255, 107, 107, 0.2);
 }
 
 /* Charts Section */
@@ -610,19 +620,63 @@ canvas {
     align-items: center;
     gap: 1rem;
     padding: 1rem;
-    background: var(--bg-tertiary);
+    background: transparent;
     border-radius: 8px;
     transition: var(--transition);
 }
 
 .activity-item:hover {
-    background: var(--sidebar-hover);
+    background: var(--bg-tertiary);
+}
+
+/* Activity item text elements */
+.activity-item strong {
+    color: var(--text-primary);
+}
+
+.activity-item small {
+    color: var(--text-secondary);
+}
+
+[data-theme="dark"] .activity-item strong {
+    color: #f7fafc;
+}
+
+[data-theme="dark"] .activity-item small {
+    color: #cbd5e0;
+}
+
+/* Activity status container */
+.activity-status {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
 }
 
 .loading {
-    text-align: center;
-    color: var(--text-secondary);
-    padding: 2rem;
+    display: none !important;
+    opacity: 0 !important;
+    visibility: hidden !important;
+}
+
+/* Modal Animations */
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: scale(0.9);
+    }
+    to {
+        opacity: 1;
+        transform: scale(1);
+    }
+}
+
+.modal-overlay {
+    animation: fadeIn 0.2s ease-out;
+}
+
+.modal-overlay .modal-content {
+    animation: fadeIn 0.3s ease-out;
 }
 
 /* Toast Notifications */
@@ -885,6 +939,15 @@ canvas {
     transition: var(--transition);
 }
 
+.form-group input::placeholder {
+    color: var(--text-tertiary);
+    opacity: 1;
+}
+
+[data-theme="dark"] .form-group input::placeholder {
+    color: #a0aec0;
+}
+
 .form-group input:focus,
 .form-group select:focus {
     outline: none;
@@ -991,14 +1054,29 @@ canvas {
     color: #38ef7d;
 }
 
+[data-theme="dark"] .badge-success {
+    color: #4fffb0;
+    background: rgba(56, 239, 125, 0.25);
+}
+
 .badge-warning {
     background: rgba(255, 217, 61, 0.2);
     color: #ffd93d;
 }
 
+[data-theme="dark"] .badge-warning {
+    color: #ffe066;
+    background: rgba(255, 217, 61, 0.25);
+}
+
 .badge-danger {
     background: rgba(255, 107, 107, 0.2);
     color: #ff6b6b;
+}
+
+[data-theme="dark"] .badge-danger {
+    color: #ff8a8a;
+    background: rgba(255, 107, 107, 0.25);
 }
 
 /* History Panel */
@@ -1489,6 +1567,15 @@ canvas {
     color: var(--text-secondary);
     font-size: 0.9rem;
     margin: 0;
+}
+
+/* General text-muted class */
+.text-muted {
+    color: var(--text-secondary);
+}
+
+[data-theme="dark"] .text-muted {
+    color: #cbd5e0;
 }
 
 .appointment-body {

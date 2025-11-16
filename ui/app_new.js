@@ -594,7 +594,17 @@ function updateChartsTheme() {
 // ========================================
 
 async function loadRecentActivity() {
+    const activityList = document.getElementById('recentActivity');
+    
+    if (!activityList) {
+        console.warn('Recent activity element not found');
+        return;
+    }
+    
     try {
+        // Clear immediately - no loading message
+        activityList.innerHTML = '';
+        
         const response = await fetch(`${API_BASE}/cases?page=1&page_size=5`, {
             headers: {
                 'Authorization': `Bearer ${authToken}`
@@ -606,10 +616,8 @@ async function loadRecentActivity() {
         const data = await response.json();
         const cases = data.cases || [];
         
-        const activityList = document.getElementById('recentActivity');
-        
         if (cases.length === 0) {
-            activityList.innerHTML = '<p class="loading">No recent activity</p>';
+            activityList.innerHTML = '<p style="text-align: center; color: var(--text-secondary); padding: 2rem; font-size: 14px; opacity: 0.7;">No recent activity</p>';
             return;
         }
         
@@ -620,7 +628,7 @@ async function loadRecentActivity() {
                     ${caseItem.patient_name ? `<br><span class="text-muted">${caseItem.patient_name}</span>` : ''}
                     ${caseItem.patient_id ? `<br><small>ID: ${caseItem.patient_id}</small>` : ''}
                     <br>
-                    <small style="color: var(--text-secondary);">
+                    <small>
                         ${new Date(caseItem.created_at).toLocaleString()}
                     </small>
                 </div>
@@ -632,6 +640,7 @@ async function loadRecentActivity() {
         
     } catch (error) {
         console.error('Error loading recent activity:', error);
+        activityList.innerHTML = '<p style="text-align: center; color: var(--text-secondary); padding: 2rem; font-size: 14px; opacity: 0.7;">Failed to load</p>';
     }
 }
 
@@ -691,11 +700,68 @@ async function loadAdminPanel() {
 // ========================================
 
 function handleLogout() {
-    if (confirm('Are you sure you want to logout?')) {
+    // Create a styled confirmation modal
+    const modal = document.createElement('div');
+    modal.className = 'modal-overlay';
+    modal.style.cssText = 'position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.7); display: flex; align-items: center; justify-content: center; z-index: 10000;';
+    
+    modal.innerHTML = `
+        <div class="modal-content" style="background: var(--bg-secondary); border-radius: 16px; padding: 32px; max-width: 400px; width: 90%; box-shadow: 0 20px 60px rgba(0,0,0,0.3); text-align: center;">
+            <div style="width: 64px; height: 64px; margin: 0 auto 20px; background: rgba(239, 68, 68, 0.1); border-radius: 50%; display: flex; align-items: center; justify-content: center;">
+                <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#EF4444" stroke-width="2">
+                    <path d="M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4M16 17l5-5-5-5M21 12H9"/>
+                </svg>
+            </div>
+            <h2 style="margin: 0 0 12px 0; color: var(--text-primary); font-size: 24px; font-weight: 600;">Sign Out</h2>
+            <p style="margin: 0 0 24px 0; color: var(--text-secondary); font-size: 15px; line-height: 1.5;">Are you sure you want to sign out? You'll need to log in again to access your account.</p>
+            
+            <div style="display: flex; gap: 12px; justify-content: center;">
+                <button 
+                    id="cancelLogout"
+                    style="flex: 1; padding: 12px 24px; border: 2px solid var(--border-color); border-radius: 8px; background: transparent; color: var(--text-primary); font-weight: 600; cursor: pointer; transition: all 0.2s; font-size: 15px;"
+                    onmouseover="this.style.background='var(--bg-tertiary)'"
+                    onmouseout="this.style.background='transparent'"
+                >
+                    Cancel
+                </button>
+                <button 
+                    id="confirmLogout"
+                    style="flex: 1; padding: 12px 24px; border: none; border-radius: 8px; background: #EF4444; color: white; font-weight: 600; cursor: pointer; transition: all 0.2s; font-size: 15px;"
+                    onmouseover="this.style.background='#DC2626'"
+                    onmouseout="this.style.background='#EF4444'"
+                >
+                    Sign Out
+                </button>
+            </div>
+        </div>
+    `;
+    
+    document.body.appendChild(modal);
+    
+    // Handle button clicks
+    document.getElementById('cancelLogout').onclick = () => modal.remove();
+    document.getElementById('confirmLogout').onclick = () => {
+        modal.remove();
+        
+        // Clear all localStorage
         localStorage.removeItem('token');
         localStorage.removeItem('user');
-        window.location.href = 'index.html';
-    }
+        
+        // Show logout toast
+        showToast('Signed out successfully', 'success');
+        
+        // Redirect to login page after a brief delay
+        setTimeout(() => {
+            window.location.href = '/ui/login.html';
+        }, 500);
+    };
+    
+    // Close on overlay click
+    modal.addEventListener('click', (e) => {
+        if (e.target === modal) {
+            modal.remove();
+        }
+    });
 }
 
 // ========================================

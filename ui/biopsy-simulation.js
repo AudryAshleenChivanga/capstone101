@@ -21,31 +21,52 @@ let rlAgent = {
 
 // Initialize the simulation
 function init() {
-    // Create scene
-    scene = new THREE.Scene();
-    scene.background = new THREE.Color(0x0f172a);
-    scene.fog = new THREE.Fog(0x0f172a, 50, 200);
+    console.log('Initializing 3D Biopsy Simulation...');
     
-    // Setup camera
-    camera = new THREE.PerspectiveCamera(
-        75,
-        window.innerWidth / window.innerHeight,
-        0.1,
-        1000
-    );
-    camera.position.z = 30;
+    // Check if THREE.js is loaded
+    if (typeof THREE === 'undefined') {
+        console.error('THREE.js library not loaded!');
+        document.getElementById('statusText').textContent = 'Error: THREE.js not loaded';
+        return;
+    }
     
-    // Setup renderer
-    const canvas = document.getElementById('canvas-3d');
-    renderer = new THREE.WebGLRenderer({ canvas, antialias: true, alpha: true });
-    renderer.setSize(window.innerWidth, window.innerHeight);
-    renderer.setPixelRatio(window.devicePixelRatio);
-    
-    // Create tissue sample (complex geometry)
-    createTissueSample();
-    
-    // Add particles (simulating cells)
-    createCellParticles();
+    try {
+        // Create scene
+        scene = new THREE.Scene();
+        scene.background = new THREE.Color(0x0f172a);
+        scene.fog = new THREE.Fog(0x0f172a, 50, 200);
+        
+        // Setup camera
+        camera = new THREE.PerspectiveCamera(
+            75,
+            window.innerWidth / window.innerHeight,
+            0.1,
+            1000
+        );
+        camera.position.z = 30;
+        
+        // Setup renderer
+        const canvas = document.getElementById('canvas-3d');
+        if (!canvas) {
+            console.error('Canvas element not found!');
+            return;
+        }
+        
+        renderer = new THREE.WebGLRenderer({ canvas, antialias: true, alpha: true });
+        renderer.setSize(window.innerWidth, window.innerHeight);
+        renderer.setPixelRatio(window.devicePixelRatio);
+        
+        // Create tissue sample (complex geometry)
+        createTissueSample();
+        
+        // Add particles (simulating cells)
+        createCellParticles();
+        
+        console.log('3D scene initialized successfully');
+    } catch (error) {
+        console.error('Error initializing 3D scene:', error);
+        document.getElementById('statusText').textContent = 'Error: ' + error.message;
+    }
     
     // Add lights
     setupLights();
@@ -523,7 +544,19 @@ function delay(ms) {
 }
 
 // Initialize on load
-window.addEventListener('load', init);
+window.addEventListener('load', () => {
+    console.log('🔬 3D Biopsy Simulation with RL Analysis Loading...');
+    
+    // Small delay to ensure DOM is fully ready
+    setTimeout(() => {
+        try {
+            init();
+        } catch (error) {
+            console.error('Failed to initialize simulation:', error);
+            alert('Failed to initialize 3D simulation. Please refresh the page or check console for details.');
+        }
+    }, 100);
+});
 
-console.log('🔬 3D Biopsy Simulation with RL Analysis Loaded');
+console.log('🔬 Biopsy Simulation Script Loaded');
 

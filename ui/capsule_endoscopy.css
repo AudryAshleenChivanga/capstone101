@@ -3,6 +3,45 @@
  * Extracted from inline styles for better theme support
  */
 
+/* Animations */
+@keyframes flashIn {
+    0% {
+        opacity: 0;
+        transform: scale(0.8);
+        box-shadow: 0 0 20px rgba(124, 58, 237, 0.8);
+    }
+    50% {
+        opacity: 1;
+        transform: scale(1.05);
+        box-shadow: 0 0 30px rgba(124, 58, 237, 1);
+    }
+    100% {
+        opacity: 1;
+        transform: scale(1);
+        box-shadow: none;
+    }
+}
+
+@keyframes pulseGlow {
+    0%, 100% {
+        box-shadow: 0 0 10px rgba(16, 185, 129, 0.5);
+    }
+    50% {
+        box-shadow: 0 0 20px rgba(16, 185, 129, 1);
+    }
+}
+
+@keyframes slideIn {
+    from {
+        opacity: 0;
+        transform: translateX(100px);
+    }
+    to {
+        opacity: 1;
+        transform: translateX(0);
+    }
+}
+
 * {
     margin: 0;
     padding: 0;

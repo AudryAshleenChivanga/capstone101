@@ -321,30 +321,109 @@ function showCaseDetailModal(caseData) {
  * Edit case (admin only)
  */
 async function editCase(caseId) {
-    const notes = prompt('Enter notes for this case:');
-    if (notes === null) return;
+    // Create modal for case editing
+    const modal = document.createElement('div');
+    modal.className = 'modal-overlay';
+    modal.style.cssText = 'position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.7); display: flex; align-items: center; justify-content: center; z-index: 10000;';
     
-    try {
-        const token = localStorage.getItem('token');
-        const response = await fetch(`/cases/${caseId}?notes=${encodeURIComponent(notes)}`, {
-            method: 'PUT',
-            headers: {
-                'Authorization': `Bearer ${token}`,
-                'Content-Type': 'application/json'
-            }
-        });
+    modal.innerHTML = `
+        <div class="modal-content" style="background: var(--bg-secondary); border-radius: 16px; padding: 32px; max-width: 600px; width: 90%; box-shadow: 0 20px 60px rgba(0,0,0,0.3);">
+            <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 24px;">
+                <h2 style="margin: 0; color: var(--text-primary); font-size: 24px;">Edit Case #${caseId}</h2>
+                <button onclick="this.closest('.modal-overlay').remove()" style="background: none; border: none; font-size: 28px; cursor: pointer; color: var(--text-secondary); padding: 0; width: 32px; height: 32px; display: flex; align-items: center; justify-content: center; border-radius: 8px; transition: all 0.2s;" onmouseover="this.style.background='var(--bg-tertiary)'" onmouseout="this.style.background='none'">&times;</button>
+            </div>
+            
+            <form id="editCaseForm" style="display: flex; flex-direction: column; gap: 20px;">
+                <div style="display: flex; flex-direction: column; gap: 8px;">
+                    <label style="color: var(--text-primary); font-weight: 600; font-size: 14px;">Case Notes</label>
+                    <textarea 
+                        id="caseNotes" 
+                        rows="6" 
+                        placeholder="Enter notes about this case..."
+                        style="padding: 12px; border: 2px solid var(--border-color); border-radius: 8px; background: var(--bg-primary); color: var(--text-primary); font-family: inherit; font-size: 14px; resize: vertical; transition: border-color 0.2s;"
+                        onfocus="this.style.borderColor='var(--primary)'"
+                        onblur="this.style.borderColor='var(--border-color)'"
+                    ></textarea>
+                </div>
+                
+                <div style="display: flex; flex-direction: column; gap: 8px;">
+                    <label style="color: var(--text-primary); font-weight: 600; font-size: 14px;">Status</label>
+                    <select 
+                        id="caseStatus"
+                        style="padding: 12px; border: 2px solid var(--border-color); border-radius: 8px; background: var(--bg-primary); color: var(--text-primary); font-family: inherit; font-size: 14px; cursor: pointer; transition: border-color 0.2s;"
+                        onfocus="this.style.borderColor='var(--primary)'"
+                        onblur="this.style.borderColor='var(--border-color)'"
+                    >
+                        <option value="pending">Pending Review</option>
+                        <option value="reviewed">Reviewed</option>
+                        <option value="approved">Approved</option>
+                        <option value="follow-up">Needs Follow-up</option>
+                    </select>
+                </div>
+                
+                <div style="display: flex; gap: 12px; justify-content: flex-end; margin-top: 8px;">
+                    <button 
+                        type="button" 
+                        onclick="this.closest('.modal-overlay').remove()"
+                        style="padding: 12px 24px; border: 2px solid var(--border-color); border-radius: 8px; background: transparent; color: var(--text-primary); font-weight: 600; cursor: pointer; transition: all 0.2s;"
+                        onmouseover="this.style.background='var(--bg-tertiary)'"
+                        onmouseout="this.style.background='transparent'"
+                    >
+                        Cancel
+                    </button>
+                    <button 
+                        type="submit"
+                        style="padding: 12px 24px; border: none; border-radius: 8px; background: var(--primary); color: white; font-weight: 600; cursor: pointer; transition: all 0.2s;"
+                        onmouseover="this.style.opacity='0.9'"
+                        onmouseout="this.style.opacity='1'"
+                    >
+                        Save Changes
+                    </button>
+                </div>
+            </form>
+        </div>
+    `;
+    
+    document.body.appendChild(modal);
+    
+    // Handle form submission
+    document.getElementById('editCaseForm').addEventListener('submit', async (e) => {
+        e.preventDefault();
         
-        if (!response.ok) {
-            throw new Error('Failed to update case');
+        const notes = document.getElementById('caseNotes').value;
+        const status = document.getElementById('caseStatus').value;
+        
+        if (!notes.trim()) {
+            showToast('Please enter some notes', 'warning');
+            return;
         }
         
-        showToast('Case updated successfully', 'success');
-        loadCaseHistory(currentPage);
-        
-    } catch (error) {
-        console.error('Error updating case:', error);
-        showToast('Error updating case', 'error');
-    }
+        try {
+            const token = localStorage.getItem('token');
+            const response = await fetch(`/cases/${caseId}?notes=${encodeURIComponent(notes)}`, {
+                method: 'PUT',
+                headers: {
+                    'Authorization': `Bearer ${token}`,
+                    'Content-Type': 'application/json'
+                }
+            });
+            
+            if (!response.ok) {
+                throw new Error('Failed to update case');
+            }
+            
+            showToast('Case updated successfully', 'success');
+            modal.remove();
+            loadCaseHistory(currentPage);
+            
+        } catch (error) {
+            console.error('Error updating case:', error);
+            showToast('Error updating case: ' + error.message, 'error');
+        }
+    });
+    
+    // Focus on textarea
+    setTimeout(() => document.getElementById('caseNotes').focus(), 100);
 }
 
 /**

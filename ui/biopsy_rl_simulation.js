@@ -137,12 +137,25 @@ async function startSimulation() {
     }
     
     const startBtn = document.getElementById('startSimBtn');
+    if (!startBtn) {
+        console.error('Start button not found');
+        return;
+    }
+    
     startBtn.disabled = true;
-    startBtn.innerHTML = '<span class="loading-spinner"></span> Running Simulation...';
+    startBtn.innerHTML = `
+        <svg class="spinner" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="animation: spin 1s linear infinite;">
+            <circle cx="12" cy="12" r="10" stroke-opacity="0.25"/>
+            <path d="M12 2a10 10 0 0110 10" stroke-opacity="1"/>
+        </svg>
+        Running Simulation...
+    `;
     
     simulationState.isRunning = true;
     
     try {
+        console.log('Starting RL biopsy simulation...');
+        
         const headers = {
             'Content-Type': 'application/json'
         };
@@ -161,11 +174,19 @@ async function startSimulation() {
         
         if (!response.ok) {
             const errorData = await response.json().catch(() => ({}));
-            throw new Error(errorData.detail || 'Simulation request failed');
+            throw new Error(errorData.detail || `Server error: ${response.status}`);
         }
         
         const result = await response.json();
         console.log('Simulation complete:', result);
+        
+        // Validate result
+        if (!result || !result.procedure_log) {
+            throw new Error('Invalid simulation result');
+        }
+        
+        // Clear previous results
+        document.getElementById('resultsContainer').innerHTML = '';
         
         // Animate simulation steps
         await animateSimulation(result);
@@ -173,22 +194,47 @@ async function startSimulation() {
         // Show final results
         displayResults(result);
         
-        showNotification('Simulation completed successfully', 'success');
+        showNotification('Simulation completed successfully!', 'success');
         
     } catch (error) {
         console.error('Simulation error:', error);
-        showNotification('Simulation failed: ' + error.message, 'error');
+        showNotification(`Simulation failed: ${error.message}`, 'error');
+        
+        // Show error in results container
+        const resultsContainer = document.getElementById('resultsContainer');
+        if (resultsContainer) {
+            resultsContainer.innerHTML = `
+                <div style="background: rgba(239, 68, 68, 0.1); border: 1px solid #EF4444; border-radius: 12px; padding: 24px; text-align: center;">
+                    <div style="font-size: 48px; margin-bottom: 16px;">⚠️</div>
+                    <h3 style="color: #EF4444; margin-bottom: 8px;">Simulation Failed</h3>
+                    <p style="color: var(--text-secondary); font-size: 14px;">${error.message}</p>
+                    <button onclick="startSimulation()" style="margin-top: 16px; padding: 10px 20px; background: var(--primary); color: white; border: none; border-radius: 8px; cursor: pointer; font-weight: 600;">Try Again</button>
+                </div>
+            `;
+        }
     } finally {
         simulationState.isRunning = false;
-        startBtn.disabled = false;
-        startBtn.innerHTML = `
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                <polygon points="5 3 19 12 5 21 5 3"/>
-            </svg>
-            Start RL Simulation
-        `;
+        if (startBtn) {
+            startBtn.disabled = false;
+            startBtn.innerHTML = `
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <polygon points="5 3 19 12 5 21 5 3"/>
+                </svg>
+                Start RL Simulation
+            `;
+        }
     }
 }
+
+// Add CSS animation for spinner
+const style = document.createElement('style');
+style.textContent = `
+    @keyframes spin {
+        from { transform: rotate(0deg); }
+        to { transform: rotate(360deg); }
+    }
+`;
+document.head.appendChild(style);
 
 /**
  * Animate simulation steps with visual feedback

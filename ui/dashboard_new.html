@@ -6,10 +6,18 @@
     <meta name="description" content="H. pylori CDSS Clinical Dashboard">
     <meta name="theme-color" content="#7C3AED">
     <title>GastroCDSS - Clinical Dashboard</title>
-    <link rel="stylesheet" href="styles_new.css?v=20250102">
+    <link rel="stylesheet" href="styles_new.css?v=20250116b">
     <link rel="stylesheet" href="workflow_styles.css?v=20250102">
     <link rel="stylesheet" href="enhanced_navigation.css?v=20250102">
     <link rel="stylesheet" href="mobile-responsive.css?v=20250102">
+    <style>
+        /* FORCE DARK MODE TEXT VISIBILITY - Override cache */
+        [data-theme="dark"] {
+            --text-primary: #FFFFFF !important;
+            --text-secondary: #E8E0FF !important;
+            --text-tertiary: #C7BFE6 !important;
+        }
+    </style>
     <style>
         /* Enhanced Form Styling for Better UX */
         .form-group {
@@ -277,7 +285,7 @@
                         <button class="btn-sm">View All</button>
                     </div>
                     <div class="activity-list" id="recentActivity">
-                        <p class="loading">Loading recent activity...</p>
+                        <!-- Activity items will be loaded dynamically -->
                     </div>
                 </div>
             </div>
@@ -2439,13 +2447,36 @@
     
     </style>
     
+    <script>
+        // IMMEDIATE DARK MODE FIX - Runs before anything else
+        (function() {
+            const applyDarkModeFix = () => {
+                const root = document.documentElement;
+                if (root.getAttribute('data-theme') === 'dark') {
+                    root.style.setProperty('--text-primary', '#FFFFFF');
+                    root.style.setProperty('--text-secondary', '#E8E0FF');
+                    root.style.setProperty('--text-tertiary', '#C7BFE6');
+                }
+            };
+            
+            // Apply immediately
+            applyDarkModeFix();
+            
+            // Apply after theme changes
+            const observer = new MutationObserver(applyDarkModeFix);
+            observer.observe(document.documentElement, {
+                attributes: true,
+                attributeFilter: ['data-theme']
+            });
+        })();
+    </script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
-<script src="app_new.js?v=20250102"></script>
+<script src="app_new.js?v=20250116"></script>
 <script src="enhanced_navigation.js?v=20250102"></script>
 <script src="case_management.js?v=20250102"></script>
 <script src="workflow_forms.js?v=20250102"></script>
 <script src="scheduling.js?v=20250102"></script>
 <script src="video_consult.js?v=20250102"></script>
-<script src="capsule_endoscopy.js?v=20250102"></script>
+<script src="capsule_endoscopy.js?v=20250116h"></script>
 </body>
 </html>
