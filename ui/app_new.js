@@ -3,7 +3,11 @@
 // Dark/Light Mode, Charts, Real-time Updates
 // ========================================
 
-const API_BASE = window.location.hostname === 'localhost' ? 'http://localhost:8000' : window.location.origin;
+// Production-ready API detection
+// Local dev: use 127.0.0.1:8000 | Production: use same origin
+const API_BASE = (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') 
+    ? 'http://127.0.0.1:8000' 
+    : window.location.origin;
 let authToken = null;
 let currentUser = null;
 let charts = {};

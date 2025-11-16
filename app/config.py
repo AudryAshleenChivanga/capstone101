@@ -24,7 +24,12 @@ class Settings:
     JWT_EXPIRATION_HOURS: int = 24
     
     # CORS
-    ALLOWED_ORIGINS: list = os.getenv("ALLOWED_ORIGINS", "http://127.0.0.1:5500,http://localhost:8000").split(",")
+    ALLOWED_ORIGINS: list = os.getenv("ALLOWED_ORIGINS", "http://127.0.0.1:5500,http://localhost:8000,http://localhost:8001,http://127.0.0.1:8001").split(",")
+    
+    # Frontend URL (for video consultation links)
+    # In production (Render), this should be set to your Render URL
+    # In local dev, defaults to 127.0.0.1:8001
+    FRONTEND_URL: str = os.getenv("FRONTEND_URL", "http://127.0.0.1:8001")
     
     # Database
     DATABASE_URL: str = os.getenv("DATABASE_URL", "sqlite:///./cdss.db")

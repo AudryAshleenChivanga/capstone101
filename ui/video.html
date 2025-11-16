@@ -300,7 +300,7 @@
 
                 <div class="info-card">
                     <h3>Quick Actions</h3>
-                    <button class="btn btn-secondary" style="width: 100%; margin-bottom: 10px;" onclick="window.location.href='dashboard.html'">
+                    <button class="btn btn-secondary" style="width: 100%; margin-bottom: 10px;" onclick="window.location.href='dashboard_new.html'">
                         Back to Dashboard
                     </button>
                 </div>
@@ -309,7 +309,12 @@
     </div>
 
     <script>
-        const API_BASE = '';
+        // Production-ready API detection
+        // Local dev: use 127.0.0.1:8000 | Production (Render): use same origin
+        // API Base URL - works in both development and production
+        const API_BASE = (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1')
+            ? 'http://127.0.0.1:8000'  // Local development
+            : window.location.origin;  // Production (Render) - same origin
         let localStream = null;
         let remoteStream = null;
         let peerConnection = null;
@@ -322,12 +327,19 @@
         const urlParams = new URLSearchParams(window.location.search);
         sessionId = urlParams.get('session');
         sessionToken = urlParams.get('token');
+        const urlAuthToken = urlParams.get('auth'); // Auth token passed from parent window
 
         document.addEventListener('DOMContentLoaded', () => {
             if (!sessionId || !sessionToken) {
-                alert('Invalid session link');
-                window.location.href = 'dashboard.html';
+                alert('Invalid session link. Please join through an accepted appointment.');
+                window.location.href = 'dashboard_new.html';
                 return;
+            }
+
+            // Store auth token in localStorage if passed via URL
+            if (urlAuthToken) {
+                localStorage.setItem('token', urlAuthToken);
+                console.log('✅ Auth token received from URL and stored');
             }
 
             loadSessionInfo();
@@ -335,14 +347,31 @@
 
         async function loadSessionInfo() {
             try {
-                const token = sessionStorage.getItem('jwt_token');
+                console.log('🔐 Checking for authentication token...');
+                
+                // Get token - check all possible locations
+                const token = localStorage.getItem('token') || localStorage.getItem('authToken') || sessionStorage.getItem('jwt_token');
+                
+                console.log('Token found:', token ? '✅ Yes' : '❌ No');
+                
+                if (!token) {
+                    throw new Error('Not authenticated. Please login first.');
+                }
+                
+                console.log('📡 Validating video session...');
                 const response = await fetch(`${API_BASE}/video/session/${sessionId}?token=${sessionToken}`, {
                     headers: {
-                        'Authorization': `Bearer ${token}`
+                        'Authorization': `Bearer ${token}`,
+                        'Content-Type': 'application/json'
                     }
                 });
 
-                if (!response.ok) throw new Error('Session not found or expired');
+                console.log('Session validation response:', response.status);
+                
+                if (!response.ok) {
+                    const errorData = await response.json().catch(() => ({}));
+                    throw new Error(errorData.detail || 'Session not found or expired');
+                }
 
                 const sessionInfo = await response.json();
                 
@@ -412,7 +441,7 @@
         async function endCall() {
             if (confirm('Are you sure you want to end this consultation?')) {
                 try {
-                    const token = sessionStorage.getItem('jwt_token');
+                    const token = localStorage.getItem('token') || localStorage.getItem('authToken') || sessionStorage.getItem('jwt_token');
                     await fetch(`${API_BASE}/video/session/${sessionId}/end`, {
                         method: 'POST',
                         headers: {
@@ -425,9 +454,10 @@
                         localStream.getTracks().forEach(track => track.stop());
                     }
 
-                    window.location.href = 'dashboard.html';
+                    window.location.href = 'dashboard_new.html';
                 } catch (error) {
                     console.error('Error ending session:', error);
+                    window.location.href = 'dashboard_new.html';
                 }
             }
         }

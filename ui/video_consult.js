@@ -6,9 +6,28 @@
 // Initialize Video Consultation Page
 async function initVideoConsultation() {
     console.log('Initializing Video Consultation...');
+    
+    // Load common data
     await loadSpecialistsForBooking();
     await loadMyAppointmentRequests();
     await loadUpcomingAppointments();
+    
+    // If user is specialist, show pending requests tab
+    const userStr = localStorage.getItem('user');
+    if (userStr) {
+        try {
+            const user = JSON.parse(userStr);
+            if (user.role === 'specialist') {
+                const pendingTab = document.getElementById('pendingTab');
+                if (pendingTab) {
+                    pendingTab.style.display = 'block';
+                }
+                await loadPendingRequests();
+            }
+        } catch (e) {
+            console.error('Error parsing user data:', e);
+        }
+    }
 }
 
 // Switch between tabs
@@ -177,15 +196,15 @@ async function submitBooking(event, specialistId) {
     
     const formData = {
         specialist_id: specialistId,
-        preferred_date: document.getElementById('appointmentDateTime').value,
+        requested_date: document.getElementById('appointmentDateTime').value,
         case_id: document.getElementById('relatedCase').value || null,
-        urgency: document.getElementById('urgencyLevel').value,
+        duration_minutes: 30,  // Default 30 minutes
         reason: document.getElementById('consultationReason').value,
-        notes: document.getElementById('additionalNotes').value
+        clinician_notes: document.getElementById('additionalNotes').value
     };
     
     try {
-        const response = await apiRequest('/scheduling/appointments', {
+        const response = await apiRequest('/appointments/request', {
             method: 'POST',
             body: JSON.stringify(formData)
         });
@@ -274,42 +293,62 @@ async function loadUpcomingAppointments() {
         if (upcoming.length === 0) {
             container.innerHTML = `
                 <div class="empty-state">
-                    <div class="empty-icon">[Calendar]</div>
+                    <div class="empty-icon">📅</div>
                     <p>No upcoming appointments</p>
                 </div>
             `;
             return;
         }
         
-        container.innerHTML = upcoming.map(apt => `
-            <div class="appointment-card confirmed">
-                <div class="apt-header">
-                    <div class="apt-specialist">
-                        <strong>${apt.specialist_name}</strong>
-                        <span class="apt-specialty">${apt.specialist_specialty}</span>
+        container.innerHTML = upcoming.map(apt => {
+            const appointmentDate = apt.scheduled_date || apt.requested_date;
+            const isAccepted = apt.status === 'accepted';
+            const displayName = apt.specialist_name || apt.clinician_name;
+            const displaySpecialty = apt.specialist_specialty || 'Consultation';
+            
+            return `
+                <div class="appointment-card confirmed">
+                    <div class="apt-header">
+                        <div class="apt-specialist">
+                            <strong>${displayName}</strong>
+                            <span class="apt-specialty">${displaySpecialty}</span>
+                        </div>
+                        <span class="apt-status status-${apt.status}">${apt.status}</span>
                     </div>
-                    <span class="apt-status status-confirmed">Confirmed</span>
+                    <div class="apt-details">
+                        <div class="apt-detail-item">
+                            <svg class="detail-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <rect x="3" y="4" width="18" height="18" rx="2" ry="2"/>
+                                <line x1="16" y1="2" x2="16" y2="6"/>
+                                <line x1="8" y1="2" x2="8" y2="6"/>
+                                <line x1="3" y1="10" x2="21" y2="10"/>
+                            </svg>
+                            <span>${new Date(appointmentDate).toLocaleString()}</span>
+                        </div>
+                        <div class="apt-detail-item">
+                            <svg class="detail-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <circle cx="12" cy="12" r="10"/>
+                                <polyline points="12 6 12 12 16 14"/>
+                            </svg>
+                            <span>Duration: ${apt.duration_minutes || 30} minutes</span>
+                        </div>
+                    </div>
+                    ${apt.reason ? `<div class="apt-reason"><strong>Reason:</strong> ${apt.reason}</div>` : ''}
+                    ${apt.specialist_notes ? `<div class="apt-notes"><strong>Notes:</strong> ${apt.specialist_notes}</div>` : ''}
+                    ${isAccepted ? `
+                        <div class="apt-actions">
+                            <button class="btn btn-primary" onclick="joinVideoSession(${apt.id})">
+                                <svg style="width: 16px; height: 16px; margin-right: 8px; vertical-align: middle;" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <polygon points="23 7 16 12 23 17 23 7"></polygon>
+                                    <rect x="1" y="5" width="15" height="14" rx="2" ry="2"></rect>
+                                </svg>
+                                Join Video Session
+                            </button>
+                        </div>
+                    ` : '<p class="apt-note">Waiting for confirmation</p>'}
                 </div>
-                <div class="apt-details">
-                    <div class="apt-detail-item">
-                        <svg class="detail-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                            <rect x="3" y="4" width="18" height="18" rx="2" ry="2"/>
-                            <line x1="16" y1="2" x2="16" y2="6"/>
-                            <line x1="8" y1="2" x2="8" y2="6"/>
-                            <line x1="3" y1="10" x2="21" y2="10"/>
-                        </svg>
-                        <span>${new Date(apt.confirmed_date).toLocaleString()}</span>
-                    </div>
-                </div>
-                ${apt.video_link ? `
-                    <div class="apt-actions">
-                        <a href="${apt.video_link}" target="_blank" class="btn btn-primary">
-                            Join Video Session
-                        </a>
-                    </div>
-                ` : '<p class="apt-note">Video link will be available closer to the appointment time</p>'}
-            </div>
-        `).join('');
+            `;
+        }).join('');
         
     } catch (error) {
         console.error('Error loading upcoming appointments:', error);
@@ -323,8 +362,8 @@ async function cancelAppointment(appointmentId) {
     }
     
     try {
-        await apiRequest(`/scheduling/appointments/${appointmentId}/cancel`, {
-            method: 'PUT'
+        await apiRequest(`/appointments/${appointmentId}`, {
+            method: 'DELETE'
         });
         
         showToast('Appointment request cancelled', 'success');
@@ -333,6 +372,188 @@ async function cancelAppointment(appointmentId) {
     } catch (error) {
         console.error('Error cancelling appointment:', error);
         showToast('Failed to cancel appointment: ' + error.message, 'error');
+    }
+}
+
+// Load pending requests for specialists
+async function loadPendingRequests() {
+    try {
+        const response = await apiRequest('/appointments/pending-requests');
+        const pending = response || [];
+        
+        const container = document.getElementById('pending-requests-list');
+        
+        if (pending.length === 0) {
+            container.innerHTML = `
+                <div class="empty-state">
+                    <div class="empty-icon">🔔</div>
+                    <p>No pending appointment requests</p>
+                </div>
+            `;
+            return;
+        }
+        
+        container.innerHTML = pending.map(apt => `
+            <div class="appointment-card pending-request">
+                <div class="apt-header">
+                    <div class="apt-specialist">
+                        <strong>${apt.clinician_name || 'Clinician'}</strong>
+                        <span class="apt-specialty">Requesting consultation</span>
+                    </div>
+                    <span class="apt-status status-pending">Pending</span>
+                </div>
+                <div class="apt-details">
+                    <div class="apt-detail-item">
+                        <svg class="detail-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <rect x="3" y="4" width="18" height="18" rx="2" ry="2"/>
+                            <line x1="16" y1="2" x2="16" y2="6"/>
+                            <line x1="8" y1="2" x2="8" y2="6"/>
+                            <line x1="3" y1="10" x2="21" y2="10"/>
+                        </svg>
+                        <span>${new Date(apt.requested_date).toLocaleString()}</span>
+                    </div>
+                    <div class="apt-detail-item">
+                        <svg class="detail-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <circle cx="12" cy="12" r="10"/>
+                            <polyline points="12 6 12 12 16 14"/>
+                        </svg>
+                        <span>Duration: ${apt.duration_minutes || 30} minutes</span>
+                    </div>
+                </div>
+                <div class="apt-reason">
+                    <strong>Reason:</strong> ${apt.reason || 'Not specified'}
+                </div>
+                ${apt.clinician_notes ? `
+                    <div class="apt-notes">
+                        <strong>Notes:</strong> ${apt.clinician_notes}
+                    </div>
+                ` : ''}
+                <div class="apt-actions">
+                    <button class="btn btn-sm btn-danger" onclick="respondToAppointmentRequest(${apt.id}, 'rejected')">
+                        Reject
+                    </button>
+                    <button class="btn btn-sm btn-success" onclick="openApprovalModal(${apt.id}, '${apt.clinician_name || 'Clinician'}', '${apt.requested_date}')">
+                        Accept
+                    </button>
+                </div>
+            </div>
+        `).join('');
+        
+    } catch (error) {
+        console.error('Error loading pending requests:', error);
+    }
+}
+
+// Open approval modal
+function openApprovalModal(appointmentId, clinicianName, requestedDate) {
+    const modal = document.createElement('div');
+    modal.className = 'modal-overlay';
+    modal.innerHTML = `
+        <div class="modal-content approval-modal">
+            <div class="modal-header">
+                <h2>Accept Appointment Request</h2>
+                <button class="close-modal" onclick="this.closest('.modal-overlay').remove()">&times;</button>
+            </div>
+            <div class="modal-body">
+                <p><strong>Clinician:</strong> ${clinicianName}</p>
+                <p><strong>Requested Date:</strong> ${new Date(requestedDate).toLocaleString()}</p>
+                
+                <form id="approvalForm" onsubmit="submitApproval(event, ${appointmentId})">
+                    <div class="form-group">
+                        <label>Scheduled Date & Time *</label>
+                        <input type="datetime-local" id="scheduledDate" required value="${requestedDate.slice(0, 16)}" min="${new Date().toISOString().slice(0, 16)}">
+                        <small>You can adjust the date/time if needed</small>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label>Notes to Clinician</label>
+                        <textarea id="specialistNotes" rows="3" placeholder="Any additional information or instructions..."></textarea>
+                    </div>
+                    
+                    <div class="modal-actions">
+                        <button type="button" class="btn btn-secondary" onclick="this.closest('.modal-overlay').remove()">Cancel</button>
+                        <button type="submit" class="btn btn-success">Confirm Acceptance</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    `;
+    
+    document.body.appendChild(modal);
+}
+
+// Submit approval
+async function submitApproval(event, appointmentId) {
+    event.preventDefault();
+    
+    const scheduledDate = document.getElementById('scheduledDate').value;
+    const specialistNotes = document.getElementById('specialistNotes').value;
+    
+    await respondToAppointmentRequest(appointmentId, 'accepted', scheduledDate, specialistNotes);
+    document.querySelector('.modal-overlay').remove();
+}
+
+// Respond to appointment request
+async function respondToAppointmentRequest(appointmentId, status, scheduledDate = null, notes = '') {
+    try {
+        const payload = {
+            status: status,
+            specialist_notes: notes
+        };
+        
+        if (status === 'accepted' && scheduledDate) {
+            payload.scheduled_date = scheduledDate;
+        }
+        
+        await apiRequest(`/appointments/${appointmentId}/respond`, {
+            method: 'PUT',
+            body: JSON.stringify(payload)
+        });
+        
+        showToast(
+            status === 'accepted' 
+                ? 'Appointment accepted successfully!' 
+                : 'Appointment request rejected',
+            'success'
+        );
+        
+        // Reload pending requests
+        await loadPendingRequests();
+        
+    } catch (error) {
+        console.error('Error responding to appointment:', error);
+        showToast('Failed to respond: ' + error.message, 'error');
+    }
+}
+
+// Join video session
+async function joinVideoSession(appointmentId) {
+    try {
+        showToast('Creating video session...', 'info');
+        
+        const response = await apiRequest('/video/session/create', {
+            method: 'POST',
+            body: JSON.stringify({
+                appointment_id: appointmentId,
+                session_name: `Appointment #${appointmentId} Consultation`
+            })
+        });
+        
+        if (response && response.join_url_host) {
+            // Get auth token to pass to video window
+            const authToken = localStorage.getItem('token');
+            
+            // Add auth token to URL for the new window to use
+            const videoUrl = `${response.join_url_host}&auth=${encodeURIComponent(authToken)}`;
+            
+            // Open video session in new window
+            window.open(videoUrl, '_blank', 'width=1280,height=720');
+            showToast('Video session created! Opening in new window...', 'success');
+        }
+        
+    } catch (error) {
+        console.error('Error creating video session:', error);
+        showToast('Failed to create video session: ' + error.message, 'error');
     }
 }
 

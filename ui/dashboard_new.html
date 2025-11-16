@@ -1364,6 +1364,7 @@
                     <button class="consult-tab-btn active" onclick="switchConsultTab('book')">Book Appointment</button>
                     <button class="consult-tab-btn" onclick="switchConsultTab('requests')">My Requests</button>
                     <button class="consult-tab-btn" onclick="switchConsultTab('upcoming')">Upcoming</button>
+                    <button class="consult-tab-btn" id="pendingTab" onclick="switchConsultTab('pending')" style="display: none;">Pending Requests</button>
                 </div>
                 
                 <div id="book-tab" class="consult-tab-content active">
@@ -1386,6 +1387,15 @@
                         <div class="empty-state">
                             <div class="empty-icon">📅</div>
                             <p>No upcoming appointments</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <div id="pending-tab" class="consult-tab-content">
+                    <div id="pending-requests-list" class="appointments-list">
+                        <div class="empty-state">
+                            <div class="empty-icon">🔔</div>
+                            <p>No pending appointment requests</p>
                         </div>
                     </div>
                 </div>
@@ -2476,7 +2486,7 @@
 <script src="case_management.js?v=20250102"></script>
 <script src="workflow_forms.js?v=20250102"></script>
 <script src="scheduling.js?v=20250102"></script>
-<script src="video_consult.js?v=20250102"></script>
+<script src="video_consult.js?v=20250116j"></script>
 <script src="capsule_endoscopy.js?v=20250116h"></script>
 </body>
 </html>

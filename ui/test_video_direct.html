@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Video Session Test</title>
+    <style>
+        body { font-family: Arial, sans-serif; padding: 20px; }
+        button { padding: 10px 20px; margin: 10px; font-size: 16px; }
+        pre { background: #f5f5f5; padding: 15px; border-radius: 5px; overflow-x: auto; }
+        .success { color: green; }
+        .error { color: red; }
+    </style>
+</head>
+<body>
+    <h1>Video Session Debug Tool</h1>
+    
+    <div>
+        <h2>Step 1: Login</h2>
+        <input type="text" id="username" placeholder="Username" value="dr_john">
+        <input type="password" id="password" placeholder="Password" value="clinician123">
+        <button onclick="login()">Login</button>
+        <div id="loginResult"></div>
+    </div>
+    
+    <div>
+        <h2>Step 2: Create Video Session</h2>
+        <input type="number" id="appointmentId" placeholder="Appointment ID" value="2">
+        <button onclick="createSession()">Create Session</button>
+        <div id="sessionResult"></div>
+    </div>
+    
+    <div>
+        <h2>Step 3: Open Video Window</h2>
+        <button onclick="openVideo()">Open Video</button>
+    </div>
+    
+    <h2>Debug Info</h2>
+    <pre id="debugInfo"></pre>
+    
+    <script>
+        const API_BASE = 'http://127.0.0.1:8000';
+        let authToken = null;
+        let sessionData = null;
+        
+        function log(message) {
+            const debugDiv = document.getElementById('debugInfo');
+            debugDiv.textContent += message + '\n';
+        }
+        
+        async function login() {
+            const username = document.getElementById('username').value;
+            const password = document.getElementById('password').value;
+            const resultDiv = document.getElementById('loginResult');
+            
+            try {
+                log('🔐 Attempting login...');
+                const response = await fetch(`${API_BASE}/auth/login`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ username, password })
+                });
+                
+                if (!response.ok) {
+                    throw new Error(`Login failed: ${response.status}`);
+                }
+                
+                const data = await response.json();
+                authToken = data.access_token;
+                
+                // Store in localStorage
+                localStorage.setItem('token', authToken);
+                
+                resultDiv.innerHTML = '<span class="success">✅ Login successful!</span>';
+                log(`✅ Login successful! Token: ${authToken.substring(0, 20)}...`);
+                log(`User: ${data.user.username} (${data.user.role})`);
+            } catch (error) {
+                resultDiv.innerHTML = `<span class="error">❌ ${error.message}</span>`;
+                log(`❌ Login error: ${error.message}`);
+            }
+        }
+        
+        async function createSession() {
+            if (!authToken) {
+                alert('Please login first!');
+                return;
+            }
+            
+            const appointmentId = document.getElementById('appointmentId').value;
+            const resultDiv = document.getElementById('sessionResult');
+            
+            try {
+                log(`📹 Creating video session for appointment ${appointmentId}...`);
+                const response = await fetch(`${API_BASE}/video/session/create`, {
+                    method: 'POST',
+                    headers: {
+                        'Authorization': `Bearer ${authToken}`,
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        appointment_id: parseInt(appointmentId),
+                        session_name: `Test Consultation ${appointmentId}`
+                    })
+                });
+                
+                if (!response.ok) {
+                    const errorText = await response.text();
+                    throw new Error(`Session creation failed: ${response.status} - ${errorText}`);
+                }
+                
+                sessionData = await response.json();
+                
+                resultDiv.innerHTML = '<span class="success">✅ Session created!</span>';
+                log(`✅ Session created successfully!`);
+                log(`Session ID: ${sessionData.session_id}`);
+                log(`Join URL: ${sessionData.join_url_host}`);
+                log(`With auth: ${sessionData.join_url_host}&auth=${encodeURIComponent(authToken)}`);
+            } catch (error) {
+                resultDiv.innerHTML = `<span class="error">❌ ${error.message}</span>`;
+                log(`❌ Session creation error: ${error.message}`);
+            }
+        }
+        
+        function openVideo() {
+            if (!sessionData || !authToken) {
+                alert('Please login and create a session first!');
+                return;
+            }
+            
+            const videoUrl = `${sessionData.join_url_host}&auth=${encodeURIComponent(authToken)}`;
+            log(`🎥 Opening video window: ${videoUrl}`);
+            
+            window.open(videoUrl, '_blank', 'width=1280,height=720');
+        }
+        
+        // Check current token status
+        window.addEventListener('load', () => {
+            const existingToken = localStorage.getItem('token');
+            if (existingToken) {
+                log(`ℹ️ Found existing token in localStorage: ${existingToken.substring(0, 20)}...`);
+                authToken = existingToken;
+            } else {
+                log('ℹ️ No existing token found in localStorage');
+            }
+        });
+    </script>
+</body>
+</html>
+

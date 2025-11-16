@@ -3,8 +3,11 @@
  * Handles login and registration functionality
  */
 
-// Dynamic API URL detection
-const API_BASE = window.location.hostname === 'localhost' ? 'http://localhost:8000' : window.location.origin;
+// Production-ready API detection
+// Local dev: use 127.0.0.1:8000 | Production (Render): use same origin
+const API_BASE = (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') 
+    ? 'http://127.0.0.1:8000' 
+    : window.location.origin;
 
 // Show message function
 function showMessage(elementId, message, type) {

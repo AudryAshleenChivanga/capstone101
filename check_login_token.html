@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Check Login Token</title>
+</head>
+<body>
+    <h2>Login Token Checker</h2>
+    <button onclick="checkToken()">Check Token</button>
+    <pre id="result"></pre>
+    
+    <script>
+        function checkToken() {
+            const token = localStorage.getItem('token');
+            const authToken = localStorage.getItem('authToken');
+            const jwtToken = sessionStorage.getItem('jwt_token');
+            const user = localStorage.getItem('user');
+            
+            let result = '=== Token Status ===\n\n';
+            result += `localStorage.token: ${token ? '✅ Found' : '❌ Not found'}\n`;
+            result += `localStorage.authToken: ${authToken ? '✅ Found' : '❌ Not found'}\n`;
+            result += `sessionStorage.jwt_token: ${jwtToken ? '✅ Found' : '❌ Not found'}\n\n`;
+            
+            if (user) {
+                result += '=== User Info ===\n';
+                try {
+                    const userData = JSON.parse(user);
+                    result += `Username: ${userData.username}\n`;
+                    result += `Role: ${userData.role}\n`;
+                    result += `Name: ${userData.full_name}\n`;
+                } catch (e) {
+                    result += 'Error parsing user data\n';
+                }
+            } else {
+                result += '❌ No user data found\n';
+            }
+            
+            document.getElementById('result').textContent = result;
+        }
+    </script>
+</body>
+</html>
+

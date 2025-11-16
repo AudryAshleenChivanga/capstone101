@@ -110,14 +110,17 @@ def create_video_session(
         # Continue even if DB save fails - session is still in memory
         db.rollback()
     
-    guest_url = f"{settings.ALLOWED_ORIGINS[0]}/ui/video.html?session={session_id}&token={guest_token}"
+    # Use FRONTEND_URL from settings (production-ready)
+    # Local dev: http://127.0.0.1:8001 | Production: your Render URL
+    ui_base = settings.FRONTEND_URL
+    guest_url = f"{ui_base}/video.html?session={session_id}&token={guest_token}"
     
     return {
         "session_id": session_id,
         "room_name": room_name,
         "host_token": host_token,
         "guest_token": guest_token,
-        "join_url_host": f"{settings.ALLOWED_ORIGINS[0]}/ui/video.html?session={session_id}&token={host_token}",
+        "join_url_host": f"{ui_base}/video.html?session={session_id}&token={host_token}",
         "join_url_guest": guest_url,
         "qr_code_url": f"/video/session/{session_id}/qr?token={guest_token}",
         "expires_at": expires_at.isoformat(),

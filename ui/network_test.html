@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Network Test</title>
+    <style>
+        body { font-family: Arial; padding: 20px; background: #f5f5f5; }
+        .box { background: white; padding: 20px; margin: 10px 0; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
+        h1 { color: #333; }
+        button { background: #007bff; color: white; padding: 12px 24px; border: none; border-radius: 5px; cursor: pointer; font-size: 16px; margin: 5px; }
+        button:hover { background: #0056b3; }
+        .success { color: green; font-weight: bold; }
+        .error { color: red; font-weight: bold; }
+        pre { background: #f8f8f8; padding: 10px; border-radius: 4px; overflow-x: auto; }
+    </style>
+</head>
+<body>
+    <h1>🔍 Network Connection Test</h1>
+    
+    <div class="box">
+        <h2>Step 1: Test Backend Connection</h2>
+        <button onclick="testBackend()">Test Backend API</button>
+        <div id="backendResult"></div>
+    </div>
+    
+    <div class="box">
+        <h2>Step 2: Test Login</h2>
+        <button onclick="testLogin()">Test Login (dr_john)</button>
+        <div id="loginResult"></div>
+    </div>
+    
+    <div class="box">
+        <h2>Console Log</h2>
+        <pre id="console"></pre>
+    </div>
+    
+    <script>
+        function log(msg) {
+            const consoleEl = document.getElementById('console');
+            const timestamp = new Date().toLocaleTimeString();
+            consoleEl.textContent += `[${timestamp}] ${msg}\n`;
+            console.log(msg);
+        }
+        
+        async function testBackend() {
+            const resultEl = document.getElementById('backendResult');
+            resultEl.innerHTML = '<p>Testing...</p>';
+            log('Testing backend connection...');
+            
+            try {
+                log('Fetching: http://127.0.0.1:8000/');
+                const response = await fetch('http://127.0.0.1:8000/', {
+                    method: 'GET',
+                    mode: 'cors',
+                    cache: 'no-cache'
+                });
+                
+                log(`Response status: ${response.status}`);
+                log(`Response OK: ${response.ok}`);
+                
+                const text = await response.text();
+                log(`Response body: ${text.substring(0, 100)}`);
+                
+                resultEl.innerHTML = `<p class="success">✅ Backend connection successful!</p><pre>Status: ${response.status}\nBody: ${text.substring(0, 200)}...</pre>`;
+                
+            } catch (error) {
+                log(`ERROR: ${error.name} - ${error.message}`);
+                log(`Error stack: ${error.stack}`);
+                resultEl.innerHTML = `<p class="error">❌ Connection failed!</p><pre>Error: ${error.message}\nType: ${error.name}</pre>`;
+            }
+        }
+        
+        async function testLogin() {
+            const resultEl = document.getElementById('loginResult');
+            resultEl.innerHTML = '<p>Testing login...</p>';
+            log('Testing login endpoint...');
+            
+            try {
+                const payload = {
+                    username: 'dr_john',
+                    password: 'clinician123'
+                };
+                
+                log(`Fetching: http://127.0.0.1:8000/auth/login`);
+                log(`Payload: ${JSON.stringify(payload)}`);
+                
+                const response = await fetch('http://127.0.0.1:8000/auth/login', {
+                    method: 'POST',
+                    mode: 'cors',
+                    cache: 'no-cache',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(payload)
+                });
+                
+                log(`Response status: ${response.status}`);
+                log(`Response OK: ${response.ok}`);
+                
+                if (!response.ok) {
+                    const errorText = await response.text();
+                    log(`Error response: ${errorText}`);
+                    resultEl.innerHTML = `<p class="error">❌ Login failed!</p><pre>Status: ${response.status}\nError: ${errorText}</pre>`;
+                    return;
+                }
+                
+                const data = await response.json();
+                log(`Login successful! User: ${data.user.username}`);
+                
+                resultEl.innerHTML = `<p class="success">✅ Login successful!</p><pre>User: ${data.user.username}\nRole: ${data.user.role}\nToken: ${data.access_token.substring(0, 30)}...</pre>`;
+                
+            } catch (error) {
+                log(`ERROR: ${error.name} - ${error.message}`);
+                log(`Error stack: ${error.stack}`);
+                resultEl.innerHTML = `<p class="error">❌ Login failed!</p><pre>Error: ${error.message}\nType: ${error.name}</pre>`;
+            }
+        }
+        
+        // Auto-test on load
+        window.addEventListener('load', () => {
+            log('Page loaded. Ready to test!');
+            log('Click "Test Backend API" to start...');
+        });
+    </script>
+</body>
+</html>
+

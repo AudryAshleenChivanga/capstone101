@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>CORS Diagnostic Test</title>
+    <style>
+        body { font-family: Arial; padding: 20px; background: #f5f5f5; }
+        .container { max-width: 800px; margin: 0 auto; background: white; padding: 30px; border-radius: 10px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); }
+        h1 { color: #333; }
+        button { background: #007bff; color: white; padding: 12px 24px; border: none; border-radius: 5px; font-size: 16px; cursor: pointer; margin: 10px 5px; }
+        button:hover { background: #0056b3; }
+        .log { background: #000; color: #0f0; padding: 15px; border-radius: 5px; font-family: monospace; font-size: 14px; margin-top: 20px; max-height: 400px; overflow-y: auto; }
+        .success { color: #0f0; }
+        .error { color: #f00; }
+        .info { color: #0ff; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🔍 CORS Diagnostic Test</h1>
+        <p>This will test if your browser can connect to the backend API.</p>
+        
+        <button onclick="testConnection()">🔌 Test Connection</button>
+        <button onclick="testLogin()">🔐 Test Login</button>
+        <button onclick="clearCache()">🗑️ Clear Cache & Reload</button>
+        
+        <div class="log" id="log">
+            <div class="info">Waiting for tests...</div>
+        </div>
+    </div>
+    
+    <script>
+        const API_BASE = 'http://127.0.0.1:8000';
+        
+        function log(message, type = 'info') {
+            const logDiv = document.getElementById('log');
+            const timestamp = new Date().toLocaleTimeString();
+            const className = type;
+            logDiv.innerHTML += `<div class="${className}">[${timestamp}] ${message}</div>`;
+            logDiv.scrollTop = logDiv.scrollHeight;
+            console.log(`[${timestamp}] ${message}`);
+        }
+        
+        function clearLog() {
+            document.getElementById('log').innerHTML = '';
+        }
+        
+        async function testConnection() {
+            clearLog();
+            log('🔌 Testing connection to backend...', 'info');
+            log(`API Base: ${API_BASE}`, 'info');
+            log('', 'info');
+            
+            try {
+                log('Sending GET request to /...', 'info');
+                const response = await fetch(`${API_BASE}/`, {
+                    method: 'GET',
+                    mode: 'cors',
+                    cache: 'no-cache',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    }
+                });
+                
+                log(`✅ Response status: ${response.status}`, 'success');
+                log(`✅ Response OK: ${response.ok}`, 'success');
+                
+                // Check CORS headers
+                log('', 'info');
+                log('📋 Response Headers:', 'info');
+                for (const [key, value] of response.headers.entries()) {
+                    if (key.toLowerCase().includes('access-control') || key.toLowerCase().includes('cors')) {
+                        log(`   ${key}: ${value}`, 'info');
+                    }
+                }
+                
+                const data = await response.text();
+                log('', 'info');
+                log(`✅ Backend is responding!`, 'success');
+                log(`Response: ${data.substring(0, 100)}...`, 'info');
+                
+            } catch (error) {
+                log(`❌ Connection FAILED!`, 'error');
+                log(`Error: ${error.message}`, 'error');
+                log(`Error type: ${error.name}`, 'error');
+                log('', 'info');
+                log('🔧 Troubleshooting:', 'info');
+                log('1. Make sure backend is running on port 8000', 'info');
+                log('2. Try clearing browser cache (Ctrl+Shift+Delete)', 'info');
+                log('3. Try a different browser', 'info');
+                log('4. Check browser console (F12) for more details', 'error');
+            }
+        }
+        
+        async function testLogin() {
+            clearLog();
+            log('🔐 Testing login endpoint...', 'info');
+            
+            try {
+                const payload = {
+                    username: 'dr_john',
+                    password: 'clinician123'
+                };
+                
+                log('Sending POST request to /auth/login', 'info');
+                log(`Payload: ${JSON.stringify(payload)}`, 'info');
+                log('', 'info');
+                
+                const response = await fetch(`${API_BASE}/auth/login`, {
+                    method: 'POST',
+                    mode: 'cors',
+                    cache: 'no-cache',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(payload)
+                });
+                
+                log(`Response status: ${response.status}`, response.ok ? 'success' : 'error');
+                
+                if (!response.ok) {
+                    const errorText = await response.text();
+                    log(`❌ Login failed: ${errorText}`, 'error');
+                    return;
+                }
+                
+                const data = await response.json();
+                log(`✅ Login successful!`, 'success');
+                log(`User: ${data.user.username} (${data.user.role})`, 'success');
+                log(`Token: ${data.access_token.substring(0, 30)}...`, 'success');
+                log('', 'info');
+                log('✅ CORS is working correctly!', 'success');
+                
+                // Store token
+                localStorage.setItem('token', data.access_token);
+                log('💾 Token saved to localStorage', 'success');
+                
+            } catch (error) {
+                log(`❌ Login test FAILED!`, 'error');
+                log(`Error: ${error.message}`, 'error');
+                log(`Error type: ${error.name}`, 'error');
+                log('', 'info');
+                
+                if (error.message.includes('Failed to fetch')) {
+                    log('🚨 This is likely a CORS or connectivity issue!', 'error');
+                    log('', 'info');
+                    log('Quick fixes:', 'info');
+                    log('1. Open browser console (F12) and check Network tab', 'info');
+                    log('2. Look for "CORS" errors in red', 'info');
+                    log('3. Try clearing ALL browser data for localhost', 'info');
+                    log('4. Restart backend server', 'error');
+                }
+            }
+        }
+        
+        function clearCache() {
+            log('🗑️ Clearing cache...', 'info');
+            localStorage.clear();
+            sessionStorage.clear();
+            log('✅ Cache cleared!', 'success');
+            log('🔄 Reloading page in 2 seconds...', 'info');
+            setTimeout(() => {
+                window.location.reload(true);
+            }, 2000);
+        }
+        
+        // Run connection test on load
+        window.addEventListener('load', () => {
+            setTimeout(testConnection, 500);
+        });
+    </script>
+</body>
+</html>
+
