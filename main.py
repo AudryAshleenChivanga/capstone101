@@ -44,6 +44,83 @@ async def lifespan(app: FastAPI):
     create_tables()
     print("[OK] Database initialized")
     
+    # Initialize model management tables and create initial model records
+    try:
+        from app.db import SessionLocal
+        from app.models import User, ModelTraining, PredictionLog
+        from datetime import datetime
+        
+        db = SessionLocal()
+        
+        # Check if model training records exist
+        existing_models = db.query(ModelTraining).count()
+        if existing_models == 0:
+            print("[*] Creating initial model training records...")
+            
+            # Create record for screening model
+            screening_model = ModelTraining(
+                model_name="screening",
+                model_version="v1.0.0",
+                model_type="classification",
+                training_start=datetime(2024, 10, 1),
+                training_end=datetime(2024, 10, 1),
+                status="active",
+                dataset_size=25000,
+                training_samples=18750,
+                validation_samples=6250,
+                accuracy=0.701,
+                precision=0.727,
+                recall=0.849,
+                f1_score=0.783,
+                auc_roc=0.738,
+                model_path="models/screening_hp_pos_calibrated.joblib",
+                config_data={
+                    "n_estimators": 400,
+                    "calibration": "sigmoid",
+                    "features": 20
+                },
+                is_production=1,
+                deployed_at=datetime(2024, 10, 1),
+                notes="Initial production model"
+            )
+            db.add(screening_model)
+            
+            # Create record for staging model
+            staging_model = ModelTraining(
+                model_name="staging",
+                model_version="v1.0.0",
+                model_type="classification",
+                training_start=datetime(2024, 10, 1),
+                training_end=datetime(2024, 10, 1),
+                status="active",
+                dataset_size=38,
+                training_samples=28,
+                validation_samples=10,
+                accuracy=0.90,
+                precision=0.875,
+                recall=1.0,
+                f1_score=0.933,
+                model_path="models/staging_3class.joblib",
+                config_data={
+                    "n_estimators": 400,
+                    "class_weight": "balanced",
+                    "features": 6
+                },
+                is_production=1,
+                deployed_at=datetime(2024, 10, 1),
+                notes="Initial production model"
+            )
+            db.add(staging_model)
+            
+            db.commit()
+            print("[OK] Initial model records created")
+        else:
+            print(f"[OK] Model training records already exist ({existing_models} records)")
+        
+        db.close()
+    except Exception as e:
+        print(f"[WARNING] Model management initialization: {e}")
+    
     # Create default admin user
     try:
         from app.db import SessionLocal
