@@ -101,14 +101,14 @@ function renderCaseTable(cases) {
             : caseItem.stage_pred || 'N/A';
         
         return `
-            <tr style="border-bottom: 1px solid rgba(255, 255, 255, 0.1); transition: background 0.3s;" onmouseover="this.style.background='rgba(0, 212, 255, 0.05)'" onmouseout="this.style.background='transparent'">
+            <tr style="border-bottom: 1px solid rgba(128, 128, 128, 0.2); transition: background 0.3s;" onmouseover="this.style.background='rgba(0, 212, 255, 0.05)'" onmouseout="this.style.background='transparent'">
                 <td style="padding: 15px;">${date}</td>
                 <td style="padding: 15px; font-weight: 600; color: #00d4ff;">${caseItem.patient_id || 'N/A'}</td>
                 <td style="padding: 15px;">${caseItem.patient_name || 'Unknown'}</td>
                 <td style="padding: 15px;">${typeBadge}</td>
                 <td style="padding: 15px;">${riskBadge}</td>
                 <td style="padding: 15px; font-weight: 600;">${result}</td>
-                <td style="padding: 15px; font-size: 0.9rem; color: rgba(255, 255, 255, 0.7);">${caseItem.clinician_name || 'Unknown'}</td>
+                <td style="padding: 15px; font-size: 0.9rem; font-weight: 500;">${caseItem.clinician_name || 'Unknown'}</td>
                 <td style="padding: 15px; text-align: center;">
                     <div style="display: flex; gap: 8px; justify-content: center;">
                         <button onclick="viewCaseDetail(${caseItem.id})" class="btn-icon" title="View Details" style="padding: 8px; background: rgba(0, 150, 255, 0.2); border: 1px solid rgba(0, 150, 255, 0.5); border-radius: 6px; cursor: pointer; transition: all 0.3s;">
