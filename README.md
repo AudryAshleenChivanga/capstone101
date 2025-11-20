@@ -868,6 +868,17 @@ The system integrates **four distinct AI models** working together as complement
 - **Data Source**: Synthetic dataset generated based on Rwandan epidemiological patterns with realistic feature dependencies
 - **Target Variable**: `hp_pos` (H. pylori positive/negative)
 
+**Data Visualizations:**
+
+![Class Distribution](presentation_graphs/1_class_distribution.png)
+*Figure 1A: H. pylori infection status distribution showing 63.7% positive prevalence*
+
+![Age Distribution](presentation_graphs/2_age_distribution.png)
+*Figure 1B: Age distribution by infection status - positive cases trend slightly older (mean 46.0 vs 43.4 years)*
+
+![Feature Correlations](presentation_graphs/3_correlation_heatmap.png)
+*Figure 1C: Feature correlation matrix showing CRP (r=0.337) as strongest predictor among top 6 features*
+
 #### Performance Metrics
 
 | Metric | Value | Clinical Interpretation |
@@ -885,17 +896,21 @@ The system integrates **four distinct AI models** working together as complement
 - Mean F1 Score: 0.667 ± 0.006
 
 **Confusion Matrix** (Test Set, n=6,250):
-```
-                  Predicted Negative    Predicted Positive
-Actual Negative          997                  1270
-Actual Positive          601                  3382
-```
+
+![Confusion Matrix](presentation_graphs/14_confusion_matrix.png)
+*Figure 2: Confusion Matrix showing high recall (84.9%) with 3,382 true positives and only 601 false negatives - conservative threshold favors catching infections over specificity*
 
 **Clinical Threshold**: 0.6 (optimized for healthcare setting - favors sensitivity over specificity)
+
+#### Model Architecture Diagram
+
+![Screening Architecture](presentation_graphs/10_screening_architecture.png)
+*Figure 3: Screening model architecture - 20 features → 400 decision trees → voting ensemble → probability calibration → output*
 
 #### Training Curves
 
 ![Screening Model Training](model_documentation/screening_model_training_curves.png)
+*Figure 4: Training progression over 50 epochs showing stable validation performance (AUC 0.74) with minimal overfitting*
 
 **Training Methodology**:
 1. **Data Split**: Stratified 75/25 train-test split
@@ -948,6 +963,20 @@ Actual Positive          601                  3382
 - **Moderate Resistance**: 8 < MIC ≤ 32 μg/mL (Intermediate)
 - **High Resistance**: MIC > 32 μg/mL (Resistant)
 
+**Staging Data Visualizations:**
+
+![Resistance Distribution](presentation_graphs/5_staging_distribution.png)
+*Figure 5A: Antibiotic resistance stage distribution - 68.4% moderate resistance indicates clarithromycin effectiveness declining*
+
+![MIC Distribution](presentation_graphs/6_mic_distribution.png)
+*Figure 5B: MIC value distribution with EUCAST/CLSI breakpoints at 8 and 32 μg/mL showing bimodal peaks*
+
+![Mutation Patterns](presentation_graphs/7_mutation_frequency.png)
+*Figure 5C: Genetic mutation patterns - 81.6% mutation rate with A2144G most common (39.5% single, 28.9% double mutations)*
+
+![MIC vs Mutations](presentation_graphs/8_mic_vs_mutations.png)
+*Figure 5D: Genotype-phenotype correlation - double mutations result in 4× higher MIC (median 32 vs 8 μg/mL)*
+
 #### Performance Metrics
 
 **Overall Accuracy**: 90.0%
@@ -965,6 +994,16 @@ Actual Positive          601                  3382
 #### Training Curves
 
 ![Staging Model Training](model_documentation/staging_model_training_curves.png)
+
+#### Model Architecture Diagram
+
+![Staging Architecture](presentation_graphs/11_staging_architecture.png)
+*Figure 6: Staging model architecture - 6 features (MIC + mutations) → 400 trees → 3-class output with clinical breakpoint integration*
+
+#### Training Curves
+
+![Staging Model Training](model_documentation/staging_model_training_curves.png)
+*Figure 7: Staging model training showing rapid convergence to 90% accuracy within 40 epochs*
 
 **Training Methodology**:
 1. **Feature Preprocessing**: Median imputation for numeric, mode for categorical
@@ -1038,6 +1077,11 @@ The model incorporates **EUCAST/CLSI breakpoints** for H. pylori clarithromycin 
 3. Minimize unnecessary movements
 4. Collect 4 optimal samples efficiently
 
+#### Model Architecture Diagram
+
+![RL Biopsy Architecture](presentation_graphs/12_rl_biopsy_architecture.png)
+*Figure 8: RL Biopsy Agent architecture - Q-Learning agent navigating 10×10 gastric tissue grid with 5 actions (4 directional + biopsy)*
+
 #### Performance Metrics
 
 | Metric | Value | Clinical Meaning |
@@ -1050,6 +1094,7 @@ The model incorporates **EUCAST/CLSI breakpoints** for H. pylori clarithromycin 
 #### Training Curves
 
 ![RL Biopsy Training](model_documentation/rl_biopsy_training_curves.png)
+*Figure 11: RL Biopsy Agent training over 500 episodes - 4 panels showing rewards, epsilon decay, biopsy quality improvement (40%→82%), and Q-value convergence*
 
 **Key Training Insights**:
 - **Reward Progression**: Steady increase from ~5 to ~20 over 500 episodes
@@ -1143,6 +1188,12 @@ The model incorporates **EUCAST/CLSI breakpoints** for H. pylori clarithromycin 
 #### Training Curves
 
 ![RL Capsule Training](model_documentation/rl_capsule_training_curves.png)
+*Figure 12: RL Capsule Endoscopy Agent training - 3 panels showing detection accuracy reaching 85%, episode rewards, and pathology detection rate (4.5 per episode)*
+
+#### Model Architecture Diagram
+
+![RL Capsule Architecture](presentation_graphs/13_rl_capsule_architecture.png)
+*Figure 9: RL Capsule Endoscopy Agent - Deep Q-Learning in 3D environment (15×15×3 grid) detecting 6 pathology types with 7 actions including depth navigation*
 
 **Training Insights**:
 - **Rapid Learning**: Detection accuracy reaches 80% within 40 episodes
@@ -1184,6 +1235,7 @@ The model incorporates **EUCAST/CLSI breakpoints** for H. pylori clarithromycin 
 ### Model Comparison & Performance
 
 ![Model Comparison](model_documentation/model_comparison.png)
+*Figure 10: Comprehensive performance comparison across all 4 AI models showing accuracy, precision, recall, and F1 scores*
 
 **Cross-Model Performance Summary**:
 
