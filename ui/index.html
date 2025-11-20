@@ -18,8 +18,8 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="landing_clean.css?v=20250102">
-    <link rel="stylesheet" href="mobile-responsive.css?v=20250102">
+    <link rel="stylesheet" href="landing_clean.css?v=20250120">
+    <link rel="stylesheet" href="mobile-responsive.css?v=20250120">
 </head>
 <body>
     <!-- Subtle 3D Background -->
@@ -124,8 +124,9 @@
                     <div class="feature-card">
                         <h3>Enhanced Lab Screening</h3>
                         <p>
-                            Advanced ML models analyze laboratory biomarkers with 87% accuracy and 92% AUC-ROC, 
-                            integrating multiple diagnostic parameters for precise detection.
+                            Random Forest model with 400 decision trees achieves <strong>70.1% accuracy</strong>, 
+                            <strong>84.9% recall</strong>, and <strong>0.738 AUC-ROC</strong>. 
+                            Calibrated probabilities provide reliable clinical risk stratification.
                         </p>
                     </div>
 
@@ -133,8 +134,9 @@
                     <div class="feature-card">
                         <h3>Antibiotic Resistance Staging</h3>
                         <p>
-                            Predict resistance patterns using molecular markers and mutation analysis with 83% accuracy,
-                            optimizing treatment selection across 3 resistance classes for improved outcomes.
+                            Multi-class Random Forest achieves <strong>90% accuracy</strong> and 
+                            <strong>93.3% F1 score</strong> for resistance staging. 
+                            Integrates MIC values and genetic mutations (A2143G, A2144G) for precise treatment guidance.
                         </p>
                     </div>
 
@@ -169,6 +171,109 @@
         </section>
 
         <!-- ========================================
+             AI MODELS SHOWCASE
+             ======================================== -->
+        <section class="ai-models">
+            <div class="container">
+                <div class="section-header">
+                    <span class="section-badge">ADVANCED AI TECHNOLOGY</span>
+                    <h2>Four Specialized Models Working Together</h2>
+                    <p>Combining traditional machine learning with cutting-edge reinforcement learning for comprehensive H. pylori management</p>
+                </div>
+
+                <div class="models-grid">
+                    <!-- Model 1: Screening -->
+                    <div class="model-card">
+                        <div class="model-icon">🔬</div>
+                        <h3>Screening Model</h3>
+                        <p class="model-type">Random Forest Classifier</p>
+                        <div class="model-metrics">
+                            <div class="metric">
+                                <span class="metric-value">70.1%</span>
+                                <span class="metric-label">Accuracy</span>
+                            </div>
+                            <div class="metric">
+                                <span class="metric-value">84.9%</span>
+                                <span class="metric-label">Recall</span>
+                            </div>
+                            <div class="metric">
+                                <span class="metric-value">78.3%</span>
+                                <span class="metric-label">F1 Score</span>
+                            </div>
+                        </div>
+                        <p class="model-description">400 decision trees with calibrated probabilities for reliable infection risk assessment</p>
+                    </div>
+
+                    <!-- Model 2: Staging -->
+                    <div class="model-card">
+                        <div class="model-icon">📊</div>
+                        <h3>Resistance Staging</h3>
+                        <p class="model-type">Random Forest (Multi-class)</p>
+                        <div class="model-metrics">
+                            <div class="metric">
+                                <span class="metric-value">90%</span>
+                                <span class="metric-label">Accuracy</span>
+                            </div>
+                            <div class="metric">
+                                <span class="metric-value">100%</span>
+                                <span class="metric-label">Recall</span>
+                            </div>
+                            <div class="metric">
+                                <span class="metric-value">93.3%</span>
+                                <span class="metric-label">F1 Score</span>
+                            </div>
+                        </div>
+                        <p class="model-description">Integrates MIC values and genetic mutations for precise antibiotic resistance classification</p>
+                    </div>
+
+                    <!-- Model 3: RL Biopsy -->
+                    <div class="model-card">
+                        <div class="model-icon">🎯</div>
+                        <h3>RL Biopsy Agent</h3>
+                        <p class="model-type">Q-Learning</p>
+                        <div class="model-metrics">
+                            <div class="metric">
+                                <span class="metric-value">82.5%</span>
+                                <span class="metric-label">Quality</span>
+                            </div>
+                            <div class="metric">
+                                <span class="metric-value">500</span>
+                                <span class="metric-label">Episodes</span>
+                            </div>
+                            <div class="metric">
+                                <span class="metric-value">10×10</span>
+                                <span class="metric-label">Grid</span>
+                            </div>
+                        </div>
+                        <p class="model-description">Reinforcement learning optimizes biopsy site selection for maximum diagnostic yield</p>
+                    </div>
+
+                    <!-- Model 4: RL Capsule -->
+                    <div class="model-card">
+                        <div class="model-icon">💊</div>
+                        <h3>RL Capsule Agent</h3>
+                        <p class="model-type">Deep Q-Learning</p>
+                        <div class="model-metrics">
+                            <div class="metric">
+                                <span class="metric-value">85%</span>
+                                <span class="metric-label">Detection</span>
+                            </div>
+                            <div class="metric">
+                                <span class="metric-value">6</span>
+                                <span class="metric-label">Pathologies</span>
+                            </div>
+                            <div class="metric">
+                                <span class="metric-value">3D</span>
+                                <span class="metric-label">Environment</span>
+                            </div>
+                        </div>
+                        <p class="model-description">Breakthrough 3D pathology detection including peptic ulcers, cancer, and inflammation</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ========================================
              STATISTICS
              ======================================== -->
         <section class="stats">
@@ -180,20 +285,24 @@
 
                 <div class="stats-grid">
                     <div class="stat-card">
-                        <div class="stat-number">87%</div>
-                        <div class="stat-label">Lab Screening Accuracy</div>
+                        <div class="stat-number">70.1%</div>
+                        <div class="stat-label">Screening Accuracy</div>
+                        <div class="stat-sublabel">Random Forest (400 trees)</div>
                     </div>
                     <div class="stat-card">
-                        <div class="stat-number">0.92</div>
-                        <div class="stat-label">AUC-ROC Score</div>
+                        <div class="stat-number">84.9%</div>
+                        <div class="stat-label">Sensitivity (Recall)</div>
+                        <div class="stat-sublabel">High detection rate</div>
                     </div>
                     <div class="stat-card">
-                        <div class="stat-number">83%</div>
+                        <div class="stat-number">90%</div>
                         <div class="stat-label">Staging Accuracy</div>
+                        <div class="stat-sublabel">3-class resistance</div>
                     </div>
                     <div class="stat-card">
-                        <div class="stat-number">89%</div>
-                        <div class="stat-label">Sensitivity</div>
+                        <div class="stat-number">0.738</div>
+                        <div class="stat-label">ROC-AUC Score</div>
+                        <div class="stat-sublabel">Good discrimination</div>
                     </div>
                 </div>
             </div>
