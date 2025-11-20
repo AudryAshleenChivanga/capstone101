@@ -42,6 +42,8 @@ body {
     background: var(--white);
     line-height: 1.6;
     -webkit-font-smoothing: antialiased;
+    width: 100%;
+    overflow-x: hidden;
 }
 
 /* 3D Background with Purple Overlay - Only on Hero */
@@ -96,12 +98,28 @@ body > .gradient-overlay {
 }
 
 .navbar .container {
-    max-width: 1280px;
+    max-width: 1400px;
     margin: 0 auto;
     padding: 1rem 2rem;
     display: flex;
     justify-content: space-between;
     align-items: center;
+    width: 100%;
+}
+
+/* Larger screens - expand navbar */
+@media (min-width: 1600px) {
+    .navbar .container {
+        max-width: 1600px;
+        padding: 1rem 3rem;
+    }
+}
+
+@media (min-width: 1920px) {
+    .navbar .container {
+        max-width: 1800px;
+        padding: 1rem 4rem;
+    }
 }
 
 .nav-brand {
@@ -185,19 +203,59 @@ body > .gradient-overlay {
 .hero .container {
     position: relative;
     z-index: 2;
-    max-width: 1280px;
+    max-width: 1400px;
     margin: 0 auto;
     padding: 0 2rem;
     display: grid;
     grid-template-columns: 1fr 1fr;
     gap: 4rem;
     align-items: center;
+    width: 100%;
+}
+
+/* Larger screens - expand hero */
+@media (min-width: 1600px) {
+    .hero .container {
+        max-width: 1600px;
+        padding: 0 3rem;
+    }
+    
+    .hero h1 {
+        font-size: 4rem;
+    }
+    
+    .subtitle {
+        font-size: 1.4rem;
+    }
+}
+
+@media (min-width: 1920px) {
+    .hero .container {
+        max-width: 1800px;
+        padding: 0 4rem;
+    }
+    
+    .hero h1 {
+        font-size: 4.5rem;
+    }
+    
+    .subtitle {
+        font-size: 1.5rem;
+    }
 }
 
 .hero-content {
     max-width: 100%;
     position: relative;
     z-index: 2;
+}
+
+/* Center hero content on large screens */
+@media (min-width: 1400px) {
+    .hero-content {
+        max-width: 1200px;
+        margin: 0 auto;
+    }
 }
 
 .trust-badge {
@@ -314,9 +372,25 @@ body > .gradient-overlay {
 }
 
 .container {
-    max-width: 1280px;
+    max-width: 1400px;
     margin: 0 auto;
     padding: 0 2rem;
+    width: 100%;
+}
+
+/* Larger screens - expand container */
+@media (min-width: 1600px) {
+    .container {
+        max-width: 1600px;
+        padding: 0 3rem;
+    }
+}
+
+@media (min-width: 1920px) {
+    .container {
+        max-width: 1800px;
+        padding: 0 4rem;
+    }
 }
 
 .section-header {
@@ -354,6 +428,14 @@ body > .gradient-overlay {
     display: grid;
     grid-template-columns: repeat(3, 1fr);
     gap: 2rem;
+}
+
+/* Larger screens - 4 columns */
+@media (min-width: 1600px) {
+    .features-grid {
+        grid-template-columns: repeat(4, 1fr);
+        gap: 2.5rem;
+    }
 }
 
 .feature-card {
