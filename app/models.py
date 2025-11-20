@@ -254,3 +254,47 @@ class ModelTraining(Base):
     
     # Relationships
     trainer = relationship("User")
+
+
+class PredictionLog(Base):
+    """Log all ML model predictions for monitoring and retraining."""
+    __tablename__ = "prediction_logs"
+    
+    id = Column(Integer, primary_key=True, index=True)
+    model_name = Column(String(100), nullable=False, index=True)  # screening, staging
+    model_version = Column(String(50), nullable=True)
+    
+    # User and case tracking
+    user_id = Column(Integer, ForeignKey("users.id"), nullable=True)
+    case_id = Column(Integer, ForeignKey("cases.id"), nullable=True)
+    patient_db_id = Column(Integer, ForeignKey("patients.id"), nullable=True)
+    
+    # Input features (JSON)
+    input_features = Column(JSON, nullable=False)
+    
+    # Prediction results
+    prediction = Column(String(100), nullable=True)  # Class label or value
+    prediction_proba = Column(Float, nullable=True)  # Probability for binary classification
+    prediction_probas = Column(JSON, nullable=True)  # All class probabilities
+    
+    # Ground truth (when available)
+    actual_outcome = Column(String(100), nullable=True)
+    outcome_verified = Column(Integer, default=0)  # Has outcome been verified?
+    outcome_verified_at = Column(DateTime, nullable=True)
+    outcome_verified_by = Column(Integer, ForeignKey("users.id"), nullable=True)
+    
+    # Metadata
+    prediction_time = Column(Float, nullable=True)  # Inference time in seconds
+    created_at = Column(DateTime, default=datetime.utcnow, index=True)
+    
+    # Relationships
+    user = relationship("User", foreign_keys=[user_id])
+    case = relationship("Case")
+    patient = relationship("Patient")
+    verifier = relationship("User", foreign_keys=[outcome_verified_by])
+    
+    # Indexes for performance
+    __table_args__ = (
+        Index('idx_prediction_search', 'model_name', 'created_at'),
+        Index('idx_model_version', 'model_name', 'model_version'),
+    )

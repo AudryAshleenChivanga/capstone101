@@ -1,6 +1,7 @@
 """Recommendation and case management routes."""
 import io
 import pandas as pd
+import time
 from typing import List, Optional
 from datetime import datetime
 from fastapi import APIRouter, Depends, HTTPException, status, UploadFile, File, Query
@@ -8,7 +9,7 @@ from sqlalchemy.orm import Session
 from sqlalchemy import or_, and_
 
 from app.db import get_db
-from app.models import User, Case, Patient
+from app.models import User, Case, Patient, PredictionLog
 from app.schemas import (
     RecommendationRequest,
     RecommendationResponse,
@@ -22,6 +23,56 @@ import sklearn
 import sys
 
 router = APIRouter(tags=["recommendations"])
+
+
+# ============================================================================
+# PREDICTION LOGGING HELPER
+# ============================================================================
+
+def log_prediction(
+    db: Session,
+    model_name: str,
+    input_features: dict,
+    prediction: any,
+    prediction_proba: float = None,
+    prediction_probas: dict = None,
+    user_id: int = None,
+    case_id: int = None,
+    patient_db_id: int = None,
+    prediction_time: float = None
+):
+    """Log a prediction to the database for monitoring and retraining."""
+    try:
+        # Get current model version (if available)
+        from app.models import ModelTraining
+        current_model = db.query(ModelTraining).filter(
+            ModelTraining.model_name == model_name,
+            ModelTraining.is_production == 1
+        ).first()
+        
+        model_version = current_model.model_version if current_model else "unknown"
+        
+        # Create prediction log
+        pred_log = PredictionLog(
+            model_name=model_name,
+            model_version=model_version,
+            input_features=input_features,
+            prediction=str(prediction) if prediction is not None else None,
+            prediction_proba=prediction_proba,
+            prediction_probas=prediction_probas,
+            user_id=user_id,
+            case_id=case_id,
+            patient_db_id=patient_db_id,
+            prediction_time=prediction_time
+        )
+        
+        db.add(pred_log)
+        db.commit()
+        
+    except Exception as e:
+        # Don't fail the main prediction if logging fails
+        print(f"Warning: Failed to log prediction: {str(e)}")
+        db.rollback()
 
 
 @router.get("/health")
@@ -79,8 +130,10 @@ def recommend_single(
             created_by=current_user.id
         )
         
-        # Get ML predictions and recommendations
+        # Get ML predictions and recommendations (with timing)
+        start_time = time.time()
         screen_prob, stage_pred, recommendations = get_recommendation(input_dict)
+        prediction_time = time.time() - start_time
         
         # Create case record linked to patient
         new_case = Case(
@@ -100,6 +153,33 @@ def recommend_single(
         db.add(new_case)
         db.commit()
         db.refresh(new_case)
+        
+        # Log predictions for monitoring and retraining
+        if screen_prob is not None:
+            screening_prediction = "positive" if screen_prob >= settings.SCREEN_THRESH else "negative"
+            log_prediction(
+                db=db,
+                model_name="screening",
+                input_features=input_dict,
+                prediction=screening_prediction,
+                prediction_proba=screen_prob,
+                user_id=current_user.id,
+                case_id=new_case.id,
+                patient_db_id=patient.id,
+                prediction_time=prediction_time
+            )
+        
+        if stage_pred is not None:
+            log_prediction(
+                db=db,
+                model_name="staging",
+                input_features=input_dict,
+                prediction=stage_pred,
+                user_id=current_user.id,
+                case_id=new_case.id,
+                patient_db_id=patient.id,
+                prediction_time=prediction_time
+            )
         
         return RecommendationResponse(
             screen_prob=screen_prob,
@@ -155,8 +235,10 @@ async def recommend_batch(
                 input_dict = row.to_dict()
                 input_dict = {k: v for k, v in input_dict.items() if pd.notna(v)}
                 
-                # Get predictions
+                # Get predictions (with timing)
+                start_time = time.time()
                 screen_prob, stage_pred, recommendations = get_recommendation(input_dict)
+                prediction_time = time.time() - start_time
                 
                 # Create case record
                 new_case = Case(
@@ -171,6 +253,31 @@ async def recommend_batch(
                 db.add(new_case)
                 db.commit()
                 db.refresh(new_case)
+                
+                # Log predictions
+                if screen_prob is not None:
+                    screening_prediction = "positive" if screen_prob >= settings.SCREEN_THRESH else "negative"
+                    log_prediction(
+                        db=db,
+                        model_name="screening",
+                        input_features=input_dict,
+                        prediction=screening_prediction,
+                        prediction_proba=screen_prob,
+                        user_id=current_user.id,
+                        case_id=new_case.id,
+                        prediction_time=prediction_time
+                    )
+                
+                if stage_pred is not None:
+                    log_prediction(
+                        db=db,
+                        model_name="staging",
+                        input_features=input_dict,
+                        prediction=stage_pred,
+                        user_id=current_user.id,
+                        case_id=new_case.id,
+                        prediction_time=prediction_time
+                    )
                 
                 results.append(RecommendationResponse(
                     screen_prob=screen_prob,

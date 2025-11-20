@@ -140,12 +140,14 @@ try:
     from app.routes_video import router as video_router
     from app.routes_scheduling import router as scheduling_router
     from app.routes_patient import router as patient_router
+    from app.routes_model_management import router as model_management_router
     
     app.include_router(profile_router)
     app.include_router(admin_router)
     app.include_router(video_router)
     app.include_router(scheduling_router)
     app.include_router(patient_router)
+    app.include_router(model_management_router)
     print("[OK] All enhanced routes loaded successfully")
 except ImportError as e:
     print(f"[WARNING] Some optional routes not available: {e}")
