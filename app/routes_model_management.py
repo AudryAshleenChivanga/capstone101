@@ -221,6 +221,50 @@ async def get_prediction_statistics(
     }
 
 
+@router.get("/predictions/timeseries", dependencies=[Depends(require_role(["admin"]))])
+async def get_prediction_timeseries(
+    model_name: str,
+    days_back: int = 30,
+    db: Session = Depends(get_db)
+):
+    """Get daily prediction counts for time-series visualization."""
+    cutoff_date = datetime.utcnow() - timedelta(days=days_back)
+    
+    predictions = db.query(PredictionLog).filter(
+        PredictionLog.model_name == model_name,
+        PredictionLog.created_at >= cutoff_date
+    ).all()
+    
+    # Group predictions by day
+    daily_counts = {}
+    for i in range(days_back):
+        date = datetime.utcnow() - timedelta(days=days_back - i - 1)
+        date_key = date.strftime('%Y-%m-%d')
+        daily_counts[date_key] = 0
+    
+    for pred in predictions:
+        date_key = pred.created_at.strftime('%Y-%m-%d')
+        if date_key in daily_counts:
+            daily_counts[date_key] += 1
+    
+    # Convert to list of objects
+    timeseries_data = [
+        {
+            "date": date_key,
+            "count": count,
+            "label": datetime.strptime(date_key, '%Y-%m-%d').strftime('%b %d')
+        }
+        for date_key, count in sorted(daily_counts.items())
+    ]
+    
+    return {
+        "status": "success",
+        "model_name": model_name,
+        "period_days": days_back,
+        "timeseries": timeseries_data
+    }
+
+
 # ============================================================================
 # MODEL VERSIONS
 # ============================================================================
