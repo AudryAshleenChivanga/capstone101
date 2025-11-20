@@ -3,6 +3,8 @@
 ## Capstone Project - Final Submission
 
 **Author**: Audry Ashleen Chivanga  
+**Institution**: African Leadership University  
+**Supervisor**: Thadee Gatera  
 **Deployed Application**: [https://h-pylori-cdss.onrender.com/](https://h-pylori-cdss.onrender.com/)  
 **Video Demonstration**: [https://vimeo.com/1130355573?share=copy&fl=sv&fe=ci](https://vimeo.com/1130355573?share=copy&fl=sv&fe=ci)  
 **Repository**: [https://github.com/AudryAshleenChivanga/capstone101](https://github.com/AudryAshleenChivanga/capstone101)
