@@ -176,15 +176,18 @@ chmod +x run_api.sh
 ### Mobile Responsive Design
 
 #### Mobile Login
-![Mobile Login](images/mobileview_login.png)
+<img src="images/mobileview_login.png" alt="Mobile Login" width="375"/>
+
 *Touch-optimized login interface for smartphones and tablets*
 
 #### Mobile Dashboard
-![Mobile Dashboard](images/mobileview_dashboard.png)
+<img src="images/mobileview_dashboard.png" alt="Mobile Dashboard" width="375"/>
+
 *Fully responsive dashboard that adapts seamlessly to mobile devices*
 
 #### Mobile Workflow Interface
-![Mobile Workflow](images/mobileviewscreen2.png)
+<img src="images/mobileviewscreen2.png" alt="Mobile Workflow" width="375"/>
+
 *Clinical workflows accessible and functional on mobile devices*
 
 ---
@@ -1192,7 +1195,8 @@ The model incorporates **EUCAST/CLSI breakpoints** for H. pylori clarithromycin 
 
 #### Model Architecture Diagram
 
-![RL Capsule Architecture](presentation_graphs/13_rl_capsule_architecture.png)
+<img src="presentation_graphs/13_rl_capsule_architecture.png" alt="RL Capsule Architecture" width="100%"/>
+
 *Figure 9: RL Capsule Endoscopy Agent - Deep Q-Learning in 3D environment (15×15×3 grid) detecting 6 pathology types with 7 actions including depth navigation*
 
 **Training Insights**:
@@ -1356,7 +1360,7 @@ Raw Data → Feature Engineering → Preprocessing → Model Training → Calibr
 ## Contact and Support
 
 **Developer**: Audry Ashleen Chivanga  
-**Institution**: Medical AI Research Initiative  
+**Institution**: African Leadership University  
 **GitHub**: [https://github.com/AudryAshleenChivanga](https://github.com/AudryAshleenChivanga)  
 **Repository**: [https://github.com/AudryAshleenChivanga/capstone101](https://github.com/AudryAshleenChivanga/capstone101)
 
