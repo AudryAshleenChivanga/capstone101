@@ -59,12 +59,22 @@ def decode_token(token: str) -> dict:
 
 
 def authenticate_user(db: Session, username: str, password: str) -> Optional[User]:
-    """Authenticate a user by username and password."""
+    """Authenticate a user by username or email and password."""
+    # Try to find user by username first
     user = db.query(User).filter(User.username == username).first()
+    
+    # If not found by username, try email
+    if not user:
+        user = db.query(User).filter(User.email == username).first()
+    
+    # If still not found, authentication fails
     if not user:
         return None
+    
+    # Verify password
     if not verify_password(password, user.hashed_password):
         return None
+    
     return user
 
 

@@ -83,6 +83,68 @@ def register_user(
     )
 
 
+@router.post("/register/public", response_model=UserResponse, status_code=status.HTTP_201_CREATED)
+def register_public_user(user_data: UserCreate, db: Session = Depends(get_db)):
+    """
+    Public user registration endpoint (no authentication required).
+    New users are created with 'clinician' role by default.
+    Admins can upgrade roles later if needed.
+    """
+    # Check if username already exists
+    existing_user = db.query(User).filter(User.username == user_data.username).first()
+    if existing_user:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Username already registered"
+        )
+    
+    # Check if email already exists
+    existing_email = db.query(User).filter(User.email == user_data.email).first()
+    if existing_email:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Email already registered"
+        )
+    
+    # Force role to 'clinician' for public registration (security measure)
+    # Admin users must be created by existing admins through /auth/register
+    user_data.role = "clinician"
+    
+    # Create new user
+    new_user = User(
+        username=user_data.username,
+        email=user_data.email,
+        hashed_password=hash_password(user_data.password),
+        role="clinician",  # Default role for public registration
+        full_name=user_data.full_name,
+        specialty=user_data.specialty,
+        institution=user_data.institution,
+        license_number=user_data.license_number,
+        bio=user_data.bio,
+        profile_photo=user_data.profile_photo,
+        is_active=True  # Auto-activate public registrations
+    )
+    
+    db.add(new_user)
+    db.commit()
+    db.refresh(new_user)
+    
+    return UserResponse(
+        id=new_user.id,
+        username=new_user.username,
+        email=new_user.email,
+        role=new_user.role,
+        full_name=new_user.full_name,
+        specialty=new_user.specialty,
+        institution=new_user.institution,
+        license_number=new_user.license_number,
+        bio=new_user.bio,
+        profile_photo=new_user.profile_photo,
+        is_active=new_user.is_active,
+        created_at=new_user.created_at
+    )
+
+
 @router.post("/register/first", response_model=UserResponse, status_code=status.HTTP_201_CREATED)
 def register_first_user(user_data: UserCreate, db: Session = Depends(get_db)):
     """
@@ -94,7 +156,7 @@ def register_first_user(user_data: UserCreate, db: Session = Depends(get_db)):
     if user_count > 0:
         raise HTTPException(
             status_code=status.HTTP_403_FORBIDDEN,
-            detail="First user already registered. Use /auth/register with admin privileges."
+            detail="First user already registered. Use /auth/register/public for self-registration."
         )
     
     # Force role to admin for first user
