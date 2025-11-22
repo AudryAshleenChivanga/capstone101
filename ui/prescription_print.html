@@ -1,0 +1,444 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Prescription - H. pylori CDSS</title>
+    <link rel="stylesheet" href="print.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <style>
+        body {
+            font-family: Arial, Helvetica, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background: white;
+        }
+
+        .prescription-container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: white;
+            padding: 40px;
+            border: 2px solid #000;
+        }
+
+        .letterhead {
+            text-align: center;
+            margin-bottom: 30px;
+            padding-bottom: 20px;
+            border-bottom: 3px double #0066cc;
+        }
+
+        .letterhead h1 {
+            font-size: 28px;
+            color: #0066cc;
+            margin: 0;
+        }
+
+        .letterhead .institution {
+            font-size: 14px;
+            color: #666;
+            margin: 5px 0;
+        }
+
+        .rx-symbol {
+            font-size: 48px;
+            font-weight: bold;
+            color: #0066cc;
+            margin: 20px 0;
+        }
+
+        .patient-section, .doctor-section {
+            margin: 20px 0;
+        }
+
+        .section-title {
+            font-weight: bold;
+            color: #0066cc;
+            font-size: 14px;
+            margin-bottom: 10px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .info-grid {
+            display: grid;
+            grid-template-columns: 150px 1fr;
+            gap: 8px;
+            margin-bottom: 15px;
+        }
+
+        .info-label {
+            font-weight: 600;
+            color: #333;
+        }
+
+        .diagnosis-box {
+            background: #f0f8ff;
+            border: 1px solid #0066cc;
+            padding: 15px;
+            margin: 20px 0;
+            border-radius: 4px;
+        }
+
+        .diagnosis-box strong {
+            color: #0066cc;
+        }
+
+        .medications-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+        }
+
+        .medications-table th {
+            background: #0066cc;
+            color: white;
+            padding: 12px;
+            text-align: left;
+            font-weight: bold;
+        }
+
+        .medications-table td {
+            padding: 12px;
+            border-bottom: 1px solid #ddd;
+        }
+
+        .medications-table tr:nth-child(even) {
+            background: #f9f9f9;
+        }
+
+        .instructions-box {
+            background: #fffbf0;
+            border-left: 4px solid #ffc107;
+            padding: 15px;
+            margin: 20px 0;
+        }
+
+        .instructions-box h3 {
+            color: #ff9800;
+            margin: 0 0 10px 0;
+            font-size: 16px;
+        }
+
+        .lifestyle-box {
+            background: #f0fff4;
+            border-left: 4px solid #28a745;
+            padding: 15px;
+            margin: 20px 0;
+        }
+
+        .lifestyle-box h3 {
+            color: #28a745;
+            margin: 0 0 10px 0;
+            font-size: 16px;
+        }
+
+        .signature-section {
+            margin-top: 60px;
+            display: flex;
+            justify-content: space-between;
+        }
+
+        .signature-block {
+            width: 45%;
+        }
+
+        .signature-line {
+            border-top: 2px solid #000;
+            margin: 40px 0 10px 0;
+        }
+
+        .signature-label {
+            font-size: 12px;
+            color: #666;
+        }
+
+        .footer {
+            margin-top: 40px;
+            padding-top: 20px;
+            border-top: 1px solid #ccc;
+            font-size: 10px;
+            color: #666;
+            text-align: center;
+        }
+
+        .no-print {
+            text-align: center;
+            margin: 20px 0;
+        }
+
+        .no-print button {
+            background: #0066cc;
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 14px;
+            margin: 0 5px;
+        }
+
+        .no-print button:hover {
+            background: #0052a3;
+        }
+
+        .no-print .btn-secondary {
+            background: #6c757d;
+        }
+
+        .no-print .btn-secondary:hover {
+            background: #5a6268;
+        }
+
+        .reference-number {
+            text-align: right;
+            font-size: 11px;
+            color: #666;
+            margin-bottom: 10px;
+        }
+
+        .date-issued {
+            text-align: right;
+            font-size: 12px;
+            margin-bottom: 20px;
+        }
+
+        @media print {
+            .no-print {
+                display: none !important;
+            }
+
+            .prescription-container {
+                border: 2px solid #000;
+            }
+
+            body {
+                background: white;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="prescription-container">
+        <!-- Letterhead -->
+        <div class="letterhead">
+            <h1>H. pylori Clinical Decision Support System</h1>
+            <div class="institution" id="institutionName">Medical Institution</div>
+            <div class="institution" id="institutionAddress">Address • Phone • Email</div>
+        </div>
+
+        <!-- Reference Number -->
+        <div class="reference-number">
+            Prescription No: <span id="prescriptionId">-</span>
+        </div>
+
+        <!-- Date -->
+        <div class="date-issued">
+            <strong>Date Issued:</strong> <span id="prescriptionDate">-</span>
+        </div>
+
+        <!-- Rx Symbol -->
+        <div class="rx-symbol">℞</div>
+
+        <!-- Patient Information -->
+        <div class="patient-section">
+            <div class="section-title">Patient Information</div>
+            <div class="info-grid">
+                <div class="info-label">Patient ID:</div>
+                <div id="patientId">-</div>
+                <div class="info-label">Name:</div>
+                <div id="patientName">-</div>
+                <div class="info-label">Age / Sex:</div>
+                <div><span id="patientAge">-</span> / <span id="patientSex">-</span></div>
+                <div class="info-label">Case ID:</div>
+                <div id="caseId">-</div>
+            </div>
+        </div>
+
+        <!-- Diagnosis -->
+        <div class="diagnosis-box">
+            <strong>DIAGNOSIS:</strong> <span id="diagnosis">-</span>
+        </div>
+
+        <!-- Medications -->
+        <table class="medications-table">
+            <thead>
+                <tr>
+                    <th>Medication</th>
+                    <th>Dosage</th>
+                    <th>Frequency</th>
+                    <th>Duration</th>
+                </tr>
+            </thead>
+            <tbody id="medicationsBody">
+                <tr>
+                    <td colspan="4" style="text-align: center; color: #999;">Loading medications...</td>
+                </tr>
+            </tbody>
+        </table>
+
+        <!-- Instructions -->
+        <div class="instructions-box">
+            <h3><i class="fas fa-pills"></i> Clinical Recommendations</h3>
+            <div id="clinicalRecommendations">-</div>
+        </div>
+
+        <!-- Lifestyle Advice -->
+        <div class="lifestyle-box">
+            <h3><i class="fas fa-heartbeat"></i> Lifestyle Advice</h3>
+            <div id="lifestyleAdvice">-</div>
+        </div>
+
+        <!-- Follow-up -->
+        <div style="background: #f0f8ff; padding: 15px; border-radius: 4px; margin: 20px 0;">
+            <strong><i class="fas fa-calendar-check"></i> Follow-up:</strong> <span id="followUp">-</span>
+        </div>
+
+        <!-- Lab Tests Ordered -->
+        <div id="labTestsSection" style="display: none;">
+            <div class="section-title">Lab Tests Ordered</div>
+            <ul id="labTestsList"></ul>
+        </div>
+
+        <!-- Signature Section -->
+        <div class="signature-section">
+            <div class="signature-block">
+                <div class="signature-line"></div>
+                <div class="signature-label">Prescriber Signature</div>
+            </div>
+            <div class="signature-block">
+                <div class="signature-line"></div>
+                <div class="signature-label">Date</div>
+            </div>
+        </div>
+
+        <!-- Doctor Information -->
+        <div class="doctor-section" style="margin-top: 30px;">
+            <div class="section-title">Prescriber Information</div>
+            <div class="info-grid">
+                <div class="info-label">Name:</div>
+                <div id="doctorName">-</div>
+                <div class="info-label">License Number:</div>
+                <div id="doctorLicense">-</div>
+                <div class="info-label">Institution:</div>
+                <div id="doctorInstitution">-</div>
+            </div>
+        </div>
+
+        <!-- Footer -->
+        <div class="footer">
+            <div style="color: #d32f2f; font-weight: bold; margin-bottom: 5px;">CONFIDENTIAL MEDICAL RECORD</div>
+            <div>This prescription is valid for 6 months from date of issue.</div>
+            <div>Generated by H. pylori CDSS v1.0 • This is a legally valid electronic prescription</div>
+        </div>
+    </div>
+
+    <!-- Print/Close Buttons -->
+    <div class="no-print">
+        <button onclick="window.print()"><i class="fas fa-print"></i> Print Prescription</button>
+        <button class="btn-secondary" onclick="window.close()"><i class="fas fa-times"></i> Close</button>
+    </div>
+
+    <script>
+        // Get prescription ID from URL
+        const urlParams = new URLSearchParams(window.location.search);
+        const prescriptionId = urlParams.get('id');
+
+        const API_BASE = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1'
+            ? 'http://localhost:8000'
+            : '';
+
+        async function loadPrescription() {
+            if (!prescriptionId) {
+                alert('No prescription ID provided');
+                return;
+            }
+
+            const token = localStorage.getItem('token') || localStorage.getItem('access_token');
+            if (!token) {
+                alert('Please login to view prescriptions');
+                window.close();
+                return;
+            }
+
+            try {
+                const response = await fetch(`${API_BASE}/prescriptions/${prescriptionId}/print`, {
+                    headers: {
+                        'Authorization': `Bearer ${token}`
+                    }
+                });
+
+                if (!response.ok) {
+                    throw new Error('Failed to load prescription');
+                }
+
+                const data = await response.json();
+                populatePrescription(data.print_data);
+
+            } catch (error) {
+                console.error('Error loading prescription:', error);
+                alert('Error loading prescription: ' + error.message);
+            }
+        }
+
+        function populatePrescription(data) {
+            // Document info
+            document.getElementById('prescriptionId').textContent = data.prescription_id || '-';
+            document.getElementById('prescriptionDate').textContent = data.date || '-';
+
+            // Patient info
+            document.getElementById('patientId').textContent = data.patient?.id || '-';
+            document.getElementById('patientName').textContent = data.patient?.name || '-';
+            document.getElementById('patientAge').textContent = data.patient?.age || '-';
+            document.getElementById('patientSex').textContent = data.patient?.sex || '-';
+            document.getElementById('caseId').textContent = data.case_id || '-';
+
+            // Doctor info
+            document.getElementById('doctorName').textContent = data.prescriber?.name || '-';
+            document.getElementById('doctorLicense').textContent = data.prescriber?.license || '-';
+            document.getElementById('doctorInstitution').textContent = data.prescriber?.institution || '-';
+            document.getElementById('institutionName').textContent = data.prescriber?.institution || 'Medical Institution';
+
+            // Diagnosis
+            document.getElementById('diagnosis').textContent = data.diagnosis || '-';
+
+            // Medications
+            if (data.medications && data.medications.length > 0) {
+                const medicationsHTML = data.medications.map(med => `
+                    <tr>
+                        <td><strong>${med.name || med.medication}</strong></td>
+                        <td>${med.dosage || '-'}</td>
+                        <td>${med.frequency || '-'}</td>
+                        <td>${med.duration || '-'}</td>
+                    </tr>
+                `).join('');
+                document.getElementById('medicationsBody').innerHTML = medicationsHTML;
+            }
+
+            // Recommendations
+            document.getElementById('clinicalRecommendations').textContent = data.recommendations || 'Follow prescriber instructions.';
+
+            // Lifestyle advice
+            document.getElementById('lifestyleAdvice').textContent = data.lifestyle_advice || 'Maintain a healthy lifestyle.';
+
+            // Follow-up
+            document.getElementById('followUp').textContent = data.follow_up || 'As needed';
+
+            // Lab tests
+            if (data.lab_tests_ordered && data.lab_tests_ordered.length > 0) {
+                document.getElementById('labTestsSection').style.display = 'block';
+                const testsHTML = data.lab_tests_ordered.map(test => `<li>${test}</li>`).join('');
+                document.getElementById('labTestsList').innerHTML = testsHTML;
+            }
+        }
+
+        // Load prescription on page load
+        document.addEventListener('DOMContentLoaded', loadPrescription);
+
+        // Auto-print option (commented out - uncomment if needed)
+        // window.onload = () => setTimeout(() => window.print(), 1000);
+    </script>
+</body>
+</html>
+

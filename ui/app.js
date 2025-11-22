@@ -42,6 +42,9 @@ function initializeApp() {
     // Load dashboard data
     loadDashboardData();
     
+    // Load chat unread count
+    loadChatUnreadCount();
+    
     // Setup form submissions
     setupForms();
 }
@@ -276,6 +279,33 @@ async function loadDashboardData() {
         console.error('Error loading dashboard data:', error);
     }
 }
+
+// Load chat unread count
+async function loadChatUnreadCount() {
+    try {
+        const response = await fetch(`${API_BASE}/chat/unread-count`, {
+            headers: {
+                'Authorization': `Bearer ${authToken}`
+            }
+        });
+        
+        if (response.ok) {
+            const data = await response.json();
+            const badge = document.getElementById('chatUnreadBadge');
+            if (badge && data.unread_count > 0) {
+                badge.textContent = data.unread_count;
+                badge.style.display = 'inline-block';
+            } else if (badge) {
+                badge.style.display = 'none';
+            }
+        }
+    } catch (error) {
+        console.error('Error loading chat unread count:', error);
+    }
+}
+
+// Poll for unread messages every 30 seconds
+setInterval(loadChatUnreadCount, 30000);
 
 function updateStatCards(data) {
     const summary = data.summary || {};
@@ -631,12 +661,38 @@ function displayScreeningResults(result) {
     const resultsPanel = document.getElementById('screeningResults');
     resultsPanel.style.display = 'block';
     
+    // Store result for print function
+    window.currentScreeningResult = result;
+    
+    // Determine infection status
+    const probability = result.infection_probability;
+    const isPositive = probability >= 0.6; // Using threshold from model
+    const statusClass = isPositive ? 'positive' : 'negative';
+    const statusText = isPositive ? 'POSITIVE - Infection Likely' : 'NEGATIVE - Infection Unlikely';
+    
+    // Update status indicator
+    const statusIndicator = document.getElementById('infectionStatus');
+    statusIndicator.className = `status-indicator ${statusClass}`;
+    document.getElementById('infectionStatusText').textContent = statusText;
+    document.getElementById('infectionProbability').textContent = `${(probability * 100).toFixed(1)}%`;
+    
+    // Set confidence level
+    let confidenceLevel = 'High';
+    if (probability > 0.4 && probability < 0.7) {
+        confidenceLevel = 'Moderate';
+    }
+    document.getElementById('confidenceLevel').textContent = confidenceLevel;
+    
     // Draw gauge
     const gaugeCanvas = document.getElementById('screeningGauge');
     if (gaugeCanvas && typeof drawGauge === 'function') {
         const ctx = gaugeCanvas.getContext('2d');
-        drawGauge(ctx, result.infection_probability, 200, 120);
+        drawGauge(ctx, probability, 200, 120);
     }
+    
+    // Print alternative for gauge
+    document.getElementById('gaugePrintText').textContent = 
+        `Infection Probability: ${(probability * 100).toFixed(1)}%`;
     
     // Display recommendations
     const recommendationList = document.getElementById('recommendationList');
@@ -646,8 +702,67 @@ function displayScreeningResults(result) {
         recommendationList.innerHTML = '<li>No specific recommendations at this time.</li>';
     }
     
+    // Show next steps if positive
+    const nextStepsSection = document.getElementById('nextStepsSection');
+    if (isPositive) {
+        nextStepsSection.style.display = 'block';
+        document.getElementById('nextStepsContent').innerHTML = `
+            <p><strong>Recommended actions:</strong></p>
+            <ul>
+                <li>Proceed with confirmatory testing (Urea Breath Test or Stool Antigen Test)</li>
+                <li>Consider endoscopy for high-risk patients or symptomatic cases</li>
+                <li>Assess for antibiotic resistance if treatment is indicated</li>
+                <li>Schedule follow-up appointment within 2 weeks</li>
+            </ul>
+        `;
+    } else {
+        nextStepsSection.style.display = 'none';
+    }
+    
+    // Populate print fields
+    populatePrintFields(result);
+    
     // Scroll to results smoothly
     resultsPanel.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+}
+
+function populatePrintFields(result) {
+    const now = new Date();
+    
+    // Document info
+    document.getElementById('printReportDate').textContent = now.toLocaleDateString();
+    document.getElementById('printCaseId').textContent = result.case_id || 'N/A';
+    document.getElementById('printGeneratedDate').textContent = now.toLocaleString();
+    
+    // Clinician info
+    if (currentUser) {
+        document.getElementById('printClinician').textContent = currentUser.full_name || currentUser.username;
+        document.getElementById('printInstitution').textContent = currentUser.institution || 'N/A';
+        document.getElementById('printClinicianName').textContent = currentUser.full_name || currentUser.username;
+        document.getElementById('printClinicianLicense').textContent = 
+            currentUser.license_number ? `License: ${currentUser.license_number}` : '';
+        document.getElementById('printClinicianInstitution').textContent = currentUser.institution || '';
+    }
+    
+    // Patient info (if available from form)
+    const form = document.getElementById('screeningForm');
+    if (form) {
+        const formData = new FormData(form);
+        document.getElementById('printPatientId').textContent = formData.get('patient_id') || 'N/A';
+        document.getElementById('printAge').textContent = formData.get('age') || 'N/A';
+        document.getElementById('printSex').textContent = formData.get('sex') || 'N/A';
+        document.getElementById('printAssessmentDate').textContent = now.toLocaleDateString();
+    }
+}
+
+function printScreeningResults() {
+    window.print();
+}
+
+function downloadScreeningPDF() {
+    // For now, trigger print dialog with instruction to save as PDF
+    alert('To save as PDF:\n\n1. Click "Print" below\n2. Select "Save as PDF" or "Microsoft Print to PDF" as printer\n3. Click "Save"');
+    window.print();
 }
 
 // ========================================

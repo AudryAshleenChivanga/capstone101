@@ -288,3 +288,84 @@ class UserProfileUpdate(BaseModel):
 class SignatureUpload(BaseModel):
     """Upload digital signature."""
     signature_data: str  # Base64 encoded signature image
+
+
+# Chat/Conversation schemas
+class MessageCreate(BaseModel):
+    """Create a new message."""
+    conversation_id: Optional[int] = None  # If None, creates new conversation
+    receiver_id: Optional[int] = None  # User ID to message (for new conversations)
+    patient_id: Optional[int] = None  # Patient ID to message (for new conversations)
+    content: str = Field(..., min_length=1, max_length=5000)
+    message_type: str = "text"
+    case_id: Optional[int] = None  # Related case ID
+
+
+class MessageResponse(BaseModel):
+    """Message response."""
+    id: int
+    conversation_id: int
+    sender_id: int
+    sender_name: Optional[str] = None
+    sender_role: Optional[str] = None
+    content: str
+    message_type: str
+    attachment_url: Optional[str] = None
+    is_read: bool
+    read_at: Optional[datetime] = None
+    is_edited: bool
+    edited_at: Optional[datetime] = None
+    created_at: datetime
+
+    class Config:
+        from_attributes = True
+
+
+class ConversationCreate(BaseModel):
+    """Create a new conversation."""
+    receiver_id: Optional[int] = None  # User to start conversation with
+    patient_id: Optional[int] = None  # Patient to start conversation with
+    case_id: Optional[int] = None
+    appointment_id: Optional[int] = None
+    title: Optional[str] = None
+    initial_message: str = Field(..., min_length=1, max_length=5000)
+
+
+class ConversationResponse(BaseModel):
+    """Conversation response."""
+    id: int
+    user1_id: int
+    user2_id: Optional[int] = None
+    patient_id: Optional[int] = None
+    case_id: Optional[int] = None
+    appointment_id: Optional[int] = None
+    conversation_type: str
+    status: str
+    title: Optional[str] = None
+    created_at: datetime
+    updated_at: datetime
+    last_message_at: datetime
+    
+    # Additional fields for frontend
+    other_participant_name: Optional[str] = None
+    other_participant_role: Optional[str] = None
+    other_participant_photo: Optional[str] = None
+    unread_count: int = 0
+    last_message: Optional[str] = None
+    last_message_sender: Optional[str] = None
+
+    class Config:
+        from_attributes = True
+
+
+class ConversationWithMessages(ConversationResponse):
+    """Conversation with messages list."""
+    messages: List[MessageResponse] = []
+
+    class Config:
+        from_attributes = True
+
+
+class MarkAsRead(BaseModel):
+    """Mark messages as read."""
+    message_ids: List[int]

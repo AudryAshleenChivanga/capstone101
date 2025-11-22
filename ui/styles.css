@@ -1016,6 +1016,225 @@ canvas {
     margin-bottom: 1rem;
 }
 
+/* Enhanced Screening Results Styles */
+.screening-results-container {
+    margin-top: 20px;
+}
+
+.status-indicator {
+    padding: 20px 25px;
+    margin: 25px 0;
+    border-left: 6px solid;
+    background: #f8f9fa;
+    border-radius: 8px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    transition: all 0.3s ease;
+}
+
+.status-indicator:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+}
+
+.status-indicator.positive {
+    border-left-color: #dc3545;
+    background: linear-gradient(135deg, #fff5f5 0%, #ffe5e5 100%);
+}
+
+.status-indicator.negative {
+    border-left-color: #28a745;
+    background: linear-gradient(135deg, #f0fff4 0%, #d4edda 100%);
+}
+
+.status-indicator.warning {
+    border-left-color: #ffc107;
+    background: linear-gradient(135deg, #fffbf0 0%, #fff3cd 100%);
+}
+
+.status-indicator .status-title {
+    font-size: 14px;
+    font-weight: 600;
+    color: #666;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin-bottom: 8px;
+}
+
+.status-indicator .status-value {
+    font-size: 24px;
+    font-weight: 700;
+    margin: 12px 0;
+    color: var(--text-primary);
+}
+
+.status-indicator.positive .status-value {
+    color: #dc3545;
+}
+
+.status-indicator.negative .status-value {
+    color: #28a745;
+}
+
+.status-indicator.warning .status-value {
+    color: #ffc107;
+}
+
+.status-indicator .status-details {
+    font-size: 14px;
+    color: #555;
+    line-height: 1.6;
+    margin-top: 10px;
+}
+
+.status-indicator .status-details strong {
+    color: var(--text-primary);
+    font-weight: 600;
+}
+
+.recommendations-print {
+    margin: 25px 0;
+    padding: 20px;
+    border: 1px solid #e1e8ed;
+    border-radius: 8px;
+    background: white;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+}
+
+.recommendations-print h3 {
+    font-size: 18px;
+    color: #0066cc;
+    margin: 0 0 15px 0;
+    padding-bottom: 10px;
+    border-bottom: 2px solid #0066cc;
+}
+
+.recommendations-print h3 i {
+    margin-right: 8px;
+}
+
+.recommendations-print ul {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+}
+
+.recommendations-print ul li {
+    padding: 10px 0 10px 30px;
+    border-bottom: 1px solid #f0f0f0;
+    position: relative;
+    line-height: 1.6;
+}
+
+.recommendations-print ul li:last-child {
+    border-bottom: none;
+}
+
+.recommendations-print ul li:before {
+    content: "✓";
+    position: absolute;
+    left: 0;
+    color: #0066cc;
+    font-weight: bold;
+    font-size: 18px;
+}
+
+.important-notes {
+    margin: 25px 0;
+    padding: 20px;
+    border: 2px solid #dc3545;
+    border-radius: 8px;
+    background: #fff5f5;
+    box-shadow: 0 2px 8px rgba(220, 53, 69, 0.1);
+}
+
+.important-notes h4 {
+    color: #dc3545;
+    margin: 0 0 15px 0;
+    font-size: 16px;
+    font-weight: 700;
+}
+
+.important-notes h4 i {
+    margin-right: 8px;
+}
+
+.important-notes ul {
+    margin: 10px 0;
+    padding-left: 20px;
+}
+
+.important-notes li {
+    margin-bottom: 8px;
+    line-height: 1.5;
+}
+
+.model-info-section {
+    margin: 25px 0;
+    padding: 15px;
+    background: #f8f9fa;
+    border-radius: 8px;
+    font-size: 13px;
+}
+
+.model-info-section h3 {
+    font-size: 14px;
+    color: #0066cc;
+    margin: 0 0 10px 0;
+}
+
+.model-info-section p {
+    margin: 5px 0;
+    color: #666;
+}
+
+.result-actions {
+    display: flex;
+    gap: 10px;
+    margin-top: 25px;
+    padding-top: 20px;
+    border-top: 1px solid #e1e8ed;
+}
+
+.result-actions .btn {
+    flex: 1;
+}
+
+.btn-icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+}
+
+.btn-icon i {
+    font-size: 14px;
+}
+
+/* Dark mode adjustments */
+[data-theme="dark"] .status-indicator {
+    background: #2d3748;
+}
+
+[data-theme="dark"] .status-indicator.positive {
+    background: linear-gradient(135deg, #3d2020 0%, #4a2525 100%);
+    border-left-color: #ef5350;
+}
+
+[data-theme="dark"] .status-indicator.negative {
+    background: linear-gradient(135deg, #1e3a2a 0%, #2a4a35 100%);
+    border-left-color: #66bb6a;
+}
+
+[data-theme="dark"] .recommendations-print {
+    background: #2d3748;
+    border-color: #4a5568;
+}
+
+[data-theme="dark"] .important-notes {
+    background: #3d2020;
+    border-color: #ef5350;
+}
+
 .recommendations ul {
     list-style: none;
     padding: 0;

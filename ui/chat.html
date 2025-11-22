@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Messages - H. pylori CDSS</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="chat.css">
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar">
+        <div class="nav-container">
+            <div class="nav-brand">
+                <img src="gastrocdss-high-resolution-logo-transparent.png" alt="GastroCDSS" class="logo">
+                <span class="brand-text">H. pylori CDSS</span>
+            </div>
+            <div class="nav-menu">
+                <a href="dashboard.html"><i class="fas fa-home"></i> Dashboard</a>
+                <a href="chat.html" class="active"><i class="fas fa-comments"></i> Messages</a>
+                <a href="#" id="logoutBtn"><i class="fas fa-sign-out-alt"></i> Logout</a>
+            </div>
+            <div class="user-info">
+                <span id="userName">Loading...</span>
+                <span id="userRole" class="user-role">...</span>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Chat Container -->
+    <div class="chat-container">
+        <!-- Conversations Sidebar -->
+        <div class="conversations-sidebar">
+            <div class="sidebar-header">
+                <h2><i class="fas fa-comments"></i> Conversations</h2>
+                <button id="newConversationBtn" class="btn-new-chat" title="New conversation">
+                    <i class="fas fa-plus"></i>
+                </button>
+            </div>
+
+            <div class="search-box">
+                <i class="fas fa-search"></i>
+                <input type="text" id="searchConversations" placeholder="Search conversations...">
+            </div>
+
+            <div id="conversationsList" class="conversations-list">
+                <!-- Conversations will be loaded here -->
+                <div class="loading-conversations">
+                    <i class="fas fa-spinner fa-spin"></i> Loading conversations...
+                </div>
+            </div>
+        </div>
+
+        <!-- Chat Area -->
+        <div class="chat-area">
+            <!-- Empty State -->
+            <div id="emptyState" class="empty-state">
+                <i class="fas fa-comments fa-3x"></i>
+                <h2>Welcome to Messages</h2>
+                <p>Select a conversation to start messaging</p>
+                <button id="startChatBtn" class="btn-primary">
+                    <i class="fas fa-plus-circle"></i> Start New Conversation
+                </button>
+            </div>
+
+            <!-- Active Chat -->
+            <div id="activeChat" class="active-chat" style="display: none;">
+                <!-- Chat Header -->
+                <div class="chat-header">
+                    <div class="chat-header-info">
+                        <div class="avatar">
+                            <i class="fas fa-user-circle fa-2x"></i>
+                        </div>
+                        <div>
+                            <h3 id="chatParticipantName">Participant Name</h3>
+                            <span id="chatParticipantRole" class="participant-role">Role</span>
+                        </div>
+                    </div>
+                    <div class="chat-header-actions">
+                        <button id="archiveChatBtn" class="btn-icon" title="Archive conversation">
+                            <i class="fas fa-archive"></i>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Messages Area -->
+                <div id="messagesArea" class="messages-area">
+                    <!-- Messages will be loaded here -->
+                </div>
+
+                <!-- Message Input -->
+                <div class="message-input-area">
+                    <textarea 
+                        id="messageInput" 
+                        placeholder="Type your message..." 
+                        rows="3"
+                        maxlength="5000"
+                    ></textarea>
+                    <div class="message-actions">
+                        <span id="charCount" class="char-count">0/5000</span>
+                        <button id="sendMessageBtn" class="btn-send">
+                            <i class="fas fa-paper-plane"></i> Send
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- New Conversation Modal -->
+    <div id="newConversationModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2><i class="fas fa-plus-circle"></i> New Conversation</h2>
+                <span class="close">&times;</span>
+            </div>
+            <div class="modal-body">
+                <form id="newConversationForm">
+                    <div class="form-group">
+                        <label>Message To:</label>
+                        <select id="recipientType" required>
+                            <option value="">-- Select Type --</option>
+                            <option value="user">Clinician/Specialist</option>
+                            <option value="patient">Patient</option>
+                        </select>
+                    </div>
+
+                    <div id="userSelectGroup" class="form-group" style="display: none;">
+                        <label>Select User:</label>
+                        <select id="userSelect">
+                            <option value="">Loading...</option>
+                        </select>
+                    </div>
+
+                    <div id="patientSelectGroup" class="form-group" style="display: none;">
+                        <label>Select Patient:</label>
+                        <select id="patientSelect">
+                            <option value="">Loading...</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Case ID (Optional):</label>
+                        <input type="number" id="caseIdInput" placeholder="Leave empty if not related to a case">
+                    </div>
+
+                    <div class="form-group">
+                        <label>Message:</label>
+                        <textarea 
+                            id="initialMessage" 
+                            placeholder="Type your message..." 
+                            rows="4" 
+                            required
+                            maxlength="5000"
+                        ></textarea>
+                    </div>
+
+                    <div class="modal-actions">
+                        <button type="button" class="btn-secondary" onclick="closeNewConversationModal()">Cancel</button>
+                        <button type="submit" class="btn-primary">
+                            <i class="fas fa-paper-plane"></i> Send Message
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <script src="chat.js"></script>
+</body>
+</html>
+

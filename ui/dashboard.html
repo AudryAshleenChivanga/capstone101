@@ -5,6 +5,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>H. pylori CDSS - Dashboard</title>
     <link rel="stylesheet" href="styles.css?v=5.0">
+    <link rel="stylesheet" href="print.css" media="print">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
 </head>
 <body>
     <!-- Sidebar Navigation -->
@@ -43,6 +45,11 @@
             <a href="#video" class="nav-item" data-page="video">
                 <svg class="nav-icon" viewBox="0 0 24 24"><polygon points="23 7 16 12 23 17 23 7"/><rect x="1" y="5" width="15" height="14" rx="2" ry="2"/></svg>
                 <span>Video Consult</span>
+            </a>
+            <a href="/ui/chat.html" class="nav-item">
+                <svg class="nav-icon" viewBox="0 0 24 24"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg>
+                <span>Messages</span>
+                <span id="chatUnreadBadge" class="badge" style="display: none;">0</span>
             </a>
             <a href="/ui/teleconsultation.html" class="nav-item" target="_blank">
                 <svg class="nav-icon" viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87m-4-12a4 4 0 010 7.75"/></svg>
@@ -328,20 +335,139 @@
                     </div>
                     
                     <div class="results-panel" id="screeningResults" style="display: none;">
-                        <h2>Screening Results</h2>
-                        <div class="gauge-container">
-                            <canvas id="screeningGauge" width="200" height="120"></canvas>
-                            <p class="gauge-label">Infection Likelihood</p>
+                        <!-- Print Header (hidden on screen) -->
+                        <div class="print-only print-header">
+                            <div class="logo-section">
+                                <img src="gastrocdss-high-resolution-logo-transparent.png" alt="H. pylori CDSS">
+                                <h1>H. pylori Clinical Decision Support System</h1>
+                                <div class="subtitle">Screening Assessment Report</div>
+                            </div>
+                        </div>
+
+                        <!-- Document Info -->
+                        <div class="document-info print-only">
+                            <div class="info-block">
+                                <span class="info-label">Report Date:</span>
+                                <span class="info-value" id="printReportDate"></span>
+                            </div>
+                            <div class="info-block">
+                                <span class="info-label">Case ID:</span>
+                                <span class="info-value" id="printCaseId"></span>
+                            </div>
+                            <div class="info-block">
+                                <span class="info-label">Clinician:</span>
+                                <span class="info-value" id="printClinician"></span>
+                            </div>
+                            <div class="info-block">
+                                <span class="info-label">Institution:</span>
+                                <span class="info-value" id="printInstitution"></span>
+                            </div>
+                        </div>
+
+                        <!-- Screen Header -->
+                        <div class="no-print">
+                            <h2><i class="fas fa-clipboard-check"></i> Screening Results</h2>
+                        </div>
+
+                        <!-- Patient Info (for print) -->
+                        <div class="patient-info-print print-only">
+                            <h2>Patient Information</h2>
+                            <div class="patient-details-grid">
+                                <div class="info-block">
+                                    <span class="info-label">Patient ID:</span>
+                                    <span class="info-value" id="printPatientId"></span>
+                                </div>
+                                <div class="info-block">
+                                    <span class="info-label">Age:</span>
+                                    <span class="info-value" id="printAge"></span>
+                                </div>
+                                <div class="info-block">
+                                    <span class="info-label">Sex:</span>
+                                    <span class="info-value" id="printSex"></span>
+                                </div>
+                                <div class="info-block">
+                                    <span class="info-label">Assessment Date:</span>
+                                    <span class="info-value" id="printAssessmentDate"></span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Results Display -->
+                        <div class="screening-results-container">
+                            <!-- Infection Status Indicator -->
+                            <div class="status-indicator" id="infectionStatus">
+                                <div class="status-title">H. pylori Infection Status</div>
+                                <div class="status-value" id="infectionStatusText">ANALYZING...</div>
+                                <div class="status-details">
+                                    <strong>Infection Probability:</strong> <span id="infectionProbability">--%</span><br>
+                                    <strong>Confidence Level:</strong> <span id="confidenceLevel">--</span><br>
+                                    <strong>Model Accuracy:</strong> 70.1%
+                                </div>
+                            </div>
+
+                            <!-- Gauge Visualization (screen only) -->
+                            <div class="gauge-container no-print">
+                                <canvas id="screeningGauge" width="200" height="120"></canvas>
+                                <p class="gauge-label">Infection Likelihood</p>
+                            </div>
+
+                            <!-- Print alternative for gauge -->
+                            <div class="chart-print-alternative print-only" id="gaugePrintText">
+                                Infection Probability: --
+                            </div>
+
+                            <!-- Clinical Recommendations -->
+                            <div class="recommendations-print">
+                                <h3><i class="fas fa-notes-medical"></i> Clinical Recommendations</h3>
+                                <ul id="recommendationList"></ul>
+                            </div>
+
+                            <!-- Next Steps -->
+                            <div class="important-notes" id="nextStepsSection" style="display: none;">
+                                <h4><i class="fas fa-exclamation-triangle"></i> Important Next Steps</h4>
+                                <div id="nextStepsContent"></div>
+                            </div>
+
+                            <!-- Model Information (for reference) -->
+                            <div class="model-info-section print-only">
+                                <h3>Model Information</h3>
+                                <p><strong>Model:</strong> Random Forest Classifier (400 decision trees)</p>
+                                <p><strong>Performance:</strong> Accuracy: 70.1% | Recall: 84.9% | F1 Score: 78.3%</p>
+                                <p><strong>Calibration:</strong> Probability-calibrated for reliable risk assessment</p>
+                            </div>
+                        </div>
+
+                        <!-- Signature Section (for print) -->
+                        <div class="signature-section print-only">
+                            <div class="signature-line"></div>
+                            <div class="signature-info">
+                                <div id="printClinicianName"></div>
+                                <div id="printClinicianLicense"></div>
+                                <div id="printClinicianInstitution"></div>
+                            </div>
+                        </div>
+
+                        <!-- Print Footer -->
+                        <div class="print-footer print-only">
+                            <div class="confidential">CONFIDENTIAL MEDICAL RECORD</div>
+                            <div>This document contains protected health information. Unauthorized disclosure is prohibited.</div>
+                            <div>Generated by H. pylori CDSS v1.0 | Date: <span id="printGeneratedDate"></span></div>
                         </div>
                         
-                        <div class="recommendations">
-                            <h3>Clinical Recommendations</h3>
-                            <ul id="recommendationList"></ul>
-                        </div>
-                        
-                        <div class="result-actions">
-                            <button class="btn btn-secondary" onclick="copyResults()">Copy Results</button>
-                            <button class="btn btn-primary" onclick="saveCase()">Save Case</button>
+                        <!-- Action Buttons (screen only) -->
+                        <div class="result-actions no-print">
+                            <button class="btn btn-icon" onclick="printScreeningResults()" title="Print Results">
+                                <i class="fas fa-print"></i> Print
+                            </button>
+                            <button class="btn btn-icon" onclick="copyResults()" title="Copy to Clipboard">
+                                <i class="fas fa-copy"></i> Copy
+                            </button>
+                            <button class="btn btn-icon" onclick="downloadScreeningPDF()" title="Download PDF">
+                                <i class="fas fa-file-pdf"></i> PDF
+                            </button>
+                            <button class="btn btn-primary" onclick="saveCase()">
+                                <i class="fas fa-save"></i> Save Case
+                            </button>
                         </div>
                     </div>
                 </div>

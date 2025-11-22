@@ -608,7 +608,7 @@ async function createPrescription(caseId) {
         
         // Option to print or send to patient
         if (confirm('Prescription created successfully! Would you like to view/print it?')) {
-            window.open(`/prescriptions/${result.prescription_id}/print`, '_blank');
+            window.open(`/ui/prescription_print.html?id=${result.prescription_id}`, '_blank');
         }
         
     } catch (error) {

@@ -13,6 +13,7 @@ from app.routes_reco import router as reco_router
 from app.routes_sms import router as sms_router
 from app.routes_telemed import router as telemed_router
 from app.routes_document import router as document_router
+from app.routes_chat import router as chat_router
 
 
 class SecurityHeadersMiddleware(BaseHTTPMiddleware):
@@ -209,6 +210,9 @@ app.include_router(prescription_router)
 # Include biopsy simulation router (RL-based endoscopy)
 from app.routes_biopsy import router as biopsy_router
 app.include_router(biopsy_router)
+
+# Include chat router (critical for messaging)
+app.include_router(chat_router)
 
 # Include other enhanced routers
 try:

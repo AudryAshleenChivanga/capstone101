@@ -298,3 +298,74 @@ class PredictionLog(Base):
         Index('idx_prediction_search', 'model_name', 'created_at'),
         Index('idx_model_version', 'model_name', 'model_version'),
     )
+
+
+class Conversation(Base):
+    """Conversation/chat threads between users or user-patient."""
+    __tablename__ = "conversations"
+    
+    id = Column(Integer, primary_key=True, index=True)
+    
+    # Participants
+    user1_id = Column(Integer, ForeignKey("users.id"), nullable=False)
+    user2_id = Column(Integer, ForeignKey("users.id"), nullable=True)  # Null if with patient
+    patient_id = Column(Integer, ForeignKey("patients.id"), nullable=True)
+    
+    # Context
+    case_id = Column(Integer, ForeignKey("cases.id"), nullable=True)  # Related case
+    appointment_id = Column(Integer, ForeignKey("appointments.id"), nullable=True)
+    
+    # Conversation type: user_to_user, user_to_patient, consultation
+    conversation_type = Column(String(50), default="user_to_user", nullable=False)
+    
+    # Status
+    status = Column(String(50), default="active")  # active, archived, closed
+    title = Column(String(255), nullable=True)  # Optional conversation title
+    
+    # Metadata
+    created_at = Column(DateTime, default=datetime.utcnow, index=True)
+    updated_at = Column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
+    last_message_at = Column(DateTime, default=datetime.utcnow, index=True)
+    
+    # Relationships
+    user1 = relationship("User", foreign_keys=[user1_id])
+    user2 = relationship("User", foreign_keys=[user2_id])
+    patient = relationship("Patient")
+    case = relationship("Case")
+    messages = relationship("Message", back_populates="conversation", cascade="all, delete-orphan")
+    
+    __table_args__ = (
+        Index('idx_conversation_participants', 'user1_id', 'user2_id', 'patient_id'),
+        Index('idx_conversation_updated', 'updated_at'),
+    )
+
+
+class Message(Base):
+    """Individual messages in conversations."""
+    __tablename__ = "messages"
+    
+    id = Column(Integer, primary_key=True, index=True)
+    conversation_id = Column(Integer, ForeignKey("conversations.id"), nullable=False, index=True)
+    sender_id = Column(Integer, ForeignKey("users.id"), nullable=False)
+    
+    # Message content
+    content = Column(Text, nullable=False)
+    message_type = Column(String(50), default="text")  # text, image, file, system
+    attachment_url = Column(String(500), nullable=True)  # For file/image messages
+    
+    # Status tracking
+    is_read = Column(Integer, default=0)
+    read_at = Column(DateTime, nullable=True)
+    is_edited = Column(Integer, default=0)
+    edited_at = Column(DateTime, nullable=True)
+    
+    # Metadata
+    created_at = Column(DateTime, default=datetime.utcnow, index=True)
+    
+    # Relationships
+    conversation = relationship("Conversation", back_populates="messages")
+    sender = relationship("User")
+    
+    __table_args__ = (
+        Index('idx_message_conversation', 'conversation_id', 'created_at'),
+    )
