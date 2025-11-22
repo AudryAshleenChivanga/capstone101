@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Endpoint Health Check - H. pylori CDSS</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 1200px;
+            margin: 20px auto;
+            padding: 20px;
+            background: #f5f5f5;
+        }
+        h1 {
+            color: #0066cc;
+        }
+        .endpoint {
+            background: white;
+            padding: 15px;
+            margin: 10px 0;
+            border-radius: 8px;
+            border-left: 5px solid #ccc;
+        }
+        .endpoint.success {
+            border-left-color: #28a745;
+        }
+        .endpoint.error {
+            border-left-color: #dc3545;
+        }
+        .endpoint.testing {
+            border-left-color: #ffc107;
+        }
+        .status {
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+        .details {
+            font-size: 14px;
+            color: #666;
+            margin-top: 5px;
+        }
+        button {
+            background: #0066cc;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            margin: 5px;
+        }
+        button:hover {
+            background: #0052a3;
+        }
+        .info {
+            background: #e3f2fd;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+        }
+        pre {
+            background: #f8f9fa;
+            padding: 10px;
+            border-radius: 4px;
+            overflow-x: auto;
+        }
+    </style>
+</head>
+<body>
+    <h1>🏥 Endpoint Health Check</h1>
+    
+    <div class="info">
+        <strong>Current Environment:</strong> <span id="environment">Loading...</span><br>
+        <strong>API Base URL:</strong> <span id="apiBase">Loading...</span>
+    </div>
+
+    <button onclick="testAllEndpoints()">🔄 Test All Endpoints</button>
+    <button onclick="testRegistration()">👤 Test Registration</button>
+    <button onclick="clearResults()">🗑️ Clear Results</button>
+
+    <div id="results"></div>
+
+    <script>
+        const API_BASE = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1'
+            ? 'http://localhost:8000'
+            : window.location.origin;
+
+        document.getElementById('environment').textContent = 
+            window.location.hostname === 'localhost' ? 'LOCAL' : 'PRODUCTION';
+        document.getElementById('apiBase').textContent = API_BASE;
+
+        async function testEndpoint(name, method, url, body = null, requiresAuth = false) {
+            const resultsDiv = document.getElementById('results');
+            const endpointDiv = document.createElement('div');
+            endpointDiv.className = 'endpoint testing';
+            endpointDiv.innerHTML = `
+                <div class="status">Testing: ${name}</div>
+                <div class="details">${method} ${url}</div>
+            `;
+            resultsDiv.appendChild(endpointDiv);
+
+            try {
+                const headers = { 'Content-Type': 'application/json' };
+                if (requiresAuth) {
+                    const token = localStorage.getItem('token') || localStorage.getItem('access_token');
+                    if (token) {
+                        headers['Authorization'] = `Bearer ${token}`;
+                    }
+                }
+
+                const options = {
+                    method,
+                    headers
+                };
+
+                if (body) {
+                    options.body = JSON.stringify(body);
+                }
+
+                const startTime = Date.now();
+                const response = await fetch(url, options);
+                const endTime = Date.now();
+                const duration = endTime - startTime;
+
+                let data;
+                const contentType = response.headers.get('content-type');
+                if (contentType && contentType.includes('application/json')) {
+                    data = await response.json();
+                } else {
+                    data = await response.text();
+                }
+
+                if (response.ok) {
+                    endpointDiv.className = 'endpoint success';
+                    endpointDiv.innerHTML = `
+                        <div class="status">✅ ${name} - SUCCESS</div>
+                        <div class="details">
+                            ${method} ${url}<br>
+                            Status: ${response.status}<br>
+                            Time: ${duration}ms<br>
+                            <details>
+                                <summary>Response</summary>
+                                <pre>${JSON.stringify(data, null, 2)}</pre>
+                            </details>
+                        </div>
+                    `;
+                } else {
+                    endpointDiv.className = 'endpoint error';
+                    endpointDiv.innerHTML = `
+                        <div class="status">❌ ${name} - FAILED</div>
+                        <div class="details">
+                            ${method} ${url}<br>
+                            Status: ${response.status}<br>
+                            Error: ${data.detail || data.message || JSON.stringify(data)}<br>
+                            Time: ${duration}ms
+                        </div>
+                    `;
+                }
+            } catch (error) {
+                endpointDiv.className = 'endpoint error';
+                endpointDiv.innerHTML = `
+                    <div class="status">❌ ${name} - ERROR</div>
+                    <div class="details">
+                        ${method} ${url}<br>
+                        Error: ${error.message}
+                    </div>
+                `;
+            }
+        }
+
+        async function testAllEndpoints() {
+            clearResults();
+
+            // Health check
+            await testEndpoint('Health Check', 'GET', `${API_BASE}/health`);
+
+            // Auth endpoints
+            await testEndpoint('First User Endpoint', 'GET', `${API_BASE}/auth/register/first`);
+            
+            // Test if public registration endpoint exists
+            await testEndpoint('Public Registration Endpoint (OPTIONS)', 'OPTIONS', `${API_BASE}/auth/register/public`);
+
+            // Other important endpoints
+            await testEndpoint('Login Endpoint (OPTIONS)', 'OPTIONS', `${API_BASE}/auth/login`);
+            await testEndpoint('Google Login Endpoint (OPTIONS)', 'OPTIONS', `${API_BASE}/auth/google/login`);
+        }
+
+        async function testRegistration() {
+            clearResults();
+
+            const testUser = {
+                username: `test_${Date.now()}`,
+                email: `test_${Date.now()}@example.com`,
+                password: 'Test@12345',
+                full_name: 'Test User',
+                role: 'clinician'
+            };
+
+            await testEndpoint(
+                'User Registration',
+                'POST',
+                `${API_BASE}/auth/register/public`,
+                testUser,
+                false
+            );
+        }
+
+        function clearResults() {
+            document.getElementById('results').innerHTML = '';
+        }
+
+        // Auto-run on load
+        window.onload = () => {
+            setTimeout(testAllEndpoints, 500);
+        };
+    </script>
+</body>
+</html>
+

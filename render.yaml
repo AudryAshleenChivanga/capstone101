@@ -38,7 +38,7 @@ services:
         value: 0.60
       
       - key: ALLOWED_ORIGINS
-        value: https://h-pylori-cdss.onrender.com
+        value: "*"
       
       # Optional: Add your Twilio credentials as secrets
       # - key: TWILIO_ACCOUNT_SID

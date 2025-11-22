@@ -83,6 +83,18 @@ def register_user(
     )
 
 
+@router.get("/register/public/test")
+def test_public_registration_endpoint():
+    """Test endpoint to verify public registration is accessible."""
+    return {
+        "status": "ok",
+        "message": "Public registration endpoint is accessible",
+        "endpoint": "/auth/register/public",
+        "method": "POST",
+        "authentication_required": False
+    }
+
+
 @router.post("/register/public", response_model=UserResponse, status_code=status.HTTP_201_CREATED)
 def register_public_user(user_data: UserCreate, db: Session = Depends(get_db)):
     """

@@ -756,7 +756,15 @@ function populatePrintFields(result) {
 }
 
 function printScreeningResults() {
-    window.print();
+    // Ensure print data is populated
+    if (window.currentScreeningResult) {
+        populatePrintFields(window.currentScreeningResult);
+    }
+    
+    // Small delay to ensure DOM updates
+    setTimeout(() => {
+        window.print();
+    }, 100);
 }
 
 function downloadScreeningPDF() {
