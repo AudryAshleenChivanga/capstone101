@@ -519,8 +519,13 @@
     </div>
 
     <script>
-        const API_BASE = window.location.origin;
+        // Set API base URL - correct port for local development
+        const API_BASE = (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') 
+            ? 'http://localhost:8000' 
+            : window.location.origin;
         let authToken = localStorage.getItem('token');
+        console.log('Model Management - API Base URL:', API_BASE);
+        console.log('Auth Token:', authToken ? 'Present' : 'Missing');
         
         // Chart instances
         let activityTrendChart = null;
@@ -535,24 +540,55 @@
         // Fetch and display models
         async function loadModels() {
             try {
+                console.log('Fetching models from:', `${API_BASE}/api/model-management/health`);
                 const response = await fetch(`${API_BASE}/api/model-management/health`, {
                     headers: {
-                        'Authorization': `Bearer ${authToken}`
+                        'Authorization': `Bearer ${authToken}`,
+                        'Content-Type': 'application/json'
                     }
                 });
 
+                console.log('Models API response status:', response.status);
+
                 if (!response.ok) {
                     if (response.status === 401 || response.status === 403) {
-                        window.location.href = 'login.html';
+                        showAlert('Authentication failed. Redirecting to login...', 'error');
+                        setTimeout(() => window.location.href = 'index.html', 2000);
                         return;
                     }
-                    throw new Error('Failed to load models');
+                    const errorText = await response.text();
+                    console.error('Models API error:', errorText);
+                    throw new Error(`Failed to load models (${response.status}): ${errorText}`);
                 }
 
                 const data = await response.json();
-                displayModels(data.models);
+                console.log('Models data received:', data);
+                if (data.models && data.models.length > 0) {
+                    displayModels(data.models);
+                } else {
+                    showAlert('No models found. Models may not be initialized yet.', 'warning');
+                    document.getElementById('modelsGrid').innerHTML = `
+                        <div style="grid-column: 1/-1; text-align: center; padding: 40px; color: #888;">
+                            <h3>No AI Models Found</h3>
+                            <p>Models may need to be trained or initialized. Check backend logs for details.</p>
+                        </div>
+                    `;
+                }
             } catch (error) {
+                console.error('Error loading models:', error);
                 showAlert('Error loading models: ' + error.message, 'error');
+                document.getElementById('modelsGrid').innerHTML = `
+                    <div style="grid-column: 1/-1; text-align: center; padding: 40px; color: #ff6b6b;">
+                        <h3>Failed to Load Models</h3>
+                        <p>${error.message}</p>
+                        <p style="margin-top: 20px; font-size: 0.9em; color: #888;">
+                            Make sure:<br>
+                            1. Backend server is running on port 8000<br>
+                            2. You're logged in as an administrator<br>
+                            3. CORS is properly configured
+                        </p>
+                    </div>
+                `;
             }
         }
 

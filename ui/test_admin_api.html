@@ -1,0 +1,310 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin API Diagnostics</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            max-width: 1200px;
+            margin: 40px auto;
+            padding: 20px;
+            background: #f5f5f5;
+        }
+        h1 {
+            color: #333;
+        }
+        .test-section {
+            background: white;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        button {
+            background: #667eea;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 14px;
+            margin: 5px;
+        }
+        button:hover {
+            background: #5568d3;
+        }
+        .result {
+            margin-top: 15px;
+            padding: 15px;
+            border-radius: 6px;
+            font-family: monospace;
+            white-space: pre-wrap;
+            word-break: break-all;
+        }
+        .success {
+            background: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+        .error {
+            background: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+        .info {
+            background: #d1ecf1;
+            color: #0c5460;
+            border: 1px solid #bee5eb;
+        }
+        .warning {
+            background: #fff3cd;
+            color: #856404;
+            border: 1px solid #ffeeba;
+        }
+    </style>
+</head>
+<body>
+    <h1>🔍 Admin API Diagnostics</h1>
+    <p>Use this page to test your admin panel and model management APIs.</p>
+
+    <div class="test-section">
+        <h3>1. Check Authentication Token</h3>
+        <button onclick="checkToken()">Check Token</button>
+        <div id="token-result"></div>
+    </div>
+
+    <div class="test-section">
+        <h3>2. Test Auth Endpoint (/auth/me)</h3>
+        <button onclick="testAuthMe()">Test /auth/me</button>
+        <div id="auth-result"></div>
+    </div>
+
+    <div class="test-section">
+        <h3>3. Test Admin Stats (/admin/stats)</h3>
+        <button onclick="testAdminStats()">Test /admin/stats</button>
+        <div id="stats-result"></div>
+    </div>
+
+    <div class="test-section">
+        <h3>4. Test Admin Users (/admin/users)</h3>
+        <button onclick="testAdminUsers()">Test /admin/users</button>
+        <div id="users-result"></div>
+    </div>
+
+    <div class="test-section">
+        <h3>5. Test Model Management (/api/model-management/health)</h3>
+        <button onclick="testModelHealth()">Test Model Health</button>
+        <div id="model-result"></div>
+    </div>
+
+    <div class="test-section">
+        <h3>6. Test Backend Connection</h3>
+        <button onclick="testBackendConnection()">Ping Backend</button>
+        <div id="backend-result"></div>
+    </div>
+
+    <script>
+        const API_BASE = (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') 
+            ? 'http://localhost:8000' 
+            : '';
+
+        function showResult(elementId, message, type) {
+            const element = document.getElementById(elementId);
+            element.className = `result ${type}`;
+            element.textContent = message;
+        }
+
+        function checkToken() {
+            const token = localStorage.getItem('token');
+            const user = localStorage.getItem('user');
+            
+            if (token) {
+                let message = '✅ Token Found!\n\n';
+                message += `Token (first 50 chars): ${token.substring(0, 50)}...\n\n`;
+                
+                if (user) {
+                    try {
+                        const userData = JSON.parse(user);
+                        message += `User Data:\n${JSON.stringify(userData, null, 2)}`;
+                    } catch (e) {
+                        message += `User Data: ${user}`;
+                    }
+                } else {
+                    message += 'No user data cached in localStorage';
+                }
+                
+                showResult('token-result', message, 'success');
+            } else {
+                showResult('token-result', '❌ No token found in localStorage.\n\nYou need to log in first.', 'error');
+            }
+        }
+
+        async function testAuthMe() {
+            const token = localStorage.getItem('token');
+            if (!token) {
+                showResult('auth-result', '❌ No token found. Please log in first.', 'error');
+                return;
+            }
+
+            try {
+                showResult('auth-result', '⏳ Testing...', 'info');
+                const response = await fetch(`${API_BASE}/auth/me`, {
+                    headers: {
+                        'Authorization': `Bearer ${token}`
+                    }
+                });
+
+                const data = await response.json();
+                
+                if (response.ok) {
+                    showResult('auth-result', 
+                        `✅ SUCCESS (${response.status})\n\n${JSON.stringify(data, null, 2)}`, 
+                        'success'
+                    );
+                } else {
+                    showResult('auth-result', 
+                        `❌ FAILED (${response.status})\n\n${JSON.stringify(data, null, 2)}`, 
+                        'error'
+                    );
+                }
+            } catch (error) {
+                showResult('auth-result', `❌ ERROR: ${error.message}`, 'error');
+            }
+        }
+
+        async function testAdminStats() {
+            const token = localStorage.getItem('token');
+            if (!token) {
+                showResult('stats-result', '❌ No token found. Please log in first.', 'error');
+                return;
+            }
+
+            try {
+                showResult('stats-result', '⏳ Testing...', 'info');
+                const response = await fetch(`${API_BASE}/admin/stats`, {
+                    headers: {
+                        'Authorization': `Bearer ${token}`,
+                        'Content-Type': 'application/json'
+                    }
+                });
+
+                const data = await response.json();
+                
+                if (response.ok) {
+                    showResult('stats-result', 
+                        `✅ SUCCESS (${response.status})\n\n${JSON.stringify(data, null, 2)}`, 
+                        'success'
+                    );
+                } else {
+                    showResult('stats-result', 
+                        `❌ FAILED (${response.status})\n\n${JSON.stringify(data, null, 2)}`, 
+                        'error'
+                    );
+                }
+            } catch (error) {
+                showResult('stats-result', `❌ ERROR: ${error.message}`, 'error');
+            }
+        }
+
+        async function testAdminUsers() {
+            const token = localStorage.getItem('token');
+            if (!token) {
+                showResult('users-result', '❌ No token found. Please log in first.', 'error');
+                return;
+            }
+
+            try {
+                showResult('users-result', '⏳ Testing...', 'info');
+                const response = await fetch(`${API_BASE}/admin/users`, {
+                    headers: {
+                        'Authorization': `Bearer ${token}`,
+                        'Content-Type': 'application/json'
+                    }
+                });
+
+                const data = await response.json();
+                
+                if (response.ok) {
+                    showResult('users-result', 
+                        `✅ SUCCESS (${response.status})\n\nFound ${data.length} users\n\n${JSON.stringify(data.slice(0, 3), null, 2)}${data.length > 3 ? '\n\n... and more' : ''}`, 
+                        'success'
+                    );
+                } else {
+                    showResult('users-result', 
+                        `❌ FAILED (${response.status})\n\n${JSON.stringify(data, null, 2)}`, 
+                        'error'
+                    );
+                }
+            } catch (error) {
+                showResult('users-result', `❌ ERROR: ${error.message}`, 'error');
+            }
+        }
+
+        async function testModelHealth() {
+            const token = localStorage.getItem('token');
+            if (!token) {
+                showResult('model-result', '❌ No token found. Please log in first.', 'error');
+                return;
+            }
+
+            try {
+                showResult('model-result', '⏳ Testing...', 'info');
+                const response = await fetch(`${API_BASE}/api/model-management/health`, {
+                    headers: {
+                        'Authorization': `Bearer ${token}`,
+                        'Content-Type': 'application/json'
+                    }
+                });
+
+                const data = await response.json();
+                
+                if (response.ok) {
+                    showResult('model-result', 
+                        `✅ SUCCESS (${response.status})\n\n${JSON.stringify(data, null, 2)}`, 
+                        'success'
+                    );
+                } else {
+                    showResult('model-result', 
+                        `❌ FAILED (${response.status})\n\n${JSON.stringify(data, null, 2)}`, 
+                        'error'
+                    );
+                }
+            } catch (error) {
+                showResult('model-result', `❌ ERROR: ${error.message}`, 'error');
+            }
+        }
+
+        async function testBackendConnection() {
+            try {
+                showResult('backend-result', '⏳ Testing connection...', 'info');
+                
+                // Try to fetch docs endpoint (usually doesn't require auth)
+                const response = await fetch(`${API_BASE}/docs`);
+                
+                if (response.ok) {
+                    showResult('backend-result', 
+                        `✅ Backend is ONLINE!\n\nAPI Base: ${API_BASE}\nStatus: ${response.status}\n\nThe backend server is running correctly.`, 
+                        'success'
+                    );
+                } else {
+                    showResult('backend-result', 
+                        `⚠️ Backend responded with status ${response.status}\n\nThe server is running but may have issues.`, 
+                        'warning'
+                    );
+                }
+            } catch (error) {
+                showResult('backend-result', 
+                    `❌ Cannot connect to backend!\n\nError: ${error.message}\n\nAPI Base: ${API_BASE}\n\nMake sure:\n1. Backend server is running\n2. It's accessible on port 8000\n3. No firewall blocking the connection`, 
+                    'error'
+                );
+            }
+        }
+
+        // Auto-run token check on load
+        window.addEventListener('load', checkToken);
+    </script>
+</body>
+</html>
+

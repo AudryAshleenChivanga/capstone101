@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Simple Test - H. pylori CDSS</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 50px auto;
+            padding: 20px;
+            background: #f5f5f5;
+        }
+        .test-box {
+            background: white;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        .success { border-left: 5px solid #28a745; }
+        .error { border-left: 5px solid #dc3545; }
+        .info { border-left: 5px solid #007bff; }
+        button {
+            background: #007bff;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            margin: 5px;
+        }
+        button:hover {
+            background: #0056b3;
+        }
+        pre {
+            background: #f8f9fa;
+            padding: 10px;
+            border-radius: 4px;
+            overflow-x: auto;
+        }
+    </style>
+</head>
+<body>
+    <h1>🧪 H. pylori CDSS - System Test</h1>
+    
+    <div class="test-box info">
+        <h3>Server Status</h3>
+        <p id="serverStatus">Testing...</p>
+    </div>
+    
+    <div class="test-box info">
+        <h3>Quick Actions</h3>
+        <button onclick="window.location.href='/ui/login.html'">Go to Login Page</button>
+        <button onclick="window.location.href='/ui/dashboard_new.html'">Go to Dashboard</button>
+        <button onclick="window.location.href='/ui/admin.html'">Go to Admin Panel</button>
+        <button onclick="testAuth()">Test Authentication</button>
+        <button onclick="clearAllCache()">Clear All Cache</button>
+    </div>
+    
+    <div class="test-box" id="authTest" style="display:none;">
+        <h3>Authentication Test</h3>
+        <div id="authResult"></div>
+    </div>
+    
+    <div class="test-box info">
+        <h3>Browser Info</h3>
+        <p><strong>URL:</strong> <span id="currentUrl"></span></p>
+        <p><strong>User Agent:</strong> <span id="userAgent"></span></p>
+        <p><strong>Cookies Enabled:</strong> <span id="cookiesEnabled"></span></p>
+        <p><strong>Local Storage:</strong> <span id="localStorageWorks"></span></p>
+    </div>
+    
+    <div class="test-box" id="tokenBox" style="display:none;">
+        <h3>Stored Token</h3>
+        <pre id="tokenInfo"></pre>
+        <button onclick="clearToken()">Clear Token</button>
+    </div>
+    
+    <script>
+        const API_BASE = window.location.origin;
+        
+        // Test server
+        async function testServer() {
+            try {
+                const response = await fetch(`${API_BASE}/health`);
+                const data = await response.json();
+                document.getElementById('serverStatus').innerHTML = `
+                    <strong style="color: #28a745;">✅ Server is running!</strong><br>
+                    Status: ${data.status}<br>
+                    Service: ${data.service}<br>
+                    Version: ${data.version}
+                `;
+            } catch (error) {
+                document.getElementById('serverStatus').innerHTML = `
+                    <strong style="color: #dc3545;">❌ Server not responding</strong><br>
+                    Error: ${error.message}
+                `;
+            }
+        }
+        
+        // Test authentication
+        async function testAuth() {
+            const box = document.getElementById('authTest');
+            const result = document.getElementById('authResult');
+            box.style.display = 'block';
+            
+            const token = localStorage.getItem('token');
+            
+            if (!token) {
+                result.innerHTML = '<p style="color: #dc3545;">❌ No token found. Please login first.</p>';
+                return;
+            }
+            
+            try {
+                const response = await fetch(`${API_BASE}/auth/me`, {
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+                
+                if (response.ok) {
+                    const user = await response.json();
+                    result.innerHTML = `
+                        <p style="color: #28a745;"><strong>✅ Authentication Working!</strong></p>
+                        <p><strong>Username:</strong> ${user.username}</p>
+                        <p><strong>Email:</strong> ${user.email}</p>
+                        <p><strong>Role:</strong> ${user.role}</p>
+                        <p><strong>Full Name:</strong> ${user.full_name || 'Not set'}</p>
+                    `;
+                } else {
+                    result.innerHTML = `<p style="color: #dc3545;">❌ Token invalid or expired (${response.status})</p>`;
+                }
+            } catch (error) {
+                result.innerHTML = `<p style="color: #dc3545;">❌ Error: ${error.message}</p>`;
+            }
+        }
+        
+        // Clear all cache
+        function clearAllCache() {
+            localStorage.clear();
+            sessionStorage.clear();
+            alert('✅ All cache cleared!\n\nRefreshing page...');
+            setTimeout(() => location.reload(), 1000);
+        }
+        
+        // Clear token
+        function clearToken() {
+            localStorage.removeItem('token');
+            localStorage.removeItem('user');
+            sessionStorage.clear();
+            alert('✅ Token cleared! Please login again.');
+            location.reload();
+        }
+        
+        // Display browser info
+        document.getElementById('currentUrl').textContent = window.location.href;
+        document.getElementById('userAgent').textContent = navigator.userAgent;
+        document.getElementById('cookiesEnabled').textContent = navigator.cookieEnabled ? 'Yes' : 'No';
+        
+        try {
+            localStorage.setItem('test', 'test');
+            localStorage.removeItem('test');
+            document.getElementById('localStorageWorks').textContent = 'Yes ✅';
+        } catch (e) {
+            document.getElementById('localStorageWorks').textContent = 'No ❌';
+        }
+        
+        // Check token
+        const token = localStorage.getItem('token');
+        if (token) {
+            document.getElementById('tokenBox').style.display = 'block';
+            document.getElementById('tokenInfo').textContent = `Token exists: ${token.substring(0, 50)}...`;
+        }
+        
+        // Run server test
+        testServer();
+    </script>
+</body>
+</html>
+

@@ -218,21 +218,7 @@ async function loadUserData() {
         document.getElementById('userName').textContent = currentUser.full_name || `Dr. ${currentUser.username}`;
         document.getElementById('userRole').textContent = currentUser.role || 'Clinician';
         
-        // Set avatar based on user - use real doctor images
-        const avatarMap = {
-            'admin': '/images/Dr_Angie.webp',
-            'clinician': '/images/Dr_Ishimwe.webp',
-            'specialist': '/images/Dr_Mugisha.webp',
-            'default': '/images/Dr_Tatenda.webp'
-        };
-        
-        let avatarSrc = avatarMap[currentUser.role] || avatarMap.default;
-        
-        if (currentUser.profile_photo) {
-            avatarSrc = currentUser.profile_photo;
-        }
-        
-        document.querySelector('.user-avatar').src = avatarSrc;
+        // User avatar is now an icon - no need to set image source
         
         // Show admin nav if admin
         if (currentUser.role === 'admin') {
@@ -1218,7 +1204,11 @@ function displaySpecialists() {
     
     container.innerHTML = specialists.map(specialist => `
         <div class="specialist-card">
-            <img src="${specialist.profile_photo || '/images/Dr_Mugisha.webp'}" alt="${specialist.full_name || specialist.username}">
+            <div class="specialist-avatar-icon">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor">
+                    <path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/>
+                </svg>
+            </div>
             <h3>${specialist.full_name || specialist.username}</h3>
             <p class="specialty">${specialist.specialty || 'Gastroenterologist'}</p>
             <p class="institution">${specialist.institution || 'Medical Center'}</p>
@@ -1675,19 +1665,7 @@ async function loadProfilePage() {
     document.getElementById('profileInstitution').textContent = currentUser.institution || 'Not set';
     document.getElementById('profileSpecialty').textContent = currentUser.specialty || 'Not set';
     
-    const avatarMap = {
-        'admin': '/images/Dr_Angie.webp',
-        'clinician': '/images/Dr_Ishimwe.webp',
-        'specialist': '/images/Dr_Mugisha.webp',
-        'default': '/images/Dr_Tatenda.webp'
-    };
-    
-    let avatarSrc = avatarMap[currentUser.role] || avatarMap.default;
-    if (currentUser.profile_photo) {
-        avatarSrc = currentUser.profile_photo;
-    }
-    
-    document.getElementById('profileAvatar').src = avatarSrc;
+    // Profile avatar is now an icon - no need to set image source
 }
 
 // ========================================

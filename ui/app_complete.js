@@ -209,21 +209,7 @@ async function loadUserData() {
         document.getElementById('userName').textContent = currentUser.full_name || `Dr. ${currentUser.username}`;
         document.getElementById('userRole').textContent = currentUser.role || 'Clinician';
         
-        // Set avatar based on user - use real doctor images
-        const avatarMap = {
-            'admin': '/images/Dr_Angie.webp',
-            'clinician': '/images/Dr_Ishimwe.webp',
-            'specialist': '/images/Dr_Mugisha.webp',
-            'default': '/images/Dr_Tatenda.webp'
-        };
-        
-        let avatarSrc = avatarMap[currentUser.role] || avatarMap.default;
-        
-        if (currentUser.profile_photo) {
-            avatarSrc = currentUser.profile_photo;
-        }
-        
-        document.querySelector('.user-avatar').src = avatarSrc;
+        // User avatar is now an icon - no need to set image source
         
         // Show admin nav if admin
         if (currentUser.role === 'admin') {
@@ -865,19 +851,7 @@ async function loadProfilePage() {
     document.getElementById('profileInstitution').textContent = currentUser.institution || 'Not set';
     document.getElementById('profileSpecialty').textContent = currentUser.specialty || 'Not set';
     
-    const avatarMap = {
-        'admin': '/images/Dr_Angie.webp',
-        'clinician': '/images/Dr_Ishimwe.webp',
-        'specialist': '/images/Dr_Mugisha.webp',
-        'default': '/images/Dr_Tatenda.webp'
-    };
-    
-    let avatarSrc = avatarMap[currentUser.role] || avatarMap.default;
-    if (currentUser.profile_photo) {
-        avatarSrc = currentUser.profile_photo;
-    }
-    
-    document.getElementById('profileAvatar').src = avatarSrc;
+    // Profile avatar is now an icon - no need to set image source
 }
 
 // ========================================
