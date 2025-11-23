@@ -894,8 +894,24 @@ async function loadCaseHistory() {
                 <td>${caseItem.case_type}</td>
                 <td>${formatResult(caseItem)}</td>
                 <td>
-                    <button class="btn-sm btn-secondary" onclick="viewCase(${caseItem.id})">View</button>
-                    <button class="btn-sm btn-danger" onclick="deleteCase(${caseItem.id})">Delete</button>
+                    <button class="btn-sm btn-secondary" onclick="viewCase(${caseItem.id})" style="background: #007bff; color: white; margin-right: 5px;">
+                        <i class="fas fa-eye"></i> View
+                    </button>
+                    ${caseItem.signed_at ? `
+                        <button class="btn-sm btn-success" onclick="generatePDF(${caseItem.id})" style="background: #28a745; color: white; margin-right: 5px;">
+                            <i class="fas fa-file-pdf"></i> PDF
+                        </button>
+                        <span class="badge" style="background: #10b981; color: white; padding: 6px 12px; border-radius: 6px; font-size: 12px;">
+                            <i class="fas fa-check-circle"></i> Signed
+                        </span>
+                    ` : `
+                        <button class="btn-sm btn-primary" onclick="openSignatureModal(${caseItem.id})" style="background: #6366f1; color: white; margin-right: 5px;">
+                            <i class="fas fa-signature"></i> Sign
+                        </button>
+                    `}
+                    <button class="btn-sm btn-danger" onclick="deleteCase(${caseItem.id})" style="background: #dc3545; color: white; margin-left: 5px;">
+                        <i class="fas fa-trash-alt"></i> Delete
+                    </button>
                 </td>
             </tr>
         `).join('');
@@ -1826,4 +1842,209 @@ async function apiRequest(endpoint, options = {}) {
     }
     
     return response.json();
+}
+
+// ========================================
+// SIGNATURE MODULE
+// ========================================
+
+let signatureCanvas = null;
+let signatureCtx = null;
+let isDrawing = false;
+let currentSignCaseId = null;
+
+function openSignatureModal(caseId) {
+    currentSignCaseId = caseId;
+    const modal = document.getElementById('signatureModal');
+    modal.style.display = 'flex';
+    
+    // Initialize canvas
+    setTimeout(() => {
+        signatureCanvas = document.getElementById('signatureCanvas');
+        signatureCtx = signatureCanvas.getContext('2d');
+        
+        // Set drawing style
+        signatureCtx.strokeStyle = '#1e293b';
+        signatureCtx.lineWidth = 2;
+        signatureCtx.lineCap = 'round';
+        signatureCtx.lineJoin = 'round';
+        
+        // Clear canvas
+        signatureCtx.fillStyle = 'white';
+        signatureCtx.fillRect(0, 0, signatureCanvas.width, signatureCanvas.height);
+        
+        // Mouse events
+        signatureCanvas.addEventListener('mousedown', startDrawing);
+        signatureCanvas.addEventListener('mousemove', draw);
+        signatureCanvas.addEventListener('mouseup', stopDrawing);
+        signatureCanvas.addEventListener('mouseout', stopDrawing);
+        
+        // Touch events
+        signatureCanvas.addEventListener('touchstart', handleTouchStart);
+        signatureCanvas.addEventListener('touchmove', handleTouchMove);
+        signatureCanvas.addEventListener('touchend', stopDrawing);
+    }, 100);
+}
+
+function closeSignatureModal() {
+    const modal = document.getElementById('signatureModal');
+    modal.style.display = 'none';
+    currentSignCaseId = null;
+}
+
+function startDrawing(e) {
+    isDrawing = true;
+    const rect = signatureCanvas.getBoundingClientRect();
+    const scaleX = signatureCanvas.width / rect.width;
+    const scaleY = signatureCanvas.height / rect.height;
+    
+    signatureCtx.beginPath();
+    signatureCtx.moveTo(
+        (e.clientX - rect.left) * scaleX,
+        (e.clientY - rect.top) * scaleY
+    );
+}
+
+function draw(e) {
+    if (!isDrawing) return;
+    
+    const rect = signatureCanvas.getBoundingClientRect();
+    const scaleX = signatureCanvas.width / rect.width;
+    const scaleY = signatureCanvas.height / rect.height;
+    
+    signatureCtx.lineTo(
+        (e.clientX - rect.left) * scaleX,
+        (e.clientY - rect.top) * scaleY
+    );
+    signatureCtx.stroke();
+}
+
+function stopDrawing() {
+    if (isDrawing) {
+        signatureCtx.closePath();
+        isDrawing = false;
+    }
+}
+
+function handleTouchStart(e) {
+    e.preventDefault();
+    const touch = e.touches[0];
+    const mouseEvent = new MouseEvent('mousedown', {
+        clientX: touch.clientX,
+        clientY: touch.clientY
+    });
+    signatureCanvas.dispatchEvent(mouseEvent);
+}
+
+function handleTouchMove(e) {
+    e.preventDefault();
+    const touch = e.touches[0];
+    const mouseEvent = new MouseEvent('mousemove', {
+        clientX: touch.clientX,
+        clientY: touch.clientY
+    });
+    signatureCanvas.dispatchEvent(mouseEvent);
+}
+
+function clearSignature() {
+    if (signatureCtx && signatureCanvas) {
+        signatureCtx.fillStyle = 'white';
+        signatureCtx.fillRect(0, 0, signatureCanvas.width, signatureCanvas.height);
+    }
+}
+
+async function saveSignature() {
+    if (!currentSignCaseId) {
+        showToast('No case selected', 'error');
+        return;
+    }
+    
+    // Check if signature is empty
+    const imageData = signatureCtx.getImageData(0, 0, signatureCanvas.width, signatureCanvas.height);
+    const data = imageData.data;
+    let isEmpty = true;
+    
+    for (let i = 0; i < data.length; i += 4) {
+        if (data[i] < 250 || data[i+1] < 250 || data[i+2] < 250) {
+            isEmpty = false;
+            break;
+        }
+    }
+    
+    if (isEmpty) {
+        showToast('Please draw your signature before saving', 'error');
+        return;
+    }
+    
+    // Convert to base64
+    const signatureData = signatureCanvas.toDataURL('image/png');
+    
+    try {
+        showToast('Signing document...', 'info');
+        
+        const response = await fetch(`${API_BASE}/documents/${currentSignCaseId}/sign`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${authToken}`
+            },
+            body: JSON.stringify({ signature_data: signatureData })
+        });
+        
+        if (!response.ok) {
+            const error = await response.json();
+            throw new Error(error.detail || 'Failed to sign');
+        }
+        
+        showToast('✅ Document signed successfully! You can now generate PDF.', 'success');
+        closeSignatureModal();
+        
+        // Reload case history
+        loadCaseHistory();
+        
+    } catch (error) {
+        console.error('Error signing:', error);
+        showToast('Error: ' + error.message, 'error');
+    }
+}
+
+async function generatePDF(caseId) {
+    try {
+        showToast('Generating PDF...', 'info');
+        
+        const response = await fetch(`${API_BASE}/documents/${caseId}/generate-pdf`, {
+            method: 'GET',
+            headers: {
+                'Authorization': `Bearer ${authToken}`
+            }
+        });
+        
+        if (!response.ok) {
+            const error = await response.json();
+            if (response.status === 400 && error.detail?.includes('signed')) {
+                showToast('⚠️ Case must be signed first. Click the Sign button.', 'error');
+                return;
+            }
+            throw new Error(error.detail || 'Failed to generate PDF');
+        }
+        
+        // Get the PDF blob
+        const blob = await response.blob();
+        
+        // Download PDF
+        const url = window.URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `case_${caseId}_report.pdf`;
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        window.URL.revokeObjectURL(url);
+        
+        showToast('✅ PDF downloaded successfully!', 'success');
+        
+    } catch (error) {
+        console.error('Error generating PDF:', error);
+        showToast('Error: ' + error.message, 'error');
+    }
 }

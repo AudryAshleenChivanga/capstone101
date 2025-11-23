@@ -1025,8 +1025,15 @@ function displayStagingResults(result) {
 async function loadCaseHistory() {
     try {
         const response = await apiRequest('/cases?page=1&page_size=50');
-        // API returns { total, page, page_size, cases }
-        displayCaseHistory(response.cases || []);
+        
+        // Use case_management.js renderCaseTable if available (has full CRUD with Sign/PDF)
+        if (typeof renderCaseTable === 'function') {
+            console.log('[Case History] Using renderCaseTable with CRUD buttons');
+            renderCaseTable(response.cases || []);
+        } else {
+            console.log('[Case History] Using fallback display');
+            displayCaseHistory(response.cases || []);
+        }
     } catch (error) {
         showToast('Error loading case history: ' + error.message, 'error');
         console.error('Case history error:', error);
@@ -1034,8 +1041,11 @@ async function loadCaseHistory() {
 }
 
 function displayCaseHistory(cases) {
-    const tbody = document.getElementById('casesTableBody');
-    if (!tbody) return;
+    const tbody = document.getElementById('caseTableBody');
+    if (!tbody) {
+        console.error('[Case History] Table not found. Looking for ID: caseTableBody');
+        return;
+    }
     
     if (!cases || cases.length === 0) {
         tbody.innerHTML = '<tr><td colspan="5">No cases found</td></tr>';
@@ -1636,5 +1646,225 @@ function initializeCurrentPage(pageId) {
         case 'admin':
             loadAdminStats();
             break;
+    }
+}
+
+// ========================================
+// SIGNATURE MODULE FOR CASE SIGNING
+// ========================================
+
+let signatureCanvas = null;
+let signatureCtx = null;
+let isDrawing = false;
+let currentSignCaseId = null;
+
+function openSignatureModal(caseId) {
+    currentSignCaseId = caseId;
+    const modal = document.getElementById('signatureModal');
+    if (!modal) {
+        console.error('Signature modal not found');
+        return;
+    }
+    modal.style.display = 'flex';
+    
+    // Initialize canvas after modal is visible
+    setTimeout(() => {
+        signatureCanvas = document.getElementById('signatureCanvas');
+        if (!signatureCanvas) {
+            console.error('Signature canvas not found');
+            return;
+        }
+        signatureCtx = signatureCanvas.getContext('2d');
+        
+        // Set drawing style
+        signatureCtx.strokeStyle = '#1e293b';
+        signatureCtx.lineWidth = 2;
+        signatureCtx.lineCap = 'round';
+        signatureCtx.lineJoin = 'round';
+        
+        // Clear canvas
+        signatureCtx.fillStyle = 'white';
+        signatureCtx.fillRect(0, 0, signatureCanvas.width, signatureCanvas.height);
+        
+        // Mouse events
+        signatureCanvas.addEventListener('mousedown', startDrawing);
+        signatureCanvas.addEventListener('mousemove', draw);
+        signatureCanvas.addEventListener('mouseup', stopDrawing);
+        signatureCanvas.addEventListener('mouseout', stopDrawing);
+        
+        // Touch events (mobile)
+        signatureCanvas.addEventListener('touchstart', handleTouchStart, { passive: false });
+        signatureCanvas.addEventListener('touchmove', handleTouchMove, { passive: false });
+        signatureCanvas.addEventListener('touchend', stopDrawing);
+    }, 100);
+}
+
+function closeSignatureModal() {
+    const modal = document.getElementById('signatureModal');
+    if (modal) modal.style.display = 'none';
+    currentSignCaseId = null;
+}
+
+function startDrawing(e) {
+    isDrawing = true;
+    const rect = signatureCanvas.getBoundingClientRect();
+    const scaleX = signatureCanvas.width / rect.width;
+    const scaleY = signatureCanvas.height / rect.height;
+    
+    signatureCtx.beginPath();
+    signatureCtx.moveTo(
+        (e.clientX - rect.left) * scaleX,
+        (e.clientY - rect.top) * scaleY
+    );
+}
+
+function draw(e) {
+    if (!isDrawing) return;
+    
+    const rect = signatureCanvas.getBoundingClientRect();
+    const scaleX = signatureCanvas.width / rect.width;
+    const scaleY = signatureCanvas.height / rect.height;
+    
+    signatureCtx.lineTo(
+        (e.clientX - rect.left) * scaleX,
+        (e.clientY - rect.top) * scaleY
+    );
+    signatureCtx.stroke();
+}
+
+function stopDrawing() {
+    if (isDrawing) {
+        signatureCtx.closePath();
+        isDrawing = false;
+    }
+}
+
+function handleTouchStart(e) {
+    e.preventDefault();
+    const touch = e.touches[0];
+    const mouseEvent = new MouseEvent('mousedown', {
+        clientX: touch.clientX,
+        clientY: touch.clientY
+    });
+    signatureCanvas.dispatchEvent(mouseEvent);
+}
+
+function handleTouchMove(e) {
+    e.preventDefault();
+    const touch = e.touches[0];
+    const mouseEvent = new MouseEvent('mousemove', {
+        clientX: touch.clientX,
+        clientY: touch.clientY
+    });
+    signatureCanvas.dispatchEvent(mouseEvent);
+}
+
+function clearSignature() {
+    if (signatureCtx && signatureCanvas) {
+        signatureCtx.fillStyle = 'white';
+        signatureCtx.fillRect(0, 0, signatureCanvas.width, signatureCanvas.height);
+    }
+}
+
+async function saveSignature() {
+    if (!currentSignCaseId) {
+        showToast('No case selected', 'error');
+        return;
+    }
+    
+    if (!signatureCanvas) {
+        showToast('Signature canvas not initialized', 'error');
+        return;
+    }
+    
+    // Check if signature is empty
+    const imageData = signatureCtx.getImageData(0, 0, signatureCanvas.width, signatureCanvas.height);
+    const data = imageData.data;
+    let isEmpty = true;
+    
+    for (let i = 0; i < data.length; i += 4) {
+        if (data[i] < 250 || data[i+1] < 250 || data[i+2] < 250) {
+            isEmpty = false;
+            break;
+        }
+    }
+    
+    if (isEmpty) {
+        showToast('Please draw your signature before saving', 'error');
+        return;
+    }
+    
+    // Convert to base64
+    const signatureData = signatureCanvas.toDataURL('image/png');
+    
+    try {
+        showToast('Signing document...', 'info');
+        
+        const response = await fetch(`${API_BASE}/documents/${currentSignCaseId}/sign`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${authToken}`
+            },
+            body: JSON.stringify({ signature_data: signatureData })
+        });
+        
+        if (!response.ok) {
+            const error = await response.json();
+            throw new Error(error.detail || 'Failed to sign document');
+        }
+        
+        showToast('Document signed successfully! You can now generate PDF.', 'success');
+        closeSignatureModal();
+        
+        // Reload case history
+        if (typeof loadCaseHistory === 'function') {
+            loadCaseHistory();
+        }
+        
+    } catch (error) {
+        console.error('Error signing:', error);
+        showToast('Error: ' + error.message, 'error');
+    }
+}
+
+async function generatePDF(caseId) {
+    try {
+        showToast('Generating PDF...', 'info');
+        
+        const response = await fetch(`${API_BASE}/documents/${caseId}/generate-pdf`, {
+            method: 'GET',
+            headers: {
+                'Authorization': `Bearer ${authToken}`
+            }
+        });
+        
+        if (!response.ok) {
+            const error = await response.json();
+            if (response.status === 400 && error.detail?.includes('signed')) {
+                showToast('Case must be signed first. Click the Sign button.', 'error');
+                return;
+            }
+            throw new Error(error.detail || 'Failed to generate PDF');
+        }
+        
+        // Get the PDF blob
+        const blob = await response.blob();
+        
+        // Download PDF
+        const url = window.URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `case_${caseId}_report.pdf`;
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        window.URL.revokeObjectURL(url);
+        
+        showToast('PDF downloaded successfully!', 'success');
+        
+    } catch (error) {
+        console.error('Error generating PDF:', error);
+        showToast('Error: ' + error.message, 'error');
     }
 }
