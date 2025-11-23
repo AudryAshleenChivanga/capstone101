@@ -275,7 +275,7 @@ function showCaseDetailModal(caseData) {
     modal.innerHTML = `
         <div style="background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%); border-radius: 16px; max-width: 800px; width: 100%; max-height: 90vh; overflow-y: auto; padding: 30px; box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);">
             <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
-                <h2 style="margin: 0; color: #00d4ff;">📋 Case Details</h2>
+                <h2 style="margin: 0; color: #00d4ff;"><i class="fas fa-clipboard"></i> Case Details</h2>
                 <button onclick="this.closest('div[style*=fixed]').remove()" style="background: rgba(255, 255, 255, 0.1); border: none; color: white; padding: 10px 15px; border-radius: 8px; cursor: pointer; font-size: 1.2rem;">✕</button>
             </div>
             
@@ -555,7 +555,7 @@ async function generateCasePDF(caseId) {
         document.body.removeChild(link);
         window.URL.revokeObjectURL(url);
         
-        showToast('✅ PDF report downloaded successfully!', 'success');
+        showToast('PDF report downloaded successfully!', 'success');
         
     } catch (error) {
         console.error('Error generating PDF:', error);
@@ -604,18 +604,18 @@ function showReportTypeModal() {
         
         modal.innerHTML = `
             <div style="background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%); border-radius: 16px; max-width: 500px; width: 100%; padding: 30px; box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);">
-                <h2 style="margin: 0 0 20px 0; color: #00d4ff;">📊 Generate Report</h2>
+                <h2 style="margin: 0 0 20px 0; color: #00d4ff;"><i class="fas fa-chart-line"></i> Generate Report</h2>
                 <p style="color: rgba(255, 255, 255, 0.8); margin-bottom: 25px;">Choose the type of report you want to generate:</p>
                 
                 <div style="display: flex; flex-direction: column; gap: 15px;">
                     <button onclick="this.closest('div[style*=fixed]').dataset.result='summary'; this.closest('div[style*=fixed]').remove();" 
                         style="padding: 15px 20px; background: linear-gradient(135deg, #667eea, #764ba2); border: none; border-radius: 8px; color: white; font-weight: 600; cursor: pointer; transition: all 0.3s; font-size: 1rem;">
-                        📋 Summary Report (All Cases)
+                        <i class="fas fa-clipboard-list"></i> Summary Report (All Cases)
                     </button>
                     
                     <button onclick="this.closest('div[style*=fixed]').dataset.result='select'; this.closest('div[style*=fixed]').remove();" 
                         style="padding: 15px 20px; background: linear-gradient(135deg, #f093fb, #f5576c); border: none; border-radius: 8px; color: white; font-weight: 600; cursor: pointer; transition: all 0.3s; font-size: 1rem;">
-                        ✅ Select Specific Cases
+                        <i class="fas fa-check-square"></i> Select Specific Cases
                     </button>
                     
                     <button onclick="this.closest('div[style*=fixed]').dataset.result='cancel'; this.closest('div[style*=fixed]').remove();" 
@@ -694,7 +694,7 @@ async function generateSummaryReport() {
         document.body.removeChild(link);
         window.URL.revokeObjectURL(url);
         
-        showToast(`✅ Summary report exported (${cases.length} cases)`, 'success');
+        showToast(`Summary report exported (${cases.length} cases)`, 'success');
         
     } catch (error) {
         console.error('Error generating summary report:', error);
@@ -757,7 +757,7 @@ async function showCaseSelectionModal() {
         modal.innerHTML = `
             <div style="background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%); border-radius: 16px; max-width: 600px; width: 100%; max-height: 80vh; overflow: hidden; display: flex; flex-direction: column; box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);">
                 <div style="padding: 30px 30px 20px 30px; border-bottom: 1px solid rgba(255, 255, 255, 0.1);">
-                    <h2 style="margin: 0; color: #00d4ff;">📄 Select Cases for PDF Export</h2>
+                    <h2 style="margin: 0; color: #00d4ff;"><i class="fas fa-file-pdf"></i> Select Cases for PDF Export</h2>
                     <p style="color: rgba(255, 255, 255, 0.7); margin: 10px 0 0 0;">Select one or more cases to download as PDF reports:</p>
                 </div>
                 
