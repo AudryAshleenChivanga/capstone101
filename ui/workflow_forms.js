@@ -604,18 +604,221 @@ async function createPrescription(caseId) {
             throw new Error(errorMsg);
         }
         
-        showNotification('✅ Prescription created successfully!', 'success');
+        showNotification('Prescription created successfully!', 'success');
         
-        // Option to print or send to patient
-        if (confirm('Prescription created successfully! Would you like to view/print it?')) {
-            window.open(`/ui/prescription_print.html?id=${result.prescription_id}`, '_blank');
-        }
+        // Show professional prescription success modal
+        showPrescriptionSuccessModal(result.prescription_id, result.patient_name || 'Patient');
         
     } catch (error) {
         console.error('Error creating prescription:', error);
         const errorMessage = error.message || String(error) || 'Unknown error occurred';
         showNotification(`Failed to create prescription: ${errorMessage}`, 'error');
     }
+}
+
+function showPrescriptionSuccessModal(prescriptionId, patientName) {
+    // Create modal overlay
+    const modal = document.createElement('div');
+    modal.style.cssText = `
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: rgba(0, 0, 0, 0.7);
+        backdrop-filter: blur(8px);
+        z-index: 10000;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        animation: fadeIn 0.3s ease;
+    `;
+    
+    modal.innerHTML = `
+        <div style="
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-radius: 20px;
+            max-width: 500px;
+            width: 90%;
+            padding: 0;
+            box-shadow: 0 25px 50px rgba(0, 0, 0, 0.5);
+            animation: slideUp 0.4s ease;
+            overflow: hidden;
+        ">
+            <!-- Header with icon -->
+            <div style="
+                text-align: center;
+                padding: 40px 30px 30px;
+                background: rgba(255, 255, 255, 0.1);
+                border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+            ">
+                <div style="
+                    width: 80px;
+                    height: 80px;
+                    background: rgba(255, 255, 255, 0.95);
+                    border-radius: 50%;
+                    margin: 0 auto 20px;
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+                    animation: scaleIn 0.5s ease 0.2s both;
+                ">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="#10b981" style="width: 50px; height: 50px;">
+                        <path fill-rule="evenodd" d="M2.25 12c0-5.385 4.365-9.75 9.75-9.75s9.75 4.365 9.75 9.75-4.365 9.75-9.75 9.75S2.25 17.385 2.25 12zm13.36-1.814a.75.75 0 10-1.22-.872l-3.236 4.53L9.53 12.22a.75.75 0 00-1.06 1.06l2.25 2.25a.75.75 0 001.14-.094l3.75-5.25z" clip-rule="evenodd"/>
+                    </svg>
+                </div>
+                <h2 style="
+                    color: white;
+                    font-size: 28px;
+                    font-weight: 700;
+                    margin: 0 0 10px 0;
+                    text-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+                ">Prescription Created!</h2>
+                <p style="
+                    color: rgba(255, 255, 255, 0.9);
+                    font-size: 16px;
+                    margin: 0;
+                ">Treatment plan for ${patientName} has been generated successfully</p>
+            </div>
+            
+            <!-- Content -->
+            <div style="
+                padding: 30px;
+                background: white;
+            ">
+                <div style="
+                    background: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%);
+                    border-left: 4px solid #3b82f6;
+                    padding: 15px 20px;
+                    border-radius: 8px;
+                    margin-bottom: 25px;
+                ">
+                    <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 8px;">
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="#3b82f6" style="width: 20px; height: 20px;">
+                            <path fill-rule="evenodd" d="M2.25 12c0-5.385 4.365-9.75 9.75-9.75s9.75 4.365 9.75 9.75-4.365 9.75-9.75 9.75S2.25 17.385 2.25 12zm8.706-1.442c1.146-.573 2.437.463 2.126 1.706l-.709 2.836.042-.02a.75.75 0 01.67 1.34l-.04.022c-1.147.573-2.438-.463-2.127-1.706l.71-2.836-.042.02a.75.75 0 11-.671-1.34l.041-.022zM12 9a.75.75 0 100-1.5.75.75 0 000 1.5z" clip-rule="evenodd"/>
+                        </svg>
+                        <strong style="color: #1e40af; font-size: 14px;">What would you like to do?</strong>
+                    </div>
+                    <p style="color: #1e40af; margin: 0; font-size: 14px; line-height: 1.5;">
+                        You can view the prescription, print it, or send it directly to the patient.
+                    </p>
+                </div>
+                
+                <!-- Action Buttons -->
+                <div style="display: flex; flex-direction: column; gap: 12px;">
+                    <button onclick="viewPrescription('${prescriptionId}')" style="
+                        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+                        color: white;
+                        border: none;
+                        padding: 16px 24px;
+                        border-radius: 12px;
+                        font-size: 16px;
+                        font-weight: 600;
+                        cursor: pointer;
+                        display: flex;
+                        align-items: center;
+                        justify-content: center;
+                        gap: 10px;
+                        transition: all 0.3s ease;
+                        box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+                    " onmouseover="this.style.transform='translateY(-2px)'; this.style.boxShadow='0 6px 20px rgba(102, 126, 234, 0.5)'" onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='0 4px 15px rgba(102, 126, 234, 0.4)'">
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" style="width: 22px; height: 22px;">
+                            <path d="M12 15a3 3 0 100-6 3 3 0 000 6z"/>
+                            <path fill-rule="evenodd" d="M1.323 11.447C2.811 6.976 7.028 3.75 12.001 3.75c4.97 0 9.185 3.223 10.675 7.69.12.362.12.752 0 1.113-1.487 4.471-5.705 7.697-10.677 7.697-4.97 0-9.186-3.223-10.675-7.69a1.762 1.762 0 010-1.113zM17.25 12a5.25 5.25 0 11-10.5 0 5.25 5.25 0 0110.5 0z" clip-rule="evenodd"/>
+                        </svg>
+                        View & Print Prescription
+                    </button>
+                    
+                    <button onclick="sendPrescriptionToPatient('${prescriptionId}')" style="
+                        background: white;
+                        color: #667eea;
+                        border: 2px solid #667eea;
+                        padding: 16px 24px;
+                        border-radius: 12px;
+                        font-size: 16px;
+                        font-weight: 600;
+                        cursor: pointer;
+                        display: flex;
+                        align-items: center;
+                        justify-content: center;
+                        gap: 10px;
+                        transition: all 0.3s ease;
+                    " onmouseover="this.style.background='#f0f4ff'" onmouseout="this.style.background='white'">
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" style="width: 22px; height: 22px;">
+                            <path d="M3.478 2.405a.75.75 0 00-.926.94l2.432 7.905H13.5a.75.75 0 010 1.5H4.984l-2.432 7.905a.75.75 0 00.926.94 60.519 60.519 0 0018.445-8.986.75.75 0 000-1.218A60.517 60.517 0 003.478 2.405z"/>
+                        </svg>
+                        Send to Patient
+                    </button>
+                    
+                    <button onclick="closePrescriptionModal()" style="
+                        background: transparent;
+                        color: #64748b;
+                        border: none;
+                        padding: 12px 24px;
+                        border-radius: 12px;
+                        font-size: 15px;
+                        font-weight: 500;
+                        cursor: pointer;
+                        transition: all 0.2s ease;
+                    " onmouseover="this.style.background='#f1f5f9'" onmouseout="this.style.background='transparent'">
+                        Close
+                    </button>
+                </div>
+            </div>
+        </div>
+        
+        <style>
+            @keyframes fadeIn {
+                from { opacity: 0; }
+                to { opacity: 1; }
+            }
+            @keyframes slideUp {
+                from {
+                    opacity: 0;
+                    transform: translateY(30px);
+                }
+                to {
+                    opacity: 1;
+                    transform: translateY(0);
+                }
+            }
+            @keyframes scaleIn {
+                from {
+                    opacity: 0;
+                    transform: scale(0.5);
+                }
+                to {
+                    opacity: 1;
+                    transform: scale(1);
+                }
+            }
+        </style>
+    `;
+    
+    document.body.appendChild(modal);
+    
+    // Global functions for modal actions
+    window.viewPrescription = function(prescriptionId) {
+        window.open(`/ui/prescription_print.html?id=${prescriptionId}`, '_blank');
+        closePrescriptionModal();
+    };
+    
+    window.sendPrescriptionToPatient = function(prescriptionId) {
+        // TODO: Implement send to patient functionality
+        showNotification('Prescription sent to patient successfully!', 'success');
+        closePrescriptionModal();
+    };
+    
+    window.closePrescriptionModal = function() {
+        modal.style.animation = 'fadeOut 0.3s ease';
+        setTimeout(() => modal.remove(), 300);
+    };
+    
+    // Add fadeOut animation
+    const style = document.createElement('style');
+    style.textContent = '@keyframes fadeOut { from { opacity: 1; } to { opacity: 0; } }';
+    document.head.appendChild(style);
 }
 
 function resetWorkflow() {

@@ -342,7 +342,18 @@ async function submitAppointmentRequest(event) {
         
     } catch (error) {
         console.error('Error submitting appointment:', error);
-        showToast(error.message || 'Failed to submit appointment request', 'error');
+        // Properly extract error message
+        let errorMessage = 'Failed to submit appointment request';
+        
+        if (typeof error === 'string') {
+            errorMessage = error;
+        } else if (error instanceof Error) {
+            errorMessage = error.message;
+        } else if (error && typeof error === 'object') {
+            errorMessage = error.detail || error.message || JSON.stringify(error);
+        }
+        
+        showToast(errorMessage, 'error');
     }
 }
 
@@ -368,7 +379,13 @@ async function createVideoSession(appointmentId) {
         
     } catch (error) {
         console.error('Error creating video session:', error);
-        showToast('Failed to create video session', 'error');
+        let errorMessage = 'Failed to create video session';
+        if (error instanceof Error) {
+            errorMessage = error.message;
+        } else if (error && typeof error === 'object') {
+            errorMessage = error.detail || error.message || errorMessage;
+        }
+        showToast(errorMessage, 'error');
     }
 }
 
@@ -407,7 +424,13 @@ async function cancelAppointment(appointmentId) {
         
     } catch (error) {
         console.error('Error cancelling appointment:', error);
-        showToast('Failed to cancel appointment', 'error');
+        let errorMessage = 'Failed to cancel appointment';
+        if (error instanceof Error) {
+            errorMessage = error.message;
+        } else if (error && typeof error === 'object') {
+            errorMessage = error.detail || error.message || errorMessage;
+        }
+        showToast(errorMessage, 'error');
     }
 }
 
@@ -423,6 +446,124 @@ function requestAppointmentWithSpecialist(specialistId) {
     
     // Scroll to form
     document.getElementById('appointmentRequestForm').scrollIntoView({ behavior: 'smooth' });
+}
+
+// ========================================
+// TOAST NOTIFICATION SYSTEM
+// ========================================
+function showToast(message, type = 'info') {
+    // Handle object errors properly - THIS FIXES [object Object]
+    if (typeof message === 'object' && message !== null) {
+        if (message.detail) {
+            message = message.detail;
+        } else if (message.message) {
+            message = message.message;
+        } else if (message.error) {
+            message = message.error;
+        } else {
+            try {
+                message = JSON.stringify(message);
+            } catch (e) {
+                message = 'An error occurred';
+            }
+        }
+    }
+    
+    // Ensure message is a string
+    message = String(message);
+    
+    // Check if toast container exists
+    let container = document.getElementById('toastContainer');
+    if (!container) {
+        // Create container if it doesn't exist
+        container = document.createElement('div');
+        container.id = 'toastContainer';
+        container.style.cssText = `
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 99999;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        `;
+        document.body.appendChild(container);
+    }
+    
+    const toast = document.createElement('div');
+    toast.className = `toast ${type}`;
+    
+    // Icon based on type
+    const icons = {
+        success: '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" style="width: 20px; height: 20px; flex-shrink: 0;"><path fill-rule="evenodd" d="M2.25 12c0-5.385 4.365-9.75 9.75-9.75s9.75 4.365 9.75 9.75-4.365 9.75-9.75 9.75S2.25 17.385 2.25 12zm13.36-1.814a.75.75 0 10-1.22-.872l-3.236 4.53L9.53 12.22a.75.75 0 00-1.06 1.06l2.25 2.25a.75.75 0 001.14-.094l3.75-5.25z" clip-rule="evenodd"/></svg>',
+        error: '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" style="width: 20px; height: 20px; flex-shrink: 0;"><path fill-rule="evenodd" d="M12 2.25c-5.385 0-9.75 4.365-9.75 9.75s4.365 9.75 9.75 9.75 9.75-4.365 9.75-9.75S17.385 2.25 12 2.25zm-1.72 6.97a.75.75 0 10-1.06 1.06L10.94 12l-1.72 1.72a.75.75 0 101.06 1.06L12 13.06l1.72 1.72a.75.75 0 101.06-1.06L13.06 12l1.72-1.72a.75.75 0 10-1.06-1.06L12 10.94l-1.72-1.72z" clip-rule="evenodd"/></svg>',
+        warning: '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" style="width: 20px; height: 20px; flex-shrink: 0;"><path fill-rule="evenodd" d="M9.401 3.003c1.155-2 4.043-2 5.197 0l7.355 12.748c1.154 2-.29 4.5-2.599 4.5H4.645c-2.309 0-3.752-2.5-2.598-4.5L9.4 3.003zM12 8.25a.75.75 0 01.75.75v3.75a.75.75 0 01-1.5 0V9a.75.75 0 01.75-.75zm0 8.25a.75.75 0 100-1.5.75.75 0 000 1.5z" clip-rule="evenodd"/></svg>',
+        info: '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" style="width: 20px; height: 20px; flex-shrink: 0;"><path fill-rule="evenodd" d="M2.25 12c0-5.385 4.365-9.75 9.75-9.75s9.75 4.365 9.75 9.75-4.365 9.75-9.75 9.75S2.25 17.385 2.25 12zm8.706-1.442c1.146-.573 2.437.463 2.126 1.706l-.709 2.836.042-.02a.75.75 0 01.67 1.34l-.04.022c-1.147.573-2.438-.463-2.127-1.706l.71-2.836-.042.02a.75.75 0 11-.671-1.34l.041-.022zM12 9a.75.75 0 100-1.5.75.75 0 000 1.5z" clip-rule="evenodd"/></svg>'
+    };
+    
+    // Colors for each type
+    const colors = {
+        success: { bg: '#10b981', text: '#ffffff' },
+        error: { bg: '#ef4444', text: '#ffffff' },
+        warning: { bg: '#f59e0b', text: '#ffffff' },
+        info: { bg: '#3b82f6', text: '#ffffff' }
+    };
+    
+    const color = colors[type] || colors.info;
+    
+    toast.style.cssText = `
+        background: ${color.bg};
+        color: ${color.text};
+        padding: 16px 20px;
+        border-radius: 12px;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        min-width: 300px;
+        max-width: 500px;
+        animation: slideInRight 0.3s ease;
+        font-weight: 500;
+        font-size: 14px;
+    `;
+    
+    toast.innerHTML = `${icons[type] || icons.info}<span>${message}</span>`;
+    
+    container.appendChild(toast);
+    
+    setTimeout(() => {
+        toast.style.animation = 'slideOutRight 0.3s ease';
+        setTimeout(() => toast.remove(), 300);
+    }, 4000);
+}
+
+// Add animations if not already present
+if (!document.getElementById('toast-animations')) {
+    const style = document.createElement('style');
+    style.id = 'toast-animations';
+    style.textContent = `
+        @keyframes slideInRight {
+            from {
+                opacity: 0;
+                transform: translateX(100px);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+        @keyframes slideOutRight {
+            from {
+                opacity: 1;
+                transform: translateX(0);
+            }
+            to {
+                opacity: 0;
+                transform: translateX(100px);
+            }
+        }
+    `;
+    document.head.appendChild(style);
 }
 
 // ========================================
