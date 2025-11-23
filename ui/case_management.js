@@ -109,28 +109,28 @@ function renderCaseTable(cases) {
                 <td style="padding: 15px;">${riskBadge}</td>
                 <td style="padding: 15px; font-weight: 600;">${result}</td>
                 <td style="padding: 15px; font-size: 0.9rem; font-weight: 500;">${caseItem.clinician_name || 'Unknown'}</td>
-                <td style="padding: 15px; text-align: center;">
-                    <div style="display: flex; gap: 8px; justify-content: center; flex-wrap: wrap;">
-                        <button onclick="viewCaseDetail(${caseItem.id})" title="View Details" style="padding: 8px 12px; background: linear-gradient(135deg, #007bff, #0056b3); color: white; border: none; border-radius: 6px; cursor: pointer; font-size: 14px; display: inline-flex; align-items: center; gap: 6px;">
+                <td style="padding: 15px; text-align: center; min-width: 350px;">
+                    <div style="display: flex; gap: 6px; justify-content: center; flex-wrap: nowrap; align-items: center;">
+                        <button onclick="viewCaseDetail(${caseItem.id})" title="View Details" style="padding: 6px 10px; background: linear-gradient(135deg, #007bff, #0056b3); color: white; border: none; border-radius: 6px; cursor: pointer; font-size: 13px; display: inline-flex; align-items: center; gap: 4px; white-space: nowrap;">
                             <i class="fas fa-eye"></i> View
                         </button>
                         ${caseItem.signed_at ? `
-                            <button onclick="generateCasePDF(${caseItem.id})" title="Download PDF" style="padding: 8px 12px; background: linear-gradient(135deg, #28a745, #218838); color: white; border: none; border-radius: 6px; cursor: pointer; font-size: 14px; display: inline-flex; align-items: center; gap: 6px;">
+                            <button onclick="generateCasePDF(${caseItem.id})" title="Download PDF" style="padding: 6px 10px; background: linear-gradient(135deg, #28a745, #218838); color: white; border: none; border-radius: 6px; cursor: pointer; font-size: 13px; display: inline-flex; align-items: center; gap: 4px; white-space: nowrap;">
                                 <i class="fas fa-file-pdf"></i> PDF
                             </button>
-                            <span style="padding: 8px 12px; background: linear-gradient(135deg, #10b981, #059669); color: white; border-radius: 6px; font-size: 14px; display: inline-flex; align-items: center; gap: 6px;">
+                            <span style="padding: 6px 10px; background: linear-gradient(135deg, #10b981, #059669); color: white; border-radius: 6px; font-size: 13px; display: inline-flex; align-items: center; gap: 4px; white-space: nowrap;">
                                 <i class="fas fa-check-circle"></i> Signed
                             </span>
                         ` : `
-                            <button onclick="openSignatureModal(${caseItem.id})" title="Sign Document" style="padding: 8px 12px; background: linear-gradient(135deg, #6366f1, #4f46e5); color: white; border: none; border-radius: 6px; cursor: pointer; font-size: 14px; display: inline-flex; align-items: center; gap: 6px;">
+                            <button onclick="openSignatureModal(${caseItem.id})" title="Sign Document" style="padding: 6px 10px; background: linear-gradient(135deg, #6366f1, #4f46e5); color: white; border: none; border-radius: 6px; cursor: pointer; font-size: 13px; display: inline-flex; align-items: center; gap: 4px; white-space: nowrap;">
                                 <i class="fas fa-signature"></i> Sign
                             </button>
                         `}
                         ${currentUserRole === 'admin' ? `
-                            <button onclick="editCase(${caseItem.id})" title="Edit" style="padding: 8px 12px; background: linear-gradient(135deg, #ffc107, #e0a800); color: #000; border: none; border-radius: 6px; cursor: pointer; font-size: 14px; display: inline-flex; align-items: center; gap: 6px;">
+                            <button onclick="editCase(${caseItem.id})" title="Edit" style="padding: 6px 10px; background: linear-gradient(135deg, #ffc107, #e0a800); color: #000; border: none; border-radius: 6px; cursor: pointer; font-size: 13px; display: inline-flex; align-items: center; gap: 4px; white-space: nowrap;">
                                 <i class="fas fa-edit"></i> Edit
                             </button>
-                            <button onclick="deleteCase(${caseItem.id})" title="Delete" style="padding: 8px 12px; background: linear-gradient(135deg, #dc3545, #c82333); color: white; border: none; border-radius: 6px; cursor: pointer; font-size: 14px; display: inline-flex; align-items: center; gap: 6px;">
+                            <button onclick="deleteCase(${caseItem.id})" title="Delete" style="padding: 6px 10px; background: linear-gradient(135deg, #dc3545, #c82333); color: white; border: none; border-radius: 6px; cursor: pointer; font-size: 13px; display: inline-flex; align-items: center; gap: 4px; white-space: nowrap;">
                                 <i class="fas fa-trash-alt"></i> Delete
                             </button>
                         ` : ''}
