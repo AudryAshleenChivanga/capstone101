@@ -110,19 +110,28 @@ function renderCaseTable(cases) {
                 <td style="padding: 15px; font-weight: 600;">${result}</td>
                 <td style="padding: 15px; font-size: 0.9rem; font-weight: 500;">${caseItem.clinician_name || 'Unknown'}</td>
                 <td style="padding: 15px; text-align: center;">
-                    <div style="display: flex; gap: 8px; justify-content: center;">
-                        <button onclick="viewCaseDetail(${caseItem.id})" class="btn-icon" title="View Details" style="padding: 8px; background: rgba(0, 150, 255, 0.2); border: 1px solid rgba(0, 150, 255, 0.5); border-radius: 6px; cursor: pointer; transition: all 0.3s;">
-                            👁️
+                    <div style="display: flex; gap: 8px; justify-content: center; flex-wrap: wrap;">
+                        <button onclick="viewCaseDetail(${caseItem.id})" title="View Details" style="padding: 8px 12px; background: linear-gradient(135deg, #007bff, #0056b3); color: white; border: none; border-radius: 6px; cursor: pointer; font-size: 14px; display: inline-flex; align-items: center; gap: 6px;">
+                            <i class="fas fa-eye"></i> View
                         </button>
-                        <button onclick="generateCasePDF(${caseItem.id})" class="btn-icon" title="Download PDF Report" style="padding: 8px; background: rgba(76, 175, 80, 0.2); border: 1px solid rgba(76, 175, 80, 0.5); border-radius: 6px; cursor: pointer; transition: all 0.3s;">
-                            📄
-                        </button>
-                        ${currentUserRole === 'admin' ? `
-                            <button onclick="editCase(${caseItem.id})" class="btn-icon" title="Edit" style="padding: 8px; background: rgba(255, 193, 7, 0.2); border: 1px solid rgba(255, 193, 7, 0.5); border-radius: 6px; cursor: pointer; transition: all 0.3s;">
-                                ✏️
+                        ${caseItem.signed_at ? `
+                            <button onclick="generateCasePDF(${caseItem.id})" title="Download PDF" style="padding: 8px 12px; background: linear-gradient(135deg, #28a745, #218838); color: white; border: none; border-radius: 6px; cursor: pointer; font-size: 14px; display: inline-flex; align-items: center; gap: 6px;">
+                                <i class="fas fa-file-pdf"></i> PDF
                             </button>
-                            <button onclick="deleteCase(${caseItem.id})" class="btn-icon" title="Delete" style="padding: 8px; background: rgba(220, 53, 69, 0.2); border: 1px solid rgba(220, 53, 69, 0.5); border-radius: 6px; cursor: pointer; transition: all 0.3s;">
-                                🗑️
+                            <span style="padding: 8px 12px; background: linear-gradient(135deg, #10b981, #059669); color: white; border-radius: 6px; font-size: 14px; display: inline-flex; align-items: center; gap: 6px;">
+                                <i class="fas fa-check-circle"></i> Signed
+                            </span>
+                        ` : `
+                            <button onclick="openSignatureModal(${caseItem.id})" title="Sign Document" style="padding: 8px 12px; background: linear-gradient(135deg, #6366f1, #4f46e5); color: white; border: none; border-radius: 6px; cursor: pointer; font-size: 14px; display: inline-flex; align-items: center; gap: 6px;">
+                                <i class="fas fa-signature"></i> Sign
+                            </button>
+                        `}
+                        ${currentUserRole === 'admin' ? `
+                            <button onclick="editCase(${caseItem.id})" title="Edit" style="padding: 8px 12px; background: linear-gradient(135deg, #ffc107, #e0a800); color: #000; border: none; border-radius: 6px; cursor: pointer; font-size: 14px; display: inline-flex; align-items: center; gap: 6px;">
+                                <i class="fas fa-edit"></i> Edit
+                            </button>
+                            <button onclick="deleteCase(${caseItem.id})" title="Delete" style="padding: 8px 12px; background: linear-gradient(135deg, #dc3545, #c82333); color: white; border: none; border-radius: 6px; cursor: pointer; font-size: 14px; display: inline-flex; align-items: center; gap: 6px;">
+                                <i class="fas fa-trash-alt"></i> Delete
                             </button>
                         ` : ''}
                     </div>

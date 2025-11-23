@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Signature Test</title>
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+    <meta http-equiv="Pragma" content="no-cache">
+    <meta http-equiv="Expires" content="0">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <style>
+        body { font-family: Arial; padding: 20px; background: #f5f5f5; }
+        .test-box { background: white; padding: 20px; margin: 20px 0; border-radius: 8px; }
+        .success { border-left: 5px solid #28a745; }
+        .error { border-left: 5px solid #dc3545; }
+        button { padding: 10px 20px; margin: 5px; border: none; border-radius: 5px; cursor: pointer; }
+        .btn-sign { background: #6366f1; color: white; }
+        #signatureCanvas { border: 2px dashed #ccc; cursor: crosshair; }
+    </style>
+</head>
+<body>
+    <h1>🧪 Signature Module Test</h1>
+    
+    <div class="test-box success">
+        <h3>✅ This Page Loads Fresh (No Cache)</h3>
+        <p>Loaded at: <span id="loadTime"></span></p>
+    </div>
+    
+    <div class="test-box">
+        <h3>Test Signature Drawing</h3>
+        <canvas id="signatureCanvas" width="500" height="200"></canvas>
+        <br><br>
+        <button class="btn-sign" onclick="testSign()">
+            <i class="fas fa-signature"></i> Test Sign
+        </button>
+        <button onclick="clearCanvas()">Clear</button>
+    </div>
+    
+    <div class="test-box">
+        <h3>Check What's Loaded:</h3>
+        <p><strong>dashboard_new.html script version:</strong> <span id="dashVersion">Checking...</span></p>
+        <p><strong>Signature functions exist:</strong> <span id="funcCheck">Checking...</span></p>
+        <button onclick="checkDashboard()">Check Dashboard Files</button>
+    </div>
+    
+    <div class="test-box">
+        <h3>Quick Actions:</h3>
+        <button onclick="window.location.href='/ui/login.html'">Go to Login</button>
+        <button onclick="window.location.href='/ui/dashboard_new.html'">Go to Dashboard</button>
+    </div>
+    
+    <script>
+        document.getElementById('loadTime').textContent = new Date().toLocaleTimeString();
+        
+        let canvas = document.getElementById('signatureCanvas');
+        let ctx = canvas.getContext('2d');
+        let drawing = false;
+        
+        ctx.fillStyle = 'white';
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
+        
+        canvas.addEventListener('mousedown', (e) => {
+            drawing = true;
+            ctx.beginPath();
+            ctx.moveTo(e.offsetX, e.offsetY);
+        });
+        
+        canvas.addEventListener('mousemove', (e) => {
+            if (!drawing) return;
+            ctx.lineTo(e.offsetX, e.offsetY);
+            ctx.strokeStyle = '#000';
+            ctx.lineWidth = 2;
+            ctx.stroke();
+        });
+        
+        canvas.addEventListener('mouseup', () => drawing = false);
+        canvas.addEventListener('mouseout', () => drawing = false);
+        
+        function clearCanvas() {
+            ctx.fillStyle = 'white';
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+        }
+        
+        function testSign() {
+            const data = canvas.toDataURL('image/png');
+            alert('✅ Signature captured as base64!\n\nLength: ' + data.length + ' chars\n\nThis would be saved to backend.');
+        }
+        
+        async function checkDashboard() {
+            try {
+                const response = await fetch('/ui/dashboard_new.html?t=' + Date.now());
+                const html = await response.text();
+                
+                // Check version
+                const versionMatch = html.match(/app_new\.js\?v=(\d+)/);
+                if (versionMatch) {
+                    document.getElementById('dashVersion').textContent = versionMatch[1];
+                    if (versionMatch[1] === '20250124001') {
+                        document.getElementById('dashVersion').innerHTML = versionMatch[1] + ' ✅ NEW';
+                        document.getElementById('dashVersion').style.color = '#28a745';
+                    } else {
+                        document.getElementById('dashVersion').innerHTML = versionMatch[1] + ' ❌ OLD';
+                        document.getElementById('dashVersion').style.color = '#dc3545';
+                    }
+                }
+                
+                // Check signature functions
+                const hasSignature = html.includes('signatureModal');
+                document.getElementById('funcCheck').textContent = hasSignature ? '✅ YES' : '❌ NO';
+                document.getElementById('funcCheck').style.color = hasSignature ? '#28a745' : '#dc3545';
+                
+            } catch (error) {
+                document.getElementById('dashVersion').textContent = 'Error: ' + error.message;
+            }
+        }
+        
+        // Auto-check on load
+        setTimeout(checkDashboard, 1000);
+    </script>
+</body>
+</html>
+
