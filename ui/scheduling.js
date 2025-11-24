@@ -444,11 +444,21 @@ async function createVideoSession(appointmentId) {
         });
         
         console.log('[Video Session] Created:', response);
+        console.log('[Video Session] Host URL:', response.join_url_host);
+        console.log('[Video Session] Guest URL:', response.join_url_guest);
         
         showToast('Video session created successfully!', 'success');
         
-        // Show modal with video links
-        showVideoLinkModal(response);
+        // Show modal with video links - TRY/CATCH to debug
+        try {
+            console.log('[Video Session] Attempting to show modal...');
+            showVideoLinkModal(response);
+            console.log('[Video Session] Modal shown successfully');
+        } catch (modalError) {
+            console.error('[Video Session] Modal error:', modalError);
+            // Fallback: just alert the links
+            alert(`Video Session Created!\n\nHost Link:\n${response.join_url_host}\n\nGuest Link:\n${response.join_url_guest}\n\nCopy these links to join the video consultation.`);
+        }
         
         // Reload appointments to update the list
         await loadAppointments();
