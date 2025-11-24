@@ -105,6 +105,16 @@ def create_video_session(
         )
         db.add(db_session)
         db.commit()
+        
+        # Update appointment with video session URL if appointment_id provided
+        if appointment_id:
+            appointment = db.query(Appointment).filter(Appointment.id == appointment_id).first()
+            if appointment:
+                appointment.video_session_url = guest_url
+                appointment.video_session_id = session_id
+                appointment.updated_at = datetime.utcnow()
+                db.commit()
+                print(f"Updated appointment #{appointment_id} with video URL")
     except Exception as db_error:
         print(f"Database error (non-critical): {db_error}")
         # Continue even if DB save fails - session is still in memory
