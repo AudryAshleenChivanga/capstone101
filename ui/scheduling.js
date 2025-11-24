@@ -443,9 +443,14 @@ async function createVideoSession(appointmentId) {
             })
         });
         
+        console.log('[Video Session] Created:', response);
+        
         showToast('Video session created successfully!', 'success');
         
-        // Reload appointments to show new video link
+        // Show modal with video links
+        showVideoLinkModal(response);
+        
+        // Reload appointments to update the list
         await loadAppointments();
         
     } catch (error) {
@@ -458,6 +463,175 @@ async function createVideoSession(appointmentId) {
         }
         showToast(errorMessage, 'error');
     }
+}
+
+// Show Video Link Modal
+function showVideoLinkModal(sessionData) {
+    const modal = document.createElement('div');
+    modal.style.cssText = `
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: rgba(0, 0, 0, 0.7);
+        backdrop-filter: blur(8px);
+        z-index: 10000;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        animation: fadeIn 0.3s ease;
+    `;
+    
+    modal.innerHTML = `
+        <div style="
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-radius: 20px;
+            max-width: 600px;
+            width: 90%;
+            padding: 0;
+            box-shadow: 0 25px 50px rgba(0, 0, 0, 0.5);
+            animation: slideUp 0.4s ease;
+            overflow: hidden;
+        ">
+            <!-- Header -->
+            <div style="
+                text-align: center;
+                padding: 40px 30px 30px;
+                background: rgba(255, 255, 255, 0.1);
+                border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+            ">
+                <div style="
+                    width: 80px;
+                    height: 80px;
+                    background: rgba(255, 255, 255, 0.95);
+                    border-radius: 50%;
+                    margin: 0 auto 20px;
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+                ">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="#667eea" style="width: 50px; height: 50px;">
+                        <path d="M4.5 4.5a3 3 0 00-3 3v9a3 3 0 003 3h8.25a3 3 0 003-3v-9a3 3 0 00-3-3H4.5zM19.94 18.75l-2.69-2.69V7.94l2.69-2.69c.944-.945 2.56-.276 2.56 1.06v11.38c0 1.336-1.616 2.005-2.56 1.06z"/>
+                    </svg>
+                </div>
+                <h2 style="color: white; font-size: 28px; font-weight: 700; margin: 0 0 10px 0;">Video Session Ready!</h2>
+                <p style="color: rgba(255, 255, 255, 0.9); font-size: 16px; margin: 0;">Share this link with participants to join the consultation</p>
+            </div>
+            
+            <!-- Content -->
+            <div style="padding: 30px; background: white;">
+                <!-- Host Link -->
+                <div style="margin-bottom: 25px;">
+                    <label style="display: block; font-weight: 600; color: #334155; margin-bottom: 8px; font-size: 14px;">YOUR LINK (Host):</label>
+                    <div style="display: flex; gap: 10px;">
+                        <input 
+                            type="text" 
+                            id="hostLinkInput" 
+                            value="${sessionData.join_url_host}" 
+                            readonly
+                            style="flex: 1; padding: 12px; border: 2px solid #e2e8f0; border-radius: 8px; font-size: 14px; font-family: monospace;"
+                        >
+                        <button onclick="copyToClipboard('hostLinkInput', 'Host link copied!')" style="
+                            background: #667eea;
+                            color: white;
+                            border: none;
+                            padding: 12px 20px;
+                            border-radius: 8px;
+                            cursor: pointer;
+                            font-weight: 600;
+                            white-space: nowrap;
+                        ">Copy</button>
+                    </div>
+                </div>
+                
+                <!-- Guest Link -->
+                <div style="margin-bottom: 25px;">
+                    <label style="display: block; font-weight: 600; color: #334155; margin-bottom: 8px; font-size: 14px;">GUEST LINK (Share with Specialist):</label>
+                    <div style="display: flex; gap: 10px;">
+                        <input 
+                            type="text" 
+                            id="guestLinkInput" 
+                            value="${sessionData.join_url_guest}" 
+                            readonly
+                            style="flex: 1; padding: 12px; border: 2px solid #e2e8f0; border-radius: 8px; font-size: 14px; font-family: monospace;"
+                        >
+                        <button onclick="copyToClipboard('guestLinkInput', 'Guest link copied!')" style="
+                            background: #10b981;
+                            color: white;
+                            border: none;
+                            padding: 12px 20px;
+                            border-radius: 8px;
+                            cursor: pointer;
+                            font-weight: 600;
+                            white-space: nowrap;
+                        ">Copy</button>
+                    </div>
+                </div>
+                
+                <!-- Session Info -->
+                <div style="
+                    background: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%);
+                    border-left: 4px solid #3b82f6;
+                    padding: 15px 20px;
+                    border-radius: 8px;
+                    margin-bottom: 25px;
+                ">
+                    <strong style="color: #1e40af; font-size: 14px;">Session Information:</strong>
+                    <p style="color: #1e40af; margin: 8px 0 0 0; font-size: 14px; line-height: 1.5;">
+                        • Room: ${sessionData.room_name}<br>
+                        • Expires: ${new Date(sessionData.expires_at).toLocaleString()}<br>
+                        • Session ID: ${sessionData.session_id}
+                    </p>
+                </div>
+                
+                <!-- Action Buttons -->
+                <div style="display: flex; gap: 12px;">
+                    <button onclick="window.open('${sessionData.join_url_host}', '_blank')" style="
+                        flex: 1;
+                        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+                        color: white;
+                        border: none;
+                        padding: 16px 24px;
+                        border-radius: 12px;
+                        font-size: 16px;
+                        font-weight: 600;
+                        cursor: pointer;
+                        transition: all 0.3s ease;
+                        box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+                    ">Join Video Call</button>
+                    
+                    <button onclick="closeVideoModal()" style="
+                        background: white;
+                        color: #64748b;
+                        border: 2px solid #e2e8f0;
+                        padding: 16px 24px;
+                        border-radius: 12px;
+                        font-size: 16px;
+                        font-weight: 600;
+                        cursor: pointer;
+                        transition: all 0.2s ease;
+                    ">Close</button>
+                </div>
+            </div>
+        </div>
+    `;
+    
+    document.body.appendChild(modal);
+    
+    // Global function to copy links
+    window.copyToClipboard = function(inputId, successMessage) {
+        const input = document.getElementById(inputId);
+        input.select();
+        document.execCommand('copy');
+        showToast(successMessage || 'Link copied!', 'success');
+    };
+    
+    // Global function to close modal
+    window.closeVideoModal = function() {
+        modal.remove();
+    };
 }
 
 // ========================================
