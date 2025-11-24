@@ -6,6 +6,65 @@
 let specialists = [];
 let appointments = [];
 
+// Get API base URL and auth token
+const API_BASE_SCHED = (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') 
+    ? 'http://localhost:8000' 
+    : '';
+const getAuthToken = () => localStorage.getItem('token');
+
+// ========================================
+// API REQUEST HELPER
+// ========================================
+async function apiRequest(endpoint, options = {}) {
+    const token = getAuthToken();
+    if (!token) {
+        showToast('Please log in to continue', 'error');
+        throw new Error('No authentication token');
+    }
+    
+    const defaultOptions = {
+        headers: {
+            'Authorization': `Bearer ${token}`,
+            'Content-Type': 'application/json'
+        }
+    };
+    
+    try {
+        const response = await fetch(`${API_BASE_SCHED}${endpoint}`, {
+            ...defaultOptions,
+            ...options,
+            headers: {
+                ...defaultOptions.headers,
+                ...options.headers
+            }
+        });
+        
+        if (response.status === 401) {
+            localStorage.removeItem('token');
+            localStorage.removeItem('user');
+            showToast('Session expired. Please log in again.', 'error');
+            setTimeout(() => window.location.href = 'index.html', 1500);
+            throw new Error('Authentication failed');
+        }
+        
+        if (!response.ok) {
+            const errorData = await response.json().catch(() => ({}));
+            const errorMessage = errorData.detail || errorData.message || `Request failed: ${response.statusText}`;
+            throw new Error(errorMessage);
+        }
+        
+        return response.json();
+    } catch (error) {
+        if (error.message === 'Authentication failed') {
+            throw error;
+        }
+        if (error.name === 'TypeError' && error.message.includes('fetch')) {
+            showToast('Unable to connect to server. Please check your connection.', 'error');
+        }
+        throw error;
+    }
+}
+
 // ========================================
 // Initialize Scheduling System
 // ========================================
