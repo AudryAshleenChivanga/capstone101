@@ -289,10 +289,27 @@ function stopDashboardAutoRefresh() {
 function updateStatCards(data) {
     const summary = data.summary || {};
     
-    document.getElementById('statTotalCases').textContent = summary.total_cases || 0;
-    document.getElementById('statScreening').textContent = summary.screening_cases || 0;
-    document.getElementById('statStaging').textContent = summary.staging_cases || 0;
-    document.getElementById('statHighRisk').textContent = summary.high_risk_cases || 0;
+    console.log('[Dashboard] Stats data:', summary);
+    console.log('[Dashboard] Screening cases:', summary.screening_cases);
+    console.log('[Dashboard] Staging cases:', summary.staging_cases);
+    
+    // Update main dashboard stats
+    const totalEl = document.getElementById('statTotalCases');
+    const screeningEl = document.getElementById('statScreening');
+    const stagingEl = document.getElementById('statStaging');
+    const highRiskEl = document.getElementById('statHighRisk');
+    
+    if (totalEl) totalEl.textContent = summary.total_cases || 0;
+    if (screeningEl) screeningEl.textContent = summary.screening_cases || 0;
+    if (stagingEl) stagingEl.textContent = summary.staging_cases || 0;
+    if (highRiskEl) highRiskEl.textContent = summary.high_risk_cases || 0;
+    
+    // Also update Case History page stats if they exist (different IDs)
+    const screeningsEl = document.getElementById('statScreenings');
+    const stagingsEl = document.getElementById('statStagings');
+    
+    if (screeningsEl) screeningsEl.textContent = summary.screening_cases || 0;
+    if (stagingsEl) stagingsEl.textContent = summary.staging_cases || 0;
 }
 
 // ========================================

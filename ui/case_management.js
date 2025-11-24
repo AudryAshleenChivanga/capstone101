@@ -59,8 +59,12 @@ function updateStatistics(data) {
     // Calculate statistics
     const total = cases.length;
     const highRisk = cases.filter(c => c.risk_level === 'high').length;
-    const screenings = cases.filter(c => c.case_type === 'screening').length;
-    const stagings = cases.filter(c => c.case_type === 'staging').length;
+    
+    // Backend returns 'task' field, not 'case_type'
+    const screenings = cases.filter(c => c.task === 'screening').length;
+    const stagings = cases.filter(c => c.task === 'staging').length;
+    
+    console.log('[Dashboard Stats] Total:', total, 'Screenings:', screenings, 'Stagings:', stagings);
     
     // Update UI
     document.getElementById('statTotalCases').textContent = total;
