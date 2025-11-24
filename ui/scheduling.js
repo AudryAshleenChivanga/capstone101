@@ -7,10 +7,15 @@ let specialists = [];
 let appointments = [];
 
 // Get API base URL and auth token
+// In production, use same origin (empty string works for same-origin requests)
 const API_BASE_SCHED = (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') 
     ? 'http://localhost:8000' 
-    : '';
+    : window.location.origin; // Use full origin in production for absolute URLs
 const getAuthToken = () => localStorage.getItem('token');
+
+console.log('[Scheduling] API Base URL:', API_BASE_SCHED);
+console.log('[Scheduling] Current hostname:', window.location.hostname);
+console.log('[Scheduling] Full origin:', window.location.origin);
 
 // ========================================
 // API REQUEST HELPER
@@ -30,7 +35,11 @@ async function apiRequest(endpoint, options = {}) {
     };
     
     try {
-        const response = await fetch(`${API_BASE_SCHED}${endpoint}`, {
+        const fullUrl = `${API_BASE_SCHED}${endpoint}`;
+        console.log('[Scheduling API] Calling:', fullUrl);
+        console.log('[Scheduling API] Method:', options.method || 'GET');
+        
+        const response = await fetch(fullUrl, {
             ...defaultOptions,
             ...options,
             headers: {
@@ -38,6 +47,8 @@ async function apiRequest(endpoint, options = {}) {
                 ...options.headers
             }
         });
+        
+        console.log('[Scheduling API] Response status:', response.status);
         
         if (response.status === 401) {
             localStorage.removeItem('token');

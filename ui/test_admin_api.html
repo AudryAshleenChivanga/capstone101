@@ -100,7 +100,13 @@
     </div>
 
     <div class="test-section">
-        <h3>6. Test Backend Connection</h3>
+        <h3>6. Test Video Session Creation (/video/session/create)</h3>
+        <button onclick="testVideoSession()">Test Video Endpoint</button>
+        <div id="video-result"></div>
+    </div>
+
+    <div class="test-section">
+        <h3>7. Test Backend Connection</h3>
         <button onclick="testBackendConnection()">Ping Backend</button>
         <div id="backend-result"></div>
     </div>
@@ -299,6 +305,45 @@
                     `❌ Cannot connect to backend!\n\nError: ${error.message}\n\nAPI Base: ${API_BASE}\n\nMake sure:\n1. Backend server is running\n2. It's accessible on port 8000\n3. No firewall blocking the connection`, 
                     'error'
                 );
+            }
+        }
+
+        async function testVideoSession() {
+            const token = localStorage.getItem('token');
+            if (!token) {
+                showResult('video-result', '❌ No token found. Please log in first.', 'error');
+                return;
+            }
+
+            try {
+                showResult('video-result', '⏳ Testing...', 'info');
+                const response = await fetch(`${API_BASE}/video/session/create`, {
+                    method: 'POST',
+                    headers: {
+                        'Authorization': `Bearer ${token}`,
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        session_name: 'Test Session',
+                        case_id: null
+                    })
+                });
+
+                const data = await response.json();
+                
+                if (response.ok) {
+                    showResult('video-result', 
+                        `✅ SUCCESS (${response.status})\n\nVideo session created!\n\n${JSON.stringify(data, null, 2)}\n\nCheck the join URLs - they should use production domain, not localhost!`, 
+                        'success'
+                    );
+                } else {
+                    showResult('video-result', 
+                        `❌ FAILED (${response.status})\n\n${JSON.stringify(data, null, 2)}`, 
+                        'error'
+                    );
+                }
+            } catch (error) {
+                showResult('video-result', `❌ ERROR: ${error.message}`, 'error');
             }
         }
 
