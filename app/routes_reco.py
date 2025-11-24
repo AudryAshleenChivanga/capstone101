@@ -592,8 +592,16 @@ def generate_cases_report(
     
     # Generate statistics
     total_cases = len(cases)
-    screening_cases = sum(1 for c in cases if c.input_data.get('task') == "screening")
-    staging_cases = sum(1 for c in cases if c.input_data.get('task') == "staging")
+    
+    # Check both input_data['task'] AND case_type column for backward compatibility
+    screening_cases = sum(1 for c in cases if (
+        c.input_data.get('task') == "screening" or 
+        c.case_type in ["screening", "symptom_assessment", "lab_screening"]
+    ))
+    staging_cases = sum(1 for c in cases if (
+        c.input_data.get('task') == "staging" or 
+        c.case_type in ["staging", "resistance_staging"]
+    ))
     high_risk_cases = sum(1 for c in cases if c.screen_prob and c.screen_prob > 0.7)
     
     # Calculate average screening probability

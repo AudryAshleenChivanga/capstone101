@@ -56,21 +56,17 @@ async function loadCaseHistory(page = 1) {
 function updateStatistics(data) {
     const cases = data.cases || [];
     
-    // Calculate statistics
-    const total = cases.length;
-    const highRisk = cases.filter(c => c.risk_level === 'high').length;
+    // Use summary from backend (already calculated correctly)
+    const summary = data.summary || {};
     
-    // Backend returns 'task' field, not 'case_type'
-    const screenings = cases.filter(c => c.task === 'screening').length;
-    const stagings = cases.filter(c => c.task === 'staging').length;
+    console.log('[Dashboard Stats] Summary:', summary);
+    console.log('[Dashboard Stats] Cases:', cases.length);
     
-    console.log('[Dashboard Stats] Total:', total, 'Screenings:', screenings, 'Stagings:', stagings);
-    
-    // Update UI
-    document.getElementById('statTotalCases').textContent = total;
-    document.getElementById('statHighRisk').textContent = highRisk;
-    document.getElementById('statScreenings').textContent = screenings;
-    document.getElementById('statStagings').textContent = stagings;
+    // Update UI with summary data (backend does the counting)
+    document.getElementById('statTotalCases').textContent = summary.total_cases || cases.length;
+    document.getElementById('statHighRisk').textContent = summary.high_risk_cases || 0;
+    document.getElementById('statScreenings').textContent = summary.screening_cases || 0;
+    document.getElementById('statStagings').textContent = summary.staging_cases || 0;
 }
 
 /**
