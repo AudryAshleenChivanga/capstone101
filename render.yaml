@@ -40,6 +40,9 @@ services:
       - key: ALLOWED_ORIGINS
         value: "*"
       
+      - key: FRONTEND_URL
+        value: https://h-pylori-cdss.onrender.com
+      
       # Optional: Add your Twilio credentials as secrets
       # - key: TWILIO_ACCOUNT_SID
       #   sync: false

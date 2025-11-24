@@ -28,9 +28,12 @@ class Settings:
     ALLOWED_ORIGINS: list = ["*"] if allowed_origins_str == "*" else allowed_origins_str.split(",")
     
     # Frontend URL (for video consultation links)
-    # In production (Render), this should be set to your Render URL
-    # In local dev, defaults to 127.0.0.1:8001
-    FRONTEND_URL: str = os.getenv("FRONTEND_URL", "http://127.0.0.1:8001")
+    # Auto-detect production URL from RENDER_EXTERNAL_URL environment variable
+    # Render automatically sets this in production
+    FRONTEND_URL: str = os.getenv(
+        "FRONTEND_URL", 
+        os.getenv("RENDER_EXTERNAL_URL", "http://127.0.0.1:8001")
+    )
     
     # Database
     DATABASE_URL: str = os.getenv("DATABASE_URL", "sqlite:///./cdss.db")
