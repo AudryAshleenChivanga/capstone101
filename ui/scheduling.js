@@ -308,10 +308,11 @@ async function submitAppointmentRequest(event) {
     const formData = {
         specialist_id: parseInt(document.getElementById('specialistSelect').value),
         case_id: document.getElementById('caseSelect').value || null,
-        preferred_date: document.getElementById('preferredDate').value,
+        requested_date: document.getElementById('preferredDate').value,  // Fixed: backend expects 'requested_date'
+        duration_minutes: 30,  // Default 30 minutes
         urgency: document.getElementById('urgencyLevel').value,
         reason: document.getElementById('appointmentReason').value,
-        notes: document.getElementById('appointmentNotes').value || null
+        clinician_notes: document.getElementById('appointmentNotes').value || null  // Fixed: backend expects 'clinician_notes'
     };
     
     if (!formData.specialist_id) {
