@@ -424,7 +424,7 @@ async function createVideoSession(appointmentId) {
     try {
         showToast('Creating video session...', 'info');
         
-        const response = await apiRequest('/video/sessions', {
+        const response = await apiRequest('/video/session/create', {
             method: 'POST',
             body: JSON.stringify({
                 appointment_id: appointmentId,
