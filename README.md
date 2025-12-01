@@ -23,13 +23,34 @@
 
 ## Project Overview
 
-An AI-powered Clinical Decision Support System designed to revolutionize H. pylori management in Rwanda and across Africa. This system brings together multiple machine learning models specifically contextualized for African healthcare settings, offering clinicians intelligent decision support throughout patient consultations for gastric conditions related to H. pylori.
+An AI-powered Clinical Decision Support Tool designed to **assist healthcare professionals** in H. pylori screening, antibiotic resistance profiling, and treatment planning in Rwanda and across Africa. This research prototype integrates machine learning models contextualized for African healthcare settings, providing clinicians with evidence-based decision support during patient consultations.
 
-### Novel Contributions
+**System Status**: Research prototype requiring clinical validation before deployment in clinical practice.
 
-**1. Africa-Contextualized AI Models**: The system integrates multiple machine learning models trained and calibrated for Rwandan and African patient populations, addressing the unique epidemiological and clinical characteristics of H. pylori infections in Sub-Saharan Africa. This contextualization ensures clinically relevant recommendations aligned with local disease patterns, antibiotic resistance profiles, and resource availability.
+### System Scope & Contributions
 
-**2. Breakthrough Reinforcement Learning Module**: The 3D Biopsy Simulation powered by reinforcement learning represents a paradigm shift in early detection of gastric conditions. This innovative module can detect peptic ulcers, gastric cancer, and other gastric pathologies with unprecedented ease and accuracy. By combining advanced 3D visualization with RL-based tissue analysis, the system enables early intervention and improved patient outcomes, potentially transforming the course of gastric disease management in resource-limited settings.
+#### Primary System (Production-Ready for Validation)
+
+**1. H. pylori Screening & Staging Models**: 
+- **Screening Model**: Random Forest classifier trained on 50,000 synthetic samples (ROC-AUC: 0.738, Recall: 84.9%)
+- **Staging Model**: Random Forest classifier trained on 38 real clinical samples (Accuracy: 90.0%)
+- **Purpose**: Assist clinicians in infection risk assessment and antibiotic resistance profiling
+- **Status**: Requires clinical validation with real patient cohorts
+
+**2. Clinical Decision Support System**:
+- Evidence-based treatment recommendations aligned with WHO, Maastricht VI, ACG, and NICE guidelines
+- Video teleconsultation for remote specialist access
+- Appointment scheduling and case management workflows
+- **Status**: Functional prototype, requires user acceptance testing in clinical settings
+
+#### Secondary Features (Research Prototypes)
+
+**3. RL-Powered Biopsy Simulation**:
+- Reinforcement learning agents for educational demonstration
+- 3D visualization of gastric tissue navigation
+- **Purpose**: Training tool and proof-of-concept for AI-guided procedures
+- **Status**: Research prototype, NOT intended for clinical deployment
+- **Limitation**: Trained in simulated environments, not validated on real endoscopic data
 
 ### Core Features
 - **AI-Powered Screening**: Machine learning-based H. pylori infection probability assessment
@@ -1463,9 +1484,62 @@ For technical issues, feature requests, or contributions, please open an issue o
 
 ---
 
-## Medical Disclaimer
+## Medical Disclaimer & System Limitations
 
-This software is intended as a clinical decision support tool and should not replace professional medical judgment. Healthcare professionals are responsible for all clinical decisions and patient care. The system should be used in conjunction with clinical expertise and established medical guidelines.
+### Clinical Validation Status
+**IMPORTANT**: This system is a **research prototype and clinical decision support tool**. It has **NOT been clinically validated** with real patient data or approved for independent diagnostic use by regulatory authorities (FDA, CE, etc.).
+
+### Intended Use
+This system is designed to **assist healthcare professionals** in:
+- H. pylori infection screening and risk assessment
+- Antibiotic resistance profiling for treatment planning
+- Evidence-based clinical recommendations
+- Remote specialist consultation facilitation
+
+**All diagnostic and therapeutic decisions remain the sole responsibility of qualified medical professionals.**
+
+### Data Limitations
+- **Screening Model**: Trained on 50,000 **synthetic samples** generated from epidemiological studies and clinical literature
+- **Staging Model**: Trained on 38 **real clinical samples** from published research
+- **RL Models**: Trained in **simulated environments** for proof-of-concept demonstration
+
+**Clinical validation with real patient data is required before deployment in clinical settings.**
+
+### System Boundaries
+**What This System Does**:
+✅ Provides risk probability estimates for H. pylori infection  
+✅ Suggests treatment protocols based on resistance patterns  
+✅ Generates evidence-based clinical recommendations  
+✅ Facilitates remote teleconsultation  
+
+**What This System Does NOT Do**:
+❌ Replace clinician judgment or decision-making  
+❌ Make autonomous diagnostic decisions  
+❌ Provide definitive diagnosis without confirmation testing  
+❌ Eliminate the need for medical professionals  
+
+### Professional Responsibility
+Healthcare professionals using this system:
+- Must independently verify all AI-generated recommendations
+- Retain full responsibility for patient care decisions
+- Should consider patient-specific factors not captured by the model
+- Must follow local clinical guidelines and protocols
+- Should report any discrepancies or concerns
+
+### Regulatory Status
+- **Not FDA-approved or CE-marked**
+- **Not intended for use as a medical device**
+- **Research and educational purposes only**
+- Requires institutional review and approval before clinical deployment
+
+### Validation Plan
+A comprehensive clinical validation study is planned to:
+1. Validate model performance on real patient cohorts
+2. Assess clinical utility in real-world workflows
+3. Gather feedback from healthcare professionals
+4. Refine models based on actual clinical outcomes
+
+**Until clinical validation is complete, this system should be used for research, education, and decision support only, not as a primary diagnostic tool.**
 
 ---
 
