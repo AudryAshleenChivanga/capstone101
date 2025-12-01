@@ -886,14 +886,11 @@ The system integrates **four distinct AI models** working together as complement
 
 **Data Visualizations:**
 
-![Class Distribution](presentation_graphs/1_class_distribution.png)
-*Figure 1A: H. pylori infection status distribution showing 63.7% positive prevalence (31,850 positive, 18,150 negative)*
-
 ![Age Distribution](presentation_graphs/2_age_distribution.png)
-*Figure 1B: Age distribution by infection status - positive cases trend slightly older (mean 46.0 vs 43.4 years)*
+*Figure 1A: Age distribution by infection status - positive cases trend slightly older (mean 46.0 vs 43.4 years)*
 
 ![Feature Correlations](presentation_graphs/3_correlation_heatmap.png)
-*Figure 1C: Feature correlation matrix showing CRP (r=0.337) as strongest predictor among top 6 features*
+*Figure 1B: Feature correlation matrix showing CRP (r=0.337) as strongest predictor among top 6 features*
 
 #### Synthetic Data Generation Methodology
 
@@ -970,7 +967,7 @@ hp_pos ~ Bernoulli(P)
 #### Training Curves
 
 ![Screening Model Training](model_documentation/screening_model_training_curves.png)
-*Figure 4: Training progression showing stable validation performance (AUC 0.738) with minimal overfitting - Random Forest ensemble learning with 400 trees*
+*Figure 4: Random Forest learning curves showing stable validation performance (AUC 0.738) as trees are added to the ensemble - performance plateaus after ~200 trees with minimal overfitting*
 
 **Training Methodology**:
 1. **Data Split**: Stratified 75/25 train-test split (37,500 train / 12,500 test)
@@ -1053,10 +1050,6 @@ hp_pos ~ Bernoulli(P)
 | **Macro Avg** | 95.8% | 83.3% | 86.7% | 10 |
 | **Weighted Avg** | 91.2% | 90.0% | 88.7% | 10 |
 
-#### Training Curves
-
-![Staging Model Training](model_documentation/staging_model_training_curves.png)
-
 #### Model Architecture Diagram
 
 ![Staging Architecture](presentation_graphs/11_staging_architecture.png)
@@ -1065,7 +1058,7 @@ hp_pos ~ Bernoulli(P)
 #### Training Curves
 
 ![Staging Model Training](model_documentation/staging_model_training_curves.png)
-*Figure 7: Staging model training showing rapid convergence to 90% accuracy within 40 epochs*
+*Figure 7: Random Forest ensemble learning curves showing rapid convergence to 90% accuracy - stable performance achieved with 400 trees despite small dataset (38 samples)*
 
 **Training Methodology**:
 1. **Feature Preprocessing**: Median imputation for numeric, mode for categorical

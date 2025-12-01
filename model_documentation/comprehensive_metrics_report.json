@@ -13,14 +13,14 @@
         "calibration": "CalibratedClassifierCV (sigmoid method, cv=3)"
       },
       "training_data": {
-        "total_samples": 25000,
-        "training_samples": 18750,
-        "validation_samples": 6250,
+        "total_samples": 50000,
+        "training_samples": 37500,
+        "validation_samples": 12500,
         "features": 20,
         "target": "hp_pos (H. pylori positive)",
         "class_distribution": {
-          "negative": 36.3,
-          "positive": 63.7
+          "negative": "36.3% (18,150 samples)",
+          "positive": "63.7% (31,850 samples)"
         }
       },
       "feature_categories": {
