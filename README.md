@@ -1065,10 +1065,20 @@ hp_pos ~ Bernoulli(P)
 ![Staging Architecture](presentation_graphs/11_staging_architecture.png)
 *Figure 5: Staging model architecture - 6 features (MIC + mutations) → 400 trees → 3-class output with clinical breakpoint integration*
 
-#### Training Curves
+#### Training Summary
 
-![Staging Model Training](model_documentation/staging_model_training_curves.png)
-*Figure 6: Random Forest ensemble learning curves showing rapid convergence to 90% accuracy - stable performance achieved with 400 trees despite small dataset (38 samples)*
+**Random Forest Training Characteristics**:
+
+| Aspect | Details |
+|--------|---------|
+| **Algorithm** | Random Forest Ensemble (400 trees) |
+| **Training Samples** | 28 (73.7% of 38) |
+| **Test Samples** | 10 (26.3% of 38) |
+| **Training Time** | <5 seconds (small dataset) |
+| **Convergence** | Rapid - stable at 90% accuracy with 400 trees |
+| **Overfitting** | Minimal despite small dataset size |
+| **Class Balance** | Balanced class weights to handle imbalance |
+| **Final Performance** | Accuracy: 90.0%, F1: 93.3% (Moderate class) |
 
 **Training Methodology**:
 1. **Feature Preprocessing**: Median imputation for numeric, mode for categorical
@@ -1145,7 +1155,7 @@ The model incorporates **EUCAST/CLSI breakpoints** for H. pylori clarithromycin 
 #### Model Architecture Diagram
 
 ![RL Biopsy Architecture](presentation_graphs/12_rl_biopsy_architecture.png)
-*Figure 7: RL Biopsy Agent architecture - Q-Learning agent navigating 10×10 gastric tissue grid with 5 actions (4 directional + biopsy)*
+*Figure 6: RL Biopsy Agent architecture - Q-Learning agent navigating 10×10 gastric tissue grid with 5 actions (4 directional + biopsy)*
 
 #### Performance Metrics
 
@@ -1159,7 +1169,7 @@ The model incorporates **EUCAST/CLSI breakpoints** for H. pylori clarithromycin 
 #### Training Curves
 
 ![RL Biopsy Training](model_documentation/rl_biopsy_training_curves.png)
-*Figure 9: RL Biopsy Agent training over 500 episodes - 4 panels showing rewards, epsilon decay, biopsy quality improvement (40%→82%), and Q-value convergence*
+*Figure 7: RL Biopsy Agent training over 500 episodes - 4 panels showing rewards, epsilon decay, biopsy quality improvement (40%→82%), and Q-value convergence*
 
 **Key Training Insights**:
 - **Reward Progression**: Steady increase from ~5 to ~20 over 500 episodes
@@ -1253,7 +1263,7 @@ The model incorporates **EUCAST/CLSI breakpoints** for H. pylori clarithromycin 
 #### Training Curves
 
 ![RL Capsule Training](model_documentation/rl_capsule_training_curves.png)
-*Figure 10: RL Capsule Endoscopy Agent training - 3 panels showing detection accuracy reaching 85%, episode rewards, and pathology detection rate (4.5 per episode)*
+*Figure 9: RL Capsule Endoscopy Agent training - 3 panels showing detection accuracy reaching 85%, episode rewards, and pathology detection rate (4.5 per episode)*
 
 #### Model Architecture Diagram
 
@@ -1301,7 +1311,7 @@ The model incorporates **EUCAST/CLSI breakpoints** for H. pylori clarithromycin 
 ### Model Comparison & Performance
 
 ![Model Comparison](model_documentation/model_comparison.png)
-*Figure 11: Comprehensive performance comparison across all 4 AI models showing accuracy, precision, recall, and F1 scores*
+*Figure 10: Comprehensive performance comparison across all 4 AI models showing accuracy, precision, recall, and F1 scores*
 
 **Cross-Model Performance Summary**:
 
